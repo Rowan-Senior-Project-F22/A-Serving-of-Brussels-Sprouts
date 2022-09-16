@@ -10,6 +10,9 @@ The social concept of the system is to introduce its users to new people and
 new music. By providing friend and music suggestions to the user, the system
 will initiate conversations.
 
+## Project Structure
+TODO
+
 ## Contributors
 - Chris Rinaldi <rinald43@students.rowan.edu>
 - Jeremy Juckett <jucket82@students.rowan.edu>
