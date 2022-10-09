@@ -1,4 +1,4 @@
-# Senior-Project-F22
+# A Serving of Brussels Sprouts
 Senior project git repository.
 
 ## Project Description
