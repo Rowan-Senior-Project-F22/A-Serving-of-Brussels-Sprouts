@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %} Artist Search {% endblock %}
+
+{% block content %}
+<!-- 
+    Note the url syntax below. It specifies that the "best" url 
+    from the recommender app, which is written as recommender:best
+-->
+
+<form method='post' class="form" action="{% url 'recommender:get_artist' %}">
+    {% csrf_token %}
+    <br>
+    <center>
+        <h2>Artist Search</h2>
+            <!-- {{ form.as_p }} -->
+
+            <p>Artist: {{ form.artist }}</p>
+            <p>From year: {{ form.from_year }}</p>
+            <p>To year: {{ form.to_year }}<p>
+            <button class="btn btn-primary btn-lg"  type="submit">
+                Search
+            </button>
+
+</center>
+</form>
+<br>
+
+<!-- -->
+
+{% if albums %}
+<table class="table">
+<tbody>
+<tr>
+
+{% for album in albums %}
+
+<td>
+<iframe src="https://open.spotify.com/embed/track/{{ album.track_id }}" width="300" height="380" 
+frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+</td>
+
+{% endfor %}
+
+</tr>
+</tbody>
+</table>
+
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %} Album Search {% endblock %}
+
+{% block content %}
+
+
+    <br>
+    <center>
+        <h2>Album Search</h2>
+    
+        <br>
+        <input class="form-text col-8" type="text"
+        name="album" hx-get="{% url 'recommender:get_album' %}" 
+        hx-trigger="keyup" hx-target="#search-results">
+        </input>
+        <br>
+        
+        <div id="search-results">
+        </div>
+
+    </center>
+
+<br>
+
+
+
+{% endblock %}
