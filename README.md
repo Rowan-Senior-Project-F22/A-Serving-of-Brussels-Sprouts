@@ -11,7 +11,15 @@ new music. By providing friend and music suggestions to the user, the system
 will initiate conversations.
 
 ## Project Structure
-TODO
+This is a Django application broken out by application. Applications are specified in the primary
+directory.
+
+## Deployment
+There is an Azure Web Application that is connected to the application thru a CI/CD pipeline via GitHub workflow automation.
+This leverages the ```staging``` branch as the deployment code base. Merges to this branch require a pull request, which can come
+from any of the three design teams' individual branches. Note that changes should only be pushed to ```staging``` if they are
+ready for testing and review by other team members. Once code is tested, pull requests can be created to ```main```, pending a
+successful deployment, which requires approval by a majority  of the group (5 members).
 
 ## Contributors
 - Chris Rinaldi <rinald43@students.rowan.edu>
@@ -31,4 +39,4 @@ TODO
 - Adding changes: git add filenames...
 - Committing changes: git commit
 - Pushing committed changes: git push
-- This is Tristan testing a git push
+ 
