@@ -40,3 +40,4 @@ successful deployment, which requires approval by a majority  of the group (5 me
 - Committing changes: git commit
 - Pushing committed changes: git push
 - This is Tristan testing a git push
+ 
