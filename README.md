@@ -39,5 +39,5 @@ successful deployment, which requires approval by a majority  of the group (5 me
 - Adding changes: git add filenames...
 - Committing changes: git commit
 - Pushing committed changes: git push
-- Merging: git merge branchnames
+- Merging: git merge branchname
  
