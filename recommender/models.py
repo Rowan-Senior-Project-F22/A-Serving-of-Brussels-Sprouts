@@ -33,7 +33,8 @@ class User(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     profile_picture = models.ImageField(null=True, blank=True,upload_to="profile/")
     direct_messages = models.ManyToManyField('DirectMessage')
-    # preferences - need to be added
+    preferences = models.CharField(null=False, default='{}')
+
     following = models.ForeignKey('self', on_delete=models.CASCADE)
 
 
@@ -55,7 +56,7 @@ class Post(models.Model):
 '''Playlist model to store a user's playlists
 - Brandon Ngo'''
 class Playlist(models.Model):
-    # list of song objects
+    songs = models.CharField(null=False, default='[]')
     is_public = models.BooleanField(default=False)
     owner = creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
 
