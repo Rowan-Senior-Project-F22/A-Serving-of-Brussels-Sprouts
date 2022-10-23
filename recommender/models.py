@@ -11,13 +11,13 @@ from django.utils.translation import gettext_lazy as _
 class User(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     profile_picture = models.ImageField(null=True, blank=True, upload_to="profile/")
-    direct_messages = models.ManyToManyField('DirectMessage')
-    preferences = models.CharField(null=False, default='{}')
+    # direct_messages = models.ManyToManyField('DirectMessage') TODO: Update with Design Team 3
+    preferences = models.CharField(null=False, default='{}', max_length=1000)
 
     following = models.ForeignKey('self', on_delete=models.CASCADE)
 
-    USERNAME_FIELD = 'email'
-    required_fields = []
+    # USERNAME_FIELD = 'email'
+    # required_fields = []
 
     def __str__(self):
         return self.email
@@ -40,9 +40,10 @@ class Post(models.Model):
 
 
 class Playlist(models.Model):
-    songs = models.CharField(null=False, default='[]')
+    songs = models.CharField(null=False, default='[]', max_length=100)
     is_public = models.BooleanField(default=False)
-    owner = creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
 
 
 '''Listening room model, contains multiple listeners and the currently playing song
@@ -51,6 +52,6 @@ class Playlist(models.Model):
 
 class ListeningRoom(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
-    listeners = models.ManyToManyField(User, on_delete=models.CASCADE)
+    listeners = models.ManyToManyField(User)
     currently_playing = models.IntegerField()
-    genre = models.CharField()
+    genre = models.CharField(max_length=150)
