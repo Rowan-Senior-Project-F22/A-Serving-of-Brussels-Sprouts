@@ -7,6 +7,10 @@ from .forms import SearchForm
 import random
 
 
+def user_profile(request):
+    # query the DB
+    return render(request, 'recommender/user_profile.html', {})
+
 def find_albums(artist, from_year = None, to_year = None):
     query = Musicdata.objects.filter(track_artist__contains = artist)
     if from_year is not None:
