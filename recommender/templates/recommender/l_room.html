@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+</br>
+<body>
+    
+    <div class="container">
+        <div class="row d-flex justify-content-center">
+            <div class="col-6">
+                <form>
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1" class="h4 pt-5">Listening Room</label>
+                        <textarea class="form-control" id="chat-text" rows="10"></textarea><br>
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control" id="input" type="text"></br>
+                    </div>
+                    <input class="btn btn-secondary btn-lg btn-block" id="submit" type="button" value="Send">
+                </form>
+            </div>
+        </div>
+    
+    <script>
+        
+
+        document.querySelector('#submit').onclick = function(e) {
+            const messageInputDom = document.querySelector('#input');
+            const message = messageInputDom.value;
+            chatSocket.send(JSON.stringify({
+                'message': message,
+                
+            }));
+            messageInputDom.value = '';
+        };
+        
+        
+        const chatSocket = new WebSocket(
+            'ws://' +
+            window.location.host +
+            '/ws/l_room/'
+        );
+
+
+
+        chatSocket.onmessage = function (e) {
+            const data = JSON.parse(e.data);
+            document.querySelector('#chat-text').value += (data.message + '\n')
+        }
+    </script>
+</body>
+{% endblock %}
+
+
