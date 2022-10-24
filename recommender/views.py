@@ -7,3 +7,7 @@ import random
 
 def get_landing_guest(request):
     return render(request, "recommender/landingguest.html")
+    
+def user_profile(request):
+    # query the DB
+    return render(request, 'recommender/user_profile.html', {})
