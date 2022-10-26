@@ -73,21 +73,7 @@ def get_album(request):
 def frontpage(request):
     return render(request, 'recommender/frontpage.html')
 
-
-def signup(request):
-    if request.method == 'POST':
-        form = SignUpForm(request.POST)
-
-        if form.is_valid():
-            user = form.save()
-
-            login(request, user)
-
-            return redirect('frontpage')
-    else:
-        form = SignUpForm()
-
-    return render(request, 'recommender/signup.html', {'form': form})
+'Shows a list of all the people you have messages with'
 class ListThreads(View):
     def get(self, request, *arg, **kwargs):
         threads = ThreadModel.objects.filter(Q(user = request.user) | Q(receiver = request.user))
@@ -107,6 +93,9 @@ class CreateThread(View):
        }
 
        return render(request, 'recommender/create_thread.html', context)
+
+    '''when a user clicks on the create thread if checks if the person you are sending to exists 
+    and then takes you to the message page'''
     def post(self, request, *args, **kwargs):
        form = ThreadForm(request.POST)
 
@@ -129,7 +118,7 @@ class CreateThread(View):
             return redirect('thread', pk =thread.pk )
        except:
         return redirect('create-thread')
-
+''' This is the message page where users are able to send messages with each other'''
 class ThreadView(View):
     def get(self, request, pk, *args, **kwargs):
         form = MessageForm()
@@ -141,7 +130,7 @@ class ThreadView(View):
             'message_list': message_list
         }
         return render(request, 'recommender/thread.html', context)
-
+'''This is what sends messages between users '''
 class CreateMessage(View):
     def post(self, request, pk, *args, **kwargs):
         thread = ThreadModel.objects.get(pk = pk)
