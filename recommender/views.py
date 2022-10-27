@@ -14,3 +14,6 @@ def user_profile(request):
 
 def user_playlist(request):
     return render(request, 'recommender/user_playlist.html', {})
+
+def l_room(request, room_name):
+    return render(request, 'l_room.html', {'room_name': room_name})
