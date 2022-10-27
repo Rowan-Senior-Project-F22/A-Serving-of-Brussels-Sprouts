@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+
 
 {% block content %}
 </br>
@@ -10,7 +10,7 @@
                 <form>
                     <div class="form-group">
                         <label for="exampleFormControlTextarea1" class="h4 pt-5">Listening Room</label>
-                        <textarea class="form-control" id="chat-text" rows="10"></textarea><br>
+                        <textarea readonly class="form-control" id="chat-text" rows="10"></textarea><br>
                     </div>
                     <div class="form-group">
                         <input class="form-control" id="input" type="text"></br>
@@ -20,14 +20,19 @@
             </div>
         </div>
     
+
+    
+    {{ room_name|json_script:"room_name" }}
     <script>
-        
+        const room_name = JSON.parse(document.getElementByID('room_name').textContent);
+        //const user_username = JSON.parse(document.getElementByID('user_username').textContent);
 
         document.querySelector('#submit').onclick = function(e) {
             const messageInputDom = document.querySelector('#input');
             const message = messageInputDom.value;
             chatSocket.send(JSON.stringify({
                 'message': message,
+                //'user': user_username,
                 
             }));
             messageInputDom.value = '';
@@ -37,7 +42,9 @@
         const chatSocket = new WebSocket(
             'ws://' +
             window.location.host +
-            '/ws/l_room/'
+            '/ws/l_room/' +
+            room_name +
+            '/'
         );
 
 
@@ -45,6 +52,7 @@
         chatSocket.onmessage = function (e) {
             const data = JSON.parse(e.data);
             document.querySelector('#chat-text').value += (data.message + '\n')
+            //document.querySelector('#chat-text').value += (data.username + ': ' + data.message + '\n')
         }
     </script>
 </body>

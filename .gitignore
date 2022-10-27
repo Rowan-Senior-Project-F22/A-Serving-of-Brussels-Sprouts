@@ -1,7 +1,12 @@
 # ignore venv
 venv/*
 venv
+myenv/*
+myenv
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+# ignore pycache
+recommender/__pycache__/*
+music/__pycache__/*
