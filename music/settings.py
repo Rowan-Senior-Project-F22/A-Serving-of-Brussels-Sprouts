@@ -34,6 +34,7 @@ ALLOWED_HOSTS = ['senior-project-dev.azurewebsites.net', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'recommender.apps.RecommenderConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
 ]
 
 MIDDLEWARE = [
@@ -72,6 +74,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'music.wsgi.application'
+ASGI_APPLICATION = 'music.routing.application'
 
 
 # Database
@@ -123,8 +126,8 @@ USE_TZ = True
 
 STATIC_URL = '/recommender/static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
