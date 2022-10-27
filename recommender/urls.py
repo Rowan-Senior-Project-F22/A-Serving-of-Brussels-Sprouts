@@ -3,7 +3,6 @@ from .views import CreateThread, ListThreads,ThreadView,CreateMessage
 from .import views
 from django.contrib.auth import views as auth_views
 
-app_name = 'recommender'
 
 urlpatterns = [
      path('' ,views.frontpage, name = 'frontpage'),
