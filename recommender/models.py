@@ -1,25 +1,25 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-    
+
+
 class ThreadModel(models.Model):
-    user = models.ForeignKey(User, on_delete = models.CASCADE, related_name = '+')
-    receiver = models.ForeignKey(User, on_delete = models.CASCADE, related_name = '+')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
+
 
 class MessageModel(models.Model):
-    thread = models.ForeignKey('ThreadModel', related_name= '+', on_delete = models.CASCADE, blank = True, null = True)
-    sender_user = models.ForeignKey(User, on_delete= models.CASCADE, related_name = '+')
-    reciever_user = models.ForeignKey(User, on_delete= models.CASCADE, related_name = '+')
-    body = models.CharField(max_length = 1000)
-    date = models.DateTimeField(default = timezone.now)
-    is_read = models.BooleanField(default = False)
+    thread = models.ForeignKey('ThreadModel', related_name='+', on_delete=models.CASCADE, blank=True, null=True)
+    sender_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
+    reciever_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
+    body = models.CharField(max_length=1000)
+    date = models.DateTimeField(default=timezone.now)
+    is_read = models.BooleanField(default=False)
+
 
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-
 
 '''Custom User Model
 - Brandon Ngo'''
