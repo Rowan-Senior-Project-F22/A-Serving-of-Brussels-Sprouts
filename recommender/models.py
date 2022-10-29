@@ -8,15 +8,15 @@ from django.utils.translation import gettext_lazy as _
 
 
 class User(AbstractUser):
-    email = models.EmailField(_('email address'), unique=True)
+    email = models.EmailField(_('email'), unique=True)
     profile_picture = models.ImageField(null=True, blank=True, upload_to="profile/")
     # direct_messages = models.ManyToManyField('DirectMessage') TODO: Update with Design Team 3
     preferences = models.CharField(null=False, default='{}', max_length=1000)
 
     following = models.ForeignKey('self', on_delete=models.CASCADE)
 
-    # USERNAME_FIELD = 'email'
-    # required_fields = []
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
 
     def __str__(self):
         return self.email

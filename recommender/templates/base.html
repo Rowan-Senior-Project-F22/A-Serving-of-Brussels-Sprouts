@@ -71,7 +71,11 @@
         <div id="sidebar" class="sidebar sidebar-with-footer">
             <!-- Aplication Brand -->
             <div class="app-brand">
-                <a href="">
+                {% if user.isAuthenticated %}
+                <a href="{% url 'recommender:user_profile' %}">
+                {% else %}
+                <a href="{% url 'recommender:get_landing_guest' %}">
+                {% endif %}
                     <img src="{%static 'images/logo.png' %}" alt="Mono">
                     <span class="brand-name">SBS</span>
                 </a>
@@ -80,7 +84,7 @@
             <div class="sidebar-left" data-simplebar style="height: 100%;">
                 <!-- sidebar menu -->
                 <ul class="nav sidebar-inner" id="sidebar-menu">
-                    {% if not user.isAuthenticated %}
+                    {% if user.isAuthenticated %}
                         <li>
                             <a class="sidenav-item-link" href="{% url 'recommender:user_profile' %}">
                                 <span class="nav-text">User Profile</span>
@@ -106,21 +110,23 @@
                         </li>
 
                         <li>
-                            <a class="sidenav-item-link" href="">
+                            <a class="sidenav-item-link" href="{% url 'recommender:get_logout' %}">
                                 <span class="nav-text">Logout</span>
                             </a>
                         </li>
                     {% else %}
                         <li>
-                            <a class="sidenav-item-link" href="">
+                            <a class="sidenav-item-link" href="{% url 'recommender:get_login' %}">
                                 <span class="nav-text">Login</span>
                             </a>
                         </li>
+                    
                         <li>
-                            <a class="sidenav-item-link" href="">
-                                <span class="nav-text">Signup</span>
+                            <a class="sidenav-item-link" href="{% url 'recommender:get_register' %}">
+                                <span class="nav-text">Register</span>
                             </a>
                         </li>
+                        
                     {% endif %}
 
                 </ul>
@@ -197,6 +203,7 @@
                     </ul>
                 </div>
             </nav>
+            {% include 'recommender/includes/messages.html' %}
         </header>
 
         <!-- ======  END HEADER ====== -->
