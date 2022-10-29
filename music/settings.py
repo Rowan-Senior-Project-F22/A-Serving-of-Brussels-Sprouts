@@ -30,6 +30,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['senior-project-dev.azurewebsites.net', '127.0.0.1']
 
+LOGOUT_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = '/login/'
 
 # Application definition
 
@@ -83,7 +86,7 @@ ASGI_APPLICATION = 'music.routing.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': str(os.path.join(BASE_DIR, "db.sqlite3")),
     }
 }
 

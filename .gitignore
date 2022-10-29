@@ -3,6 +3,8 @@ venv/*
 venv
 myenv/*
 myenv
+.idea/*
+.idea
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
