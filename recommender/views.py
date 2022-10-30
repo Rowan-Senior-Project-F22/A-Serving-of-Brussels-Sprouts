@@ -119,12 +119,12 @@ def get_login(request):
 	if request.method == "POST":
 		form = AuthenticationForm(data=request.POST)
 		if form.is_valid():
-			email = form.cleaned_data.get('email')
+			email = form.cleaned_data.get('username')
 			password = form.cleaned_data.get('password')
 			user = authenticate(request, email=email, password=password)
 			if user is not None:
 				login(request, user)
-				messages.info(request, f"You are now logged in as {user.get_username}.")
+				messages.info(request, f"You are now logged in as {email}.")
 				return redirect("recommender:user_profile")
 			else:
 				messages.error(request,"Invalid username or password.")
