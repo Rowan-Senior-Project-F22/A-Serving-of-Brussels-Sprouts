@@ -62,7 +62,7 @@ ROOT_URLCONF = 'music.urls'
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'BACKEND': 'django.template.backends.django.DjangoTemplates', 
         'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -75,6 +75,11 @@ TEMPLATES = [
         },
     },
 ]
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'recommender.backends.EmailBackend',
+)
 
 WSGI_APPLICATION = 'music.wsgi.application'
 ASGI_APPLICATION = 'music.routing.application'

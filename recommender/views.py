@@ -6,11 +6,15 @@ from .forms import SearchForm
 import random
 from email import message
 from urllib import request
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate, logout
 from django.dispatch import receiver
 from django.views import View
 from django.db.models import Q
-from django.contrib.auth.models import User
+from .models import User
+from .forms import CustomUserForm
+from django.contrib import messages
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.decorators import login_required
 
 def get_landing_guest(request):
     return render(request, "recommender/landingguest.html")
@@ -98,3 +102,39 @@ class CreateMessage(View):
 
 def l_room(request, room_name):
     return render(request, 'l_room.html', {'room_name': room_name})
+
+def get_register(request):
+    if request.method == "POST":
+        form = CustomUserForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, "Registration successful." )
+            return redirect("recommender:user_profile")
+        messages.error(request, "Unsuccessful registration. Invalid information.")
+    form = CustomUserForm()
+    return render (request=request, template_name="recommender/register.html", context={"register_form":form})
+  
+def get_login(request):
+	if request.method == "POST":
+		form = AuthenticationForm(data=request.POST)
+		if form.is_valid():
+			email = form.cleaned_data.get('username')
+			password = form.cleaned_data.get('password')
+			user = authenticate(request, email=email, password=password)
+			if user is not None:
+				login(request, user)
+				messages.info(request, f"You are now logged in as {email}.")
+				return redirect("recommender:user_profile")
+			else:
+				messages.error(request,"Invalid username or password.")
+		else:
+			messages.error(request,"Invalid username or password.")
+	form = AuthenticationForm()
+	return render(request=request, template_name="recommender/login.html", context={"login_form":form})
+
+@login_required
+def get_logout(request):
+	logout(request)
+	messages.info(request, "You have successfully logged out.") 
+	return redirect("recommender:get_landing_guest")
