@@ -12,6 +12,7 @@ urlpatterns = [
     path("", views.get_landing_guest, name="get_landing_guest"),
     path("profile/", views.user_profile, name="user_profile"),
     path("playlist", views.user_playlist, name="user_playlist"),
+    path("landing/", views.get_member_feed, name="landing_member"),
     path("l_room/<str:room_name>", views.l_room, name="l_room"),
     path("login/", views.get_login, name="get_login"),
     path("register/", views.get_register, name="get_register"),

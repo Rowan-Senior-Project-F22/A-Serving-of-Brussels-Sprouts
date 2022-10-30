@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+    For You Page
+{% endblock %}
+{% block view_title %}
+For You Page
+{% endblock %}
+{% block content %}
+    <h4>Songs to scroll:</h4>
+    {% if memberlist %}
+    <!--<div class="table-wrapper">
+    <table class="table">
+    <tbody>
+    <tr>-->
+    {% for members in memberlist %}
+    <!--<td>-->
+    <iframe src="https://open.spotify.com/embed/track/{{ members.track_id }}" width="240" height="304"
+    frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+    <!--</td>-->
+    {% endfor %}
+    <!--</tr>
+    </tbody>
+    </table>
+    <div class="table-wrapper">-->
+    {% endif %}
+{% endblock %}

@@ -86,6 +86,12 @@
                 <ul class="nav sidebar-inner" id="sidebar-menu">
                     {% if user.is_authenticated %}
                         <li>
+                            <a class="sidenav-item-link" href="{% url 'recommender:landing_member' %}">
+                                <i class="mdi mdi-home"></i>
+                                <span class="nav-text">Home</span>
+                            </a>
+                        </li>
+                        <li>
                             <a class="sidenav-item-link" href="{% url 'recommender:user_profile' %}">
                                 <i class="mdi mdi-teamviewer"></i>
                                 <span class="nav-text">User Profile</span>
