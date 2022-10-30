@@ -76,6 +76,11 @@ TEMPLATES = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'recommender.backends.EmailBackend',
+)
+
 WSGI_APPLICATION = 'music.wsgi.application'
 ASGI_APPLICATION = 'music.routing.application'
 
