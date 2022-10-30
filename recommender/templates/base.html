@@ -71,7 +71,7 @@
         <div id="sidebar" class="sidebar sidebar-with-footer">
             <!-- Aplication Brand -->
             <div class="app-brand">
-                {% if user.isAuthenticated %}
+                {% if user.is_authenticated %}
                 <a href="{% url 'recommender:user_profile' %}">
                 {% else %}
                 <a href="{% url 'recommender:get_landing_guest' %}">
@@ -84,7 +84,7 @@
             <div class="sidebar-left" data-simplebar style="height: 100%;">
                 <!-- sidebar menu -->
                 <ul class="nav sidebar-inner" id="sidebar-menu">
-                    {% if user.isAuthenticated %}
+                    {% if user.is_authenticated %}
                         <li>
                             <a class="sidenav-item-link" href="{% url 'recommender:user_profile' %}">
                                 <span class="nav-text">User Profile</span>
@@ -111,7 +111,7 @@
 
                         <li>
                             <a class="sidenav-item-link" href="{% url 'recommender:get_logout' %}">
-                                <span class="nav-text">Logout</span>
+                                <span class="nav-text">Log Out</span>
                             </a>
                         </li>
                     {% else %}
@@ -133,7 +133,7 @@
 
             </div>
 
-            {% if not user.isAuthenticated %}
+            {% if user.is_authenticated %}
                 <div class="sidebar-footer">
                     <div class="sidebar-footer-content">
                         <ul class="d-flex">
@@ -169,17 +169,17 @@
                 <div class="navbar-right ">
                     <ul class="nav navbar-nav">
 
-                        {% if not user.isAuthenticated %}
+                        {% if user.is_authenticated %}
                         <!-- User Account -->
                         <li class="dropdown user-menu">
                             <button class="dropdown-toggle nav-link" data-toggle="dropdown">
                                 <img src="{%static 'images/user/user-xs-01.jpg' %}" class="user-image rounded-circle"
                                      alt="User Image"/>
-                                <span class="d-none d-lg-inline-block">John Doe</span>
+                                <span class="d-none d-lg-inline-block">{{ user.username }}</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-right">
                                 <li>
-                                    <a class="dropdown-link-item" href="user-profile.html">
+                                    <a class="dropdown-link-item" href="{% url 'recommender:user_profile' %}">
                                         <i class="mdi mdi-account-outline"></i>
                                         <span class="nav-text">My Profile</span>
                                     </a>
@@ -192,7 +192,7 @@
                                 </li>
 
                                 <li class="dropdown-footer">
-                                    <a class="dropdown-link-item" href="sign-in.html"> <i class="mdi mdi-logout"></i>
+                                    <a class="dropdown-link-item" href="{% url 'recommender:get_logout' %}"> <i class="mdi mdi-logout"></i>
                                         Log Out
                                     </a>
                                 </li>

@@ -13,7 +13,7 @@ class User(AbstractUser):
     # direct_messages = models.ManyToManyField('DirectMessage') TODO: Update with Design Team 3
     preferences = models.CharField(null=False, default='{}', max_length=1000)
 
-    following = models.ForeignKey('self', on_delete=models.CASCADE)
+    following = models.ForeignKey('self', null=True, on_delete=models.CASCADE)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

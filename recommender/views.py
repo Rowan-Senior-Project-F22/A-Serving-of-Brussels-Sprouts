@@ -10,7 +10,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.dispatch import receiver
 from django.views import View
 from django.db.models import Q
-from django.contrib.auth.models import User
+from .models import User
 from .forms import CustomUserForm
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
@@ -119,12 +119,12 @@ def get_login(request):
 	if request.method == "POST":
 		form = AuthenticationForm(data=request.POST)
 		if form.is_valid():
-			username = form.cleaned_data.get('username')
+			email = form.cleaned_data.get('email')
 			password = form.cleaned_data.get('password')
-			user = authenticate(request, username=username, password=password)
+			user = authenticate(request, email=email, password=password)
 			if user is not None:
 				login(request, user)
-				messages.info(request, f"You are now logged in as {username}.")
+				messages.info(request, f"You are now logged in as {user.get_username}.")
 				return redirect("recommender:user_profile")
 			else:
 				messages.error(request,"Invalid username or password.")
