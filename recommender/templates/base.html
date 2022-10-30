@@ -87,6 +87,7 @@
                     {% if user.is_authenticated %}
                         <li>
                             <a class="sidenav-item-link" href="{% url 'recommender:user_profile' %}">
+                                <i class="mdi mdi-teamviewer"></i>
                                 <span class="nav-text">User Profile</span>
                             </a>
                         </li>
@@ -100,18 +101,21 @@
 
                         <li>
                             <a class="sidenav-item-link" href="">
+                                <i class="mdi mdi-wechat"></i>
                                 <span class="nav-text">Messages</span>
                             </a>
                         </li>
 
                         <li>
                             <a class="sidenav-item-link" href="">
+                                <i class="mdi mdi-settings"></i>
                                 <span class="nav-text">Preferences</span>
                             </a>
                         </li>
 
                         <li>
                             <a class="sidenav-item-link" href="{% url 'recommender:get_logout' %}">
+                                <i class="mdi mdi-logout-variant"></i>
                                 <span class="nav-text">Log Out</span>
                             </a>
                         </li>
