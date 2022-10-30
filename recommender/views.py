@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import Http404
 from recommender.models import ThreadModel, MessageModel
-from .forms import   ThreadForm, MessageForm
+from .forms import ThreadForm, MessageForm
 from .forms import SearchForm
 import random
 from email import message
@@ -16,12 +16,15 @@ from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 
+
 def get_landing_guest(request):
     return render(request, "recommender/landingguest.html")
-    
+
+
 def user_profile(request):
     # query the DB
     return render(request, 'recommender/user_profile.html', {})
+
 
 def user_playlist(request):
     return render(request, 'recommender/user_playlist.html', {})
@@ -29,10 +32,10 @@ def user_playlist(request):
 
 class ListThreads(View):
     def get(self, request, *arg, **kwargs):
-        threads = ThreadModel.objects.filter(Q(user = request.user) | Q(receiver = request.user))
+        threads = ThreadModel.objects.filter(Q(user=request.user) | Q(receiver=request.user))
 
         context = {
-            'threads':threads
+            'threads': threads
         }
 
         return render(request, 'recommender/inbox.html', context)
@@ -40,68 +43,71 @@ class ListThreads(View):
 
 class CreateThread(View):
     def get(self, request, *args, **kwargs):
-       form = ThreadForm()
-       context = {
-        'form': form
-       }
+        form = ThreadForm()
+        context = {
+            'form': form
+        }
 
-       return render(request, 'recommender/create_thread.html', context)
+        return render(request, 'recommender/create_thread.html', context)
+
     def post(self, request, *args, **kwargs):
-       form = ThreadForm(request.POST)
+        form = ThreadForm(request.POST)
 
-       username = request.POST.get('username')
+        username = request.POST.get('username')
 
-       try:
-        receiver = User.objects.get(username = username)
-        if ThreadModel.objects.filter(user = request.user, receiver = receiver).exists():
-            thread = ThreadModel.objects.filter(user = request.user, receiver = receiver)[0]
-            return redirect('thread',pk = thread.pk)
-        elif ThreadModel.objects.filter(user = receiver, receiver = request.user).exists():
-            thread = ThreadModel.objects.filter(user = receiver, reciever = request.user)[0]
-            return redirect('thread', pk = thread.pk)
-        if form.is_valid:
-            thread = ThreadModel(
-                user = request.user,
-                receiver = receiver
-            )
-            thread.save()
-            return redirect('thread', pk =thread.pk )
-       except:
-        return redirect('create-thread')
+        try:
+            receiver = User.objects.get(username=username)
+            if ThreadModel.objects.filter(user=request.user, receiver=receiver).exists():
+                thread = ThreadModel.objects.filter(user=request.user, receiver=receiver)[0]
+                return redirect('thread', pk=thread.pk)
+            elif ThreadModel.objects.filter(user=receiver, receiver=request.user).exists():
+                thread = ThreadModel.objects.filter(user=receiver, reciever=request.user)[0]
+                return redirect('thread', pk=thread.pk)
+            if form.is_valid:
+                thread = ThreadModel(
+                    user=request.user,
+                    receiver=receiver
+                )
+                thread.save()
+                return redirect('thread', pk=thread.pk)
+        except:
+            return redirect('create-thread')
+
 
 class ThreadView(View):
     def get(self, request, pk, *args, **kwargs):
         form = MessageForm()
-        thread = ThreadModel.objects.get(pk =pk)
-        message_list = MessageModel.objects.filter(thread__pk__contains = pk)
+        thread = ThreadModel.objects.get(pk=pk)
+        message_list = MessageModel.objects.filter(thread__pk__contains=pk)
         context = {
             'thread': thread,
-            'form': form, 
+            'form': form,
             'message_list': message_list
         }
         return render(request, 'recommender/thread.html', context)
 
+
 class CreateMessage(View):
     def post(self, request, pk, *args, **kwargs):
-        thread = ThreadModel.objects.get(pk = pk)
+        thread = ThreadModel.objects.get(pk=pk)
         if thread.receiver == request.user:
             receiver = thread.user
         else:
             receiver = thread.receiver
-        
+
         message = MessageModel(
-            thread = thread, 
-            sender_user = request.user,
-            reciever_user = receiver,
-            body = request.POST.get('message')
+            thread=thread,
+            sender_user=request.user,
+            reciever_user=receiver,
+            body=request.POST.get('message')
         )
         message.save()
-        return redirect('thread', pk = pk)
-        
+        return redirect('thread', pk=pk)
 
 
 def l_room(request, room_name):
     return render(request, 'l_room.html', {'room_name': room_name})
+
 
 def get_register(request):
     if request.method == "POST":
@@ -109,32 +115,34 @@ def get_register(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            messages.success(request, "Registration successful." )
+            messages.success(request, "Registration successful.")
             return redirect("recommender:user_profile")
         messages.error(request, "Unsuccessful registration. Invalid information.")
     form = CustomUserForm()
-    return render (request=request, template_name="recommender/register.html", context={"register_form":form})
-  
+    return render(request=request, template_name="recommender/register.html", context={"register_form": form})
+
+
 def get_login(request):
-	if request.method == "POST":
-		form = AuthenticationForm(data=request.POST)
-		if form.is_valid():
-			email = form.cleaned_data.get('username')
-			password = form.cleaned_data.get('password')
-			user = authenticate(request, email=email, password=password)
-			if user is not None:
-				login(request, user)
-				messages.info(request, f"You are now logged in as {email}.")
-				return redirect("recommender:user_profile")
-			else:
-				messages.error(request,"Invalid username or password.")
-		else:
-			messages.error(request,"Invalid username or password.")
-	form = AuthenticationForm()
-	return render(request=request, template_name="recommender/login.html", context={"login_form":form})
+    if request.method == "POST":
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            email = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, email=email, password=password)
+            if user is not None:
+                login(request, user)
+                messages.info(request, f"You are now logged in as {email}.")
+                return redirect("recommender:user_profile")
+            else:
+                messages.error(request, "Invalid username or password.")
+        else:
+            messages.error(request, "Invalid username or password.")
+    form = AuthenticationForm()
+    return render(request=request, template_name="recommender/login.html", context={"login_form": form})
+
 
 @login_required
 def get_logout(request):
-	logout(request)
-	messages.info(request, "You have successfully logged out.") 
-	return redirect("recommender:get_landing_guest")
+    logout(request)
+    messages.info(request, "You have successfully logged out.")
+    return redirect("recommender:get_landing_guest")
