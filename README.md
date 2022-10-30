@@ -14,6 +14,26 @@ will initiate conversations.
 This is a Django application broken out by application. Applications are specified in the primary
 directory.
 
+Before running, ensure you are on the latest version of Python. Create a venv using the following:
+
+```commandline
+python -m venv venv
+```
+
+Then, active the venv
+
+For mac:
+```commandline
+source venv/bin/activate 
+```
+
+For Windows:
+```commandline
+venv/scripts/activate
+```
+
+Run pip install -r requirements.txt to grab the dependencies, then run the server.
+
 ## Deployment
 There is an Azure Web Application that is connected to the application thru a CI/CD pipeline via GitHub workflow automation.
 This leverages the ```staging``` branch as the deployment code base. Merges to this branch require a pull request, which can come
