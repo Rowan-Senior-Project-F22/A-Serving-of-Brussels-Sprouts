@@ -27,6 +27,7 @@ def user_profile(request):
     # query the DB
     return render(request, 'recommender/user_profile.html', {})
 
+<<<<<<< Updated upstream
 
 def user_playlist(request):
     return render(request, 'recommender/user_playlist.html', {})
@@ -164,3 +165,7 @@ def get_logout(request):
     logout(request)
     messages.info(request, "You have successfully logged out.")
     return redirect("recommender:get_landing_guest")
+=======
+def user_playlist(request,user_id):
+    return render(request, 'recommender/user_playlist.html', {})
+>>>>>>> Stashed changes
