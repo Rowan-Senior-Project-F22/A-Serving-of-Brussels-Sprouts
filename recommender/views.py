@@ -1,3 +1,5 @@
+import json
+
 from django.shortcuts import render, redirect
 from django.http import Http404
 from recommender.models import ThreadModel, MessageModel
@@ -23,14 +25,10 @@ def get_landing_guest(request):
     return render(request, "recommender/landingguest.html")
 
 
+@login_required
 def user_profile(request):
     # query the DB
     return render(request, 'recommender/user_profile.html', {})
-
-<<<<<<< Updated upstream
-
-def user_playlist(request):
-    return render(request, 'recommender/user_playlist.html', {})
 
 
 class ListThreads(View):
@@ -125,17 +123,48 @@ def get_register(request):
     return render(request=request, template_name="recommender/register.html", context={"register_form": form})
 
 
+@login_required
+def user_preferences(request):
+    """Retrieves the user's preferences. Fetches the current user in session,
+    returns their information, parses the preferences to a readable format
+    and passes as context.
+
+    """
+    if request.method == 'POST':
+        # TODO: Handle form logic to add and remove from the user's preferences.
+        pass
+
+    # TODO: Pull these from Spotify Genre Seed Web API
+    available_genre_seeds = ['rock', 'country', 'rap']
+
+    # Retrieve the current user, parse their preferences given the available
+    # genre seeds and ensure genre seeds are in the list of Spotify genre seeds.
+    current_user = request.user
+    try:
+        users_preferences = json.loads(current_user.preferences)
+        users_preferences['likes'] = filter(lambda x: x in available_genre_seeds, users_preferences['likes'])
+        users_preferences['dislikes'] = filter(lambda x: x in available_genre_seeds, users_preferences['dislikes'])
+    except any as E:
+        # TODO: Fallback for if user preferences are not valid formatting.
+        users_preferences = {
+            "likes": [],
+            "dislikes": []
+        }
+    return render(request=request, template_name="recommender/user_preferences.html",
+                  context={"users_preferences": users_preferences})
+
+
 def get_member_feed(request):
     if request.method == 'GET':
         memberlist = list([])
         random.shuffle(memberlist)
-        answer = list(memberlist)[:4] #Could put [:4] in comments
+        answer = list(memberlist)[:4]  # Could put [:4] in comments
         page = request.GET.get('page', 1)
-        paginator = Paginator(memberlist, 20) # len(memberlist)
+        paginator = Paginator(memberlist, 20)  # len(memberlist)
         try:
             numbers = paginator.page(page)
         except PageNotAnInteger:
-            numbers = paginator.page(1) #used to be 1
+            numbers = paginator.page(1)  # used to be 1
         except EmptyPage:
             numbers = paginator.page(paginator.num_pages)
         return render(request=request, template_name='recommender/landing_member.html', context={'memberlist': numbers})
@@ -165,7 +194,8 @@ def get_logout(request):
     logout(request)
     messages.info(request, "You have successfully logged out.")
     return redirect("recommender:get_landing_guest")
-=======
-def user_playlist(request,user_id):
+
+
+@login_required
+def user_playlist(request, user_id):
     return render(request, 'recommender/user_playlist.html', {})
->>>>>>> Stashed changes
