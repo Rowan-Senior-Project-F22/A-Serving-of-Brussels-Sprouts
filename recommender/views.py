@@ -71,9 +71,9 @@ class CreateThread(View):
                     receiver=receiver
                 )
                 thread.save()
-                return redirect('thread', pk=thread.pk)
+                return redirect('recommender:thread', pk=thread.pk)
         except:
-            return redirect('create-thread')
+            return redirect('recommender:create-thread')
 
 
 class ThreadView(View):
@@ -100,11 +100,11 @@ class CreateMessage(View):
         message = MessageModel(
             thread=thread,
             sender_user=request.user,
-            reciever_user=receiver,
+            receiver_user=receiver,
             body=request.POST.get('message')
         )
         message.save()
-        return redirect('thread', pk=pk)
+        return redirect('recommender:thread', pk=pk)
 
 
 def l_room(request, room_name):
