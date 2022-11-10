@@ -142,8 +142,8 @@ def user_preferences(request):
     current_user = request.user
     try:
         users_preferences = json.loads(current_user.preferences)
-        users_preferences['likes'] = filter(lambda x: x in available_genre_seeds, users_preferences['likes'])
-        users_preferences['dislikes'] = filter(lambda x: x in available_genre_seeds, users_preferences['dislikes'])
+        users_preferences['likes'] = list(filter(lambda x: x in available_genre_seeds, users_preferences['likes']))
+        users_preferences['dislikes'] = list(filter(lambda x: x in available_genre_seeds, users_preferences['dislikes']))
     except any as E:
         # TODO: Fallback for if user preferences are not valid formatting.
         users_preferences = {
