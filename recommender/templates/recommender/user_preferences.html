@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}
+    A Serving of Brussels Sprouts
+{% endblock %}
+
+{% block view_title %}
+User Preferences
+{% endblock %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="card card-default">
+  <div class="card-header">
+    <h2>My Preferences</h2>
+    <a class="btn mdi mdi-code-tags" data-toggle="collapse" href="#collapse-card-1" role="button"
+      aria-expanded="false" aria-controls="collapse-card-1"> </a>
+
+
+  </div>
+  <div class="card-body">
+      Likes
+      <hr/>
+      <br/>
+      Dislikes
+      <hr/>
+      <select class="form-control rounded-pill" id="exampleFormControlSelect13">
+        {% for genre in available_genre_seeds %}
+            <option>{{ genre }}</option>
+          {% endfor %}
+        </select>
+      <div class="form-footer mt-4">
+        <button type="submit" class="btn btn-primary btn-pill">Add to dislikes</button>
+        <button type="submit" class="btn btn-primary btn-pill">Add to likes</button>
+  </div>
+  </div>
+</div>
+
+{% endblock %}

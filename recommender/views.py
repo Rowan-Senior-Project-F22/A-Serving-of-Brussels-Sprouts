@@ -142,6 +142,10 @@ def user_preferences(request):
     current_user = request.user
     try:
         users_preferences = json.loads(current_user.preferences)
+        if 'likes' not in users_preferences:
+            users_preferences['likes'] = []
+        if 'dislikes' not in users_preferences:
+            users_preferences['dislikes'] = []
         users_preferences['likes'] = list(filter(lambda x: x in available_genre_seeds, users_preferences['likes']))
         users_preferences['dislikes'] = list(filter(lambda x: x in available_genre_seeds, users_preferences['dislikes']))
     except any as E:
@@ -151,7 +155,7 @@ def user_preferences(request):
             "dislikes": []
         }
     return render(request=request, template_name="recommender/user_preferences.html",
-                  context={"users_preferences": users_preferences})
+                  context={"users_preferences": users_preferences, "available_genre_seeds": available_genre_seeds})
 
 
 def get_member_feed(request):
