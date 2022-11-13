@@ -5,7 +5,7 @@ from django.http import Http404
 from recommender.models import ThreadModel, MessageModel
 from .forms import ThreadForm, MessageForm
 from .forms import SearchForm
-import random
+import random, spotipy
 from email import message
 from urllib import request
 from django.contrib.auth import login, authenticate, logout
@@ -19,6 +19,12 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
+
+cid = '2de1575d99b14786ae4f7e46e33e494e'
+secret = 'fbf315776bda4ea2aaeeeb1ec559de7d'
+client_credentials = spotipy.oauth2.SpotifyClientCredentials(client_id=cid, client_secret=secret)
+sp = spotipy.Spotify(client_credentials_manager=client_credentials)
+
 
 
 def get_landing_guest(request):
@@ -134,8 +140,12 @@ def user_preferences(request):
         # TODO: Handle form logic to add and remove from the user's preferences.
         pass
 
-    # TODO: Pull these from Spotify Genre Seed Web API
-    available_genre_seeds = ['rock', 'country', 'rap']
+    # Pulls genre list from Spotify API using the client credentials authentication flow
+    available_genre_seeds = []
+    genre_list = list(sp.recommendation_genre_seeds().values())
+    for i in range(len(genre_list[0])):
+        available_genre_seeds.append(genre_list[0][i])
+    
 
     # Retrieve the current user, parse their preferences given the available
     # genre seeds and ensure genre seeds are in the list of Spotify genre seeds.
