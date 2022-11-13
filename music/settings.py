@@ -15,8 +15,6 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-TEMPLATES_DIRS = os.path.join(BASE_DIR,'templates')
-
 
 AUTH_USER_MODEL = "recommender.User"
 
@@ -47,7 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'blog.apps.BlogConfig'
+    
 ]
 
 MIDDLEWARE = [
@@ -65,7 +63,7 @@ ROOT_URLCONF = 'music.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates', 
-        'DIRS': [TEMPLATES_DIRS],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

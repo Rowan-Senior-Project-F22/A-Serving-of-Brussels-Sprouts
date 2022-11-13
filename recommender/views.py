@@ -12,7 +12,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.dispatch import receiver
 from django.views import View
 from django.db.models import Q
-from .models import Post, User
+from .models import User
 from .forms import CustomUserForm
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
@@ -163,7 +163,6 @@ def get_member_feed(request):
         memberlist = list([])
         random.shuffle(memberlist)
         answer = list(memberlist)[:4]  # Could put [:4] in comments
-        post_list = list(Post.objects.all())
         page = request.GET.get('page', 1)
         paginator = Paginator(memberlist, 20)  # len(memberlist)
         try:
@@ -172,7 +171,7 @@ def get_member_feed(request):
             numbers = paginator.page(1)  # used to be 1
         except EmptyPage:
             numbers = paginator.page(paginator.num_pages)
-        return render(request=request, template_name='recommender/landing_member.html', context={'memberlist': numbers, 'post_list': post_list})
+        return render(request=request, template_name='recommender/landing_member.html', context={'memberlist': numbers})
 
 
 def get_login(request):
