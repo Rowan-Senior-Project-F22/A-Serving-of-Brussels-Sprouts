@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %}
+    A Serving of Brussels Sprouts
+{% endblock %}
+
+{% block view_title %}
+Home
+{% endblock %}
+
+{% load static %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-inverse">
+      <li class="breadcrumb-item active" aria-current="page">Home</li>
+        <li class="breadcrumb-item active" aria-current="page">Landing Page</li>
+    </ol>
+  </nav>
+<div class="card card-default">
+    <div class="card-header align-items-center">
+        <h2>A Serving of Brussels Sprouts</h2>
+    </div>
+    <div class="card-body">
+        <p>Welcome to A Serving of Brussels Sprouts - the most diverse online social music engagement platform! Our
+            vision is to connect users with their friends through musical taste. For our more adventurous users, we
+            allow users to connect through not only their likes, but also their DISLIKES!
+        If you are seeing this page, it means that you're not quite signed in yet. Signup is free and has a TON of perks
+            that are awaiting your arrival! Find out why SO many users are getting engaged today!
+        </p>
+    </div>
+</div>
+<div class="row">
+<div class="mx-auto">
+<strong>Global listening session goes here</strong>
+</div>
+    </div>
+<br/>
+<div class="card card-default">
+  <div class="card-header">
+    <h2>What's in it for me?</h2>
+    <a class="btn mdi mdi-code-tags" data-toggle="collapse" href="#collapse-card-2" role="button"
+      aria-expanded="false" aria-controls="collapse-card-2"> </a>
+
+
+  </div>
+  <div class="card-body">
+    <div class="collapse" id="collapse-card-2">
+      <pre class="language-html mb-4">
+<code>
+<strong>Pro tip:</strong>Users who frequently engage in a variety of listening sessions will be able to best discover new music!
+</code>
+      </pre>
+    </div>
+    <div class="row">
+      <div class="col-xl-6">
+        <div class="card mb-3">
+          <div class="row no-gutters">
+            <div class="col-md-3">
+              <img src="{% static 'images/elements/hc1.jpg' %}" class="rounded-left horizontal-img" alt="Image">
+            </div>
+            <div class="col-md-9">
+              <div class="card-body">
+                <h5 class="card-title pt-2">Listen with Friends</h5>
+                <p class="card-text mb-6">Our live listening sessions allow you to set a genre and listen to your favorite music. This is designed with social engagement in mind to allow you to connect you with people of all different genres!</p>
+                <a href="{% url 'recommender:get_register' %}" class="btn btn-outline-primary">JOIN TODAY</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-6">
+        <div class="card mb-3">
+          <div class="row no-gutters">
+            <div class="col-md-9">
+              <div class="card-body">
+                <h5 class="card-title pt-2">Discover New Music</h5>
+                <p class="card-text mb-6">Discover new music on your "For You" page! Our recommender system is engineered to take you outside your zone! You may join listening sessions of many genres and follow the feeds of users you vibe with!</p>
+                <a href="{% url 'recommender:get_register' %}" class="btn btn-outline-primary">JOIN TODAY</a>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <img src="{%static 'images/elements/hc2.jpg' %}" class="rounded-right horizontal-img" alt="Image">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+    <div class="mx-auto">
+        <a href="{% url 'recommender:get_register' %}">
+    <button type="button" class="mb-1 btn btn-primary">
+  <i class="mdi mdi-arrow-right-box mr-1"></i>
+  JOIN NOW
+</button>
+            </a>
+    </div>
+</div>
+{% endblock %}

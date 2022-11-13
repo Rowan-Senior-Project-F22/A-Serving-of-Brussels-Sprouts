@@ -1,0 +1,260 @@
+<!--
+    user_profile.html
+
+    The template file for the User Profile Page.
+    Liked/Disliked music will be displayed horizontally as cards.
+    The number of cards displayed will be handled programmatically.
+    Currently, dummy cards are displayed for demonstration.
+
+    Jeremy Juckett
+-->
+{% extends 'base.html' %}
+
+{% block title %}
+    User Profile
+{% endblock %}
+
+{% block content %}
+<!-- Liked Music -->
+<a href="" class="h1">Liked Music</a>
+<div class="row">
+
+    <!-- Test Card -->
+    <div class="col-xl-3 col-sm-6">
+        <div class="card card-default card-mini">
+            <div class="card-header">
+                <h2>Song Title</h2>
+                <div class="dropdown">
+                    <a  id="dropdownMenuLink"
+                        class="dropdown-toggle icon-burger-mini"
+                        href="#" role="button" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right"
+                         aria-labelledby="dropdownMenuLink"
+                         x-placement="bottom-end"
+                         style="position: absolute; transform: translate3d(24px,33px,0px); top: 0px; left: 0px; will-change: transform;">
+                        <a class="dropdown-item">Open Listening Room</a>
+                        <a class="dropdown-item">Remove</a>
+                    </div>
+                </div> <!-- End Dropdown -->
+                <div class="sub-title">
+                    <p>Artist Name, Album Name</p>
+                </div>
+            </div>
+            <div class="card-body">
+                <img src="" alt="Album Cover Goes Here" />
+            </div>
+        </div> <!-- End Song Card -->
+    </div>
+
+    <!-- Test Card -->
+    <div class="col-xl-3 col-sm-6">
+        <div class="card card-default card-mini">
+            <div class="card-header">
+                <h2>Song Title</h2>
+                <div class="dropdown">
+                    <a  id="dropdownMenuLink"
+                        class="dropdown-toggle icon-burger-mini"
+                        href="#" role="button" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right"
+                         aria-labelledby="dropdownMenuLink"
+                         x-placement="bottom-end"
+                         style="position: absolute; transform: translate3d(24px,33px,0px); top: 0px; left: 0px; will-change: transform;">
+                        <a class="dropdown-item">Open Listening Room</a>
+                        <a class="dropdown-item">Remove</a>
+                    </div>
+                </div> <!-- End Dropdown -->
+                <div class="sub-title">
+                    <p>Artist Name, Album Name</p>
+                </div>
+            </div>
+            <div class="card-body">
+                <img src="" alt="Album Cover Goes Here" />
+            </div>
+        </div> <!-- End Song Card -->
+    </div>
+
+    <!-- Test Card -->
+    <div class="col-xl-3 col-sm-6">
+        <div class="card card-default card-mini">
+            <div class="card-header">
+                <h2>Song Title</h2>
+                <div class="dropdown">
+                    <a  id="dropdownMenuLink"
+                        class="dropdown-toggle icon-burger-mini"
+                        href="#" role="button" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right"
+                         aria-labelledby="dropdownMenuLink"
+                         x-placement="bottom-end"
+                         style="position: absolute; transform: translate3d(24px,33px,0px); top: 0px; left: 0px; will-change: transform;">
+                        <a class="dropdown-item">Open Listening Room</a>
+                        <a class="dropdown-item">Remove</a>
+                    </div>
+                </div> <!-- End Dropdown -->
+                <div class="sub-title">
+                    <p>Artist Name, Album Name</p>
+                </div>
+            </div>
+            <div class="card-body">
+                <img src="" alt="Album Cover Goes Here" />
+            </div>
+        </div> <!-- End Song Card -->
+    </div>
+
+    <!-- Test Card -->
+    <div class="col-xl-3 col-sm-6">
+        <div class="card card-default card-mini">
+            <div class="card-header">
+                <h2>Song Title</h2>
+                <div class="dropdown">
+                    <a  id="dropdownMenuLink"
+                        class="dropdown-toggle icon-burger-mini"
+                        href="#" role="button" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right"
+                         aria-labelledby="dropdownMenuLink"
+                         x-placement="bottom-end"
+                         style="position: absolute; transform: translate3d(24px,33px,0px); top: 0px; left: 0px; will-change: transform;">
+                        <a class="dropdown-item">Open Listening Room</a>
+                        <a class="dropdown-item">Remove</a>
+                    </div>
+                </div> <!-- End Dropdown -->
+                <div class="sub-title">
+                    <p>Artist Name, Album Name</p>
+                </div>
+            </div>
+            <div class="card-body">
+                <img src="" alt="Album Cover Goes Here" />
+            </div>
+        </div> <!-- End Song Card -->
+    </div>
+
+</div> <!-- End Liked Music Row -->
+
+<!-- Disliked Music -->
+<a href="" class="h1">Disliked Music</a>
+<div class="row">
+
+    <!-- Test Card -->
+    <div class="col-xl-3 col-sm-6">
+        <div class="card card-default card-mini">
+            <div class="card-header">
+                <h2>Song Title</h2>
+                <div class="dropdown">
+                    <a  id="dropdownMenuLink"
+                        class="dropdown-toggle icon-burger-mini"
+                        href="#" role="button" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right"
+                         aria-labelledby="dropdownMenuLink"
+                         x-placement="bottom-end"
+                         style="position: absolute; transform: translate3d(24px,33px,0px); top: 0px; left: 0px; will-change: transform;">
+                        <a class="dropdown-item">Open Listening Room</a>
+                        <a class="dropdown-item">Remove</a>
+                    </div>
+                </div> <!-- End Dropdown -->
+                <div class="sub-title">
+                    <p>Artist Name, Album Name</p>
+                </div>
+            </div>
+            <div class="card-body">
+                <img src="" alt="Album Cover Goes Here" />
+            </div>
+        </div> <!-- End Song Card -->
+    </div>
+
+    <!-- Test Card -->
+    <div class="col-xl-3 col-sm-6">
+        <div class="card card-default card-mini">
+            <div class="card-header">
+                <h2>Song Title</h2>
+                <div class="dropdown">
+                    <a  id="dropdownMenuLink"
+                        class="dropdown-toggle icon-burger-mini"
+                        href="#" role="button" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right"
+                         aria-labelledby="dropdownMenuLink"
+                         x-placement="bottom-end"
+                         style="position: absolute; transform: translate3d(24px,33px,0px); top: 0px; left: 0px; will-change: transform;">
+                        <a class="dropdown-item">Open Listening Room</a>
+                        <a class="dropdown-item">Remove</a>
+                    </div>
+                </div> <!-- End Dropdown -->
+                <div class="sub-title">
+                    <p>Artist Name, Album Name</p>
+                </div>
+            </div>
+            <div class="card-body">
+                <img src="" alt="Album Cover Goes Here" />
+            </div>
+        </div> <!-- End Song Card -->
+    </div>
+
+    <!-- Test Card -->
+    <div class="col-xl-3 col-sm-6">
+        <div class="card card-default card-mini">
+            <div class="card-header">
+                <h2>Song Title</h2>
+                <div class="dropdown">
+                    <a  id="dropdownMenuLink"
+                        class="dropdown-toggle icon-burger-mini"
+                        href="#" role="button" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right"
+                         aria-labelledby="dropdownMenuLink"
+                         x-placement="bottom-end"
+                         style="position: absolute; transform: translate3d(24px,33px,0px); top: 0px; left: 0px; will-change: transform;">
+                        <a class="dropdown-item">Open Listening Room</a>
+                        <a class="dropdown-item">Remove</a>
+                    </div>
+                </div> <!-- End Dropdown -->
+                <div class="sub-title">
+                    <p>Artist Name, Album Name</p>
+                </div>
+            </div>
+            <div class="card-body">
+                <img src="" alt="Album Cover Goes Here" />
+            </div>
+        </div> <!-- End Song Card -->
+    </div>
+
+    <!-- Test Card -->
+    <div class="col-xl-3 col-sm-6">
+        <div class="card card-default card-mini">
+            <div class="card-header">
+                <h2>Song Title</h2>
+                <div class="dropdown">
+                    <a  id="dropdownMenuLink"
+                        class="dropdown-toggle icon-burger-mini"
+                        href="#" role="button" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right"
+                         aria-labelledby="dropdownMenuLink"
+                         x-placement="bottom-end"
+                         style="position: absolute; transform: translate3d(24px,33px,0px); top: 0px; left: 0px; will-change: transform;">
+                        <a class="dropdown-item">Open Listening Room</a>
+                        <a class="dropdown-item">Remove</a>
+                    </div>
+                </div> <!-- End Dropdown -->
+                <div class="sub-title">
+                    <p>Artist Name, Album Name</p>
+                </div>
+            </div>
+            <div class="card-body">
+                <img src="" alt="Album Cover Goes Here" />
+            </div>
+        </div> <!-- End Song Card -->
+    </div>
+</div> <!-- End Disliked Music Row -->
+{% endblock %}
