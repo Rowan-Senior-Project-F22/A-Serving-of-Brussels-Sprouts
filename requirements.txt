@@ -1,3 +1,4 @@
 Django==3.2.15
 Pillow
 channels
+spotipy
