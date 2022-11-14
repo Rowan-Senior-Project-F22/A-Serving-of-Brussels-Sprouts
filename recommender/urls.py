@@ -13,6 +13,7 @@ urlpatterns = [
     path("profile/", views.user_profile, name="user_profile"),
     path("playlist/<int:user_id>", views.user_playlist, name="user_playlist"),
     path("preferences", views.user_preferences, name="user_preferences"),
+    path("settings", views.user_account_settings, name="user_account_settings"),
     path("landing/", views.get_member_feed, name="landing_member"),
     path("l_room/<str:room_name>", views.l_room, name="l_room"),
     path("login/", views.get_login, name="get_login"),
