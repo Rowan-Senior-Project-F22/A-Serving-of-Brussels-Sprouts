@@ -1,5 +1,5 @@
-{% extends 'recommender/base.html' %}
-{% block title %} Thread | {% endblock %}
+{% extends 'base.html' %}
+{% block title %} Messaging {{thread.receiver.username}}{% endblock %}
 
 {% block content %}
 
@@ -7,9 +7,11 @@
 	<div class="row">
 		<div class="card col-md-12 mt-5 p-3 shadow-sm">
 			{% if thread.receiver == request.user %}
-				<h5>@{{ thread.user }}</h5>
+				<h5>{{ thread.user.username }}</h5>
+				<h5>{{ thread.user.profile_picture}}</h5>
 			{% else %}
-				<h5>@{{ thread.receiver }}</h5>
+				<h5>{{ thread.receiver.username }}</h5>
+				<h5>{{ thread.receiver.profile_picture}}</h5>
 			{% endif %}
 		</div>
 	</div>
@@ -28,10 +30,12 @@
 			{% if message.sender_user == request.user %}
 				<div class="sent-message my-3">
 					<p>{{ message.body }}</p>
+					<p>{{ message.date }}</p>
 				</div>
 			{% elif message.receiver_user == request.user %}
 				<div class="received-message my-3">
 					<p>{{ message.body }}</p>
+					<p>{{ message.date }}</p>
 				</div>
 			{% endif %}
 		</div>
@@ -40,7 +44,7 @@
 
 	<div class="row">
 		<div class="card col-md-12 p-3 shadow-sm">
-			<form method="POST" action="{% url 'create-message' thread.pk %}" enctype="multipart/form-data">
+			<form method="POST" action="{% url 'recommender:create-message' thread.pk %}" enctype="multipart/form-data">
 				{% csrf_token %}
 				{{ form}}
 
