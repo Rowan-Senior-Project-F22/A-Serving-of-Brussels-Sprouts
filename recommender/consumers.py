@@ -40,5 +40,4 @@ class L_RoomConsumer(AsyncWebsocketConsumer):
             'message': message,
             #'username': username,
         }))
-    
-    pass
+    pass   
