@@ -2,8 +2,8 @@ import json
 
 from django.shortcuts import render, redirect
 from django.http import Http404
-from recommender.models import ThreadModel, MessageModel
-from .forms import ThreadForm, MessageForm
+from recommender.models import ThreadModel, MessageModel, Playlist
+from .forms import ThreadForm, MessageForm, UserPreferencesForm
 from .forms import SearchForm
 import random, spotipy
 from email import message
@@ -137,7 +137,6 @@ def user_preferences(request):
     """
     if request.method == 'POST':
         # TODO: Handle form logic to add and remove from the user's preferences.
-
         pass
 
     else:
@@ -160,20 +159,35 @@ def user_preferences(request):
             users_preferences['dislikes'] = list(
                 filter(lambda x: x in available_genre_seeds, users_preferences['dislikes']))
         except any as E:
-            # TODO: Fallback for if user preferences are not valid formatting.
             users_preferences = {
                 "likes": [],
                 "dislikes": []
             }
+        preference_form = UserPreferencesForm(genre_seed_options=available_genre_seeds)
+        playlist_count = Playlist.objects.filter(Q(creator=request.user)).count()
         return render(request=request, template_name="recommender/user_preferences.html",
-                      context={"users_preferences": users_preferences, "available_genre_seeds": available_genre_seeds})
+                      context={"users_preferences": users_preferences, "available_genre_seeds": available_genre_seeds,
+                               "playlist_count": playlist_count, "preference_form": preference_form})
 
 
+@login_required
 def user_account_settings(request):
+    """Retrieves the user's account settings.
+
+    """
     # TODO: Handle post request for account settings
     if request.method == "POST":
         pass
-    return render(request=request, template_name="recommender/settings.html")
+
+    # Represents the current user.
+    user = request.user
+
+    # Retrieves the user's post count.
+    playlist_count = Playlist.objects.filter(Q(creator=user)).count()
+
+    return render(request=request, template_name="recommender/settings.html", context={
+        "playlist_count": playlist_count
+    })
 
 
 def get_member_feed(request):
