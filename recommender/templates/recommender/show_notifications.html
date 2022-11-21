@@ -1,0 +1,8 @@
+
+{% for notification in notifications %}
+{% if notification.thread %}
+
+    <a href="{% url 'recommender:thread-notification' notification.pk notification.thread.pk %}">{{notification.from_user.username}} sent you a message</a>
+
+{% endif %}
+{% endfor %}

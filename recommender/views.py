@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import Http404
-from recommender.models import ThreadModel, MessageModel
+from recommender.models import ThreadModel, MessageModel,Notification
 from .forms import ThreadForm, MessageForm
 from .forms import SearchForm
 import random
@@ -73,6 +73,7 @@ class CreateThread(View):
                 thread.save()
                 return redirect('recommender:thread', pk=thread.pk)
         except:
+            messages.error(request, 'Invalid username')
             return redirect('recommender:create-thread')
 
 
@@ -104,9 +105,25 @@ class CreateMessage(View):
             body=request.POST.get('message')
         )
         message.save()
+
+        notification = Notification.objects.create(
+            notification_type = 4,
+            from_user = request.user,
+            to_user = receiver,
+            thread = thread
+        )
         return redirect('recommender:thread', pk=pk)
 
 
+class ThreadNotification(View):
+    def get(self, request, notification_pk, object_pk, *args, **kwargs):
+        notification = Notification.objects.get(pk = notification_pk)
+        thread = ThreadModel.objects.get(pk = object_pk)
+
+        notification.user_has_seen = True
+        notification.save()
+
+        return redirect('recommender:thread', pk = object_pk)
 def l_room(request, room_name):
     return render(request, 'l_room.html', {'room_name': room_name})
 

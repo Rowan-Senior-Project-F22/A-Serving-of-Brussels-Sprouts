@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CreateThread, ListThreads, ThreadView, CreateMessage
+from .views import CreateThread, ListThreads, ThreadView, CreateMessage, ThreadNotification
 from . import views
 
 app_name = 'recommender'
@@ -9,6 +9,7 @@ urlpatterns = [
     path('inbox/create-thread', CreateThread.as_view(), name='create-thread'),
     path('inbox/<int:pk>', ThreadView.as_view(), name='thread'),
     path('inbox/<int:pk>/create-message', CreateMessage.as_view(), name='create-message'),
+    path('notification/<int:notification_pk>/thread/<int:object_pk>', ThreadNotification.as_view(), name = 'thread-notification'),
     path("", views.get_landing_guest, name="get_landing_guest"),
     path("profile/", views.user_profile, name="user_profile"),
     path("playlist", views.user_playlist, name="user_playlist"),
