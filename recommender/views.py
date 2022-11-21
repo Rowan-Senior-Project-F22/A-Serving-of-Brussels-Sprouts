@@ -1,9 +1,11 @@
+import json
+
 from django.shortcuts import render, redirect
 from django.http import Http404
 from recommender.models import ThreadModel, MessageModel,Notification
 from .forms import ThreadForm, MessageForm
 from .forms import SearchForm
-import random
+import random, spotipy
 from email import message
 from urllib import request
 from django.contrib.auth import login, authenticate, logout
@@ -18,18 +20,21 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
 
+cid = '2de1575d99b14786ae4f7e46e33e494e'
+secret = 'fbf315776bda4ea2aaeeeb1ec559de7d'
+client_credentials = spotipy.oauth2.SpotifyClientCredentials(client_id=cid, client_secret=secret)
+sp = spotipy.Spotify(client_credentials_manager=client_credentials)
+
+
 
 def get_landing_guest(request):
     return render(request, "recommender/landingguest.html")
 
 
+@login_required
 def user_profile(request):
     # query the DB
     return render(request, 'recommender/user_profile.html', {})
-
-
-def user_playlist(request):
-    return render(request, 'recommender/user_playlist.html', {})
 
 
 class ListThreads(View):
@@ -141,17 +146,56 @@ def get_register(request):
     return render(request=request, template_name="recommender/register.html", context={"register_form": form})
 
 
+@login_required
+def user_preferences(request):
+    """Retrieves the user's preferences. Fetches the current user in session,
+    returns their information, parses the preferences to a readable format
+    and passes as context.
+
+    """
+    if request.method == 'POST':
+        # TODO: Handle form logic to add and remove from the user's preferences.
+        pass
+
+    # Pulls genre list from Spotify API using the client credentials authentication flow
+    available_genre_seeds = []
+    genre_list = list(sp.recommendation_genre_seeds().values())
+    for i in range(len(genre_list[0])):
+        available_genre_seeds.append(genre_list[0][i])
+    
+
+    # Retrieve the current user, parse their preferences given the available
+    # genre seeds and ensure genre seeds are in the list of Spotify genre seeds.
+    current_user = request.user
+    try:
+        users_preferences = json.loads(current_user.preferences)
+        if 'likes' not in users_preferences:
+            users_preferences['likes'] = []
+        if 'dislikes' not in users_preferences:
+            users_preferences['dislikes'] = []
+        users_preferences['likes'] = list(filter(lambda x: x in available_genre_seeds, users_preferences['likes']))
+        users_preferences['dislikes'] = list(filter(lambda x: x in available_genre_seeds, users_preferences['dislikes']))
+    except any as E:
+        # TODO: Fallback for if user preferences are not valid formatting.
+        users_preferences = {
+            "likes": [],
+            "dislikes": []
+        }
+    return render(request=request, template_name="recommender/user_preferences.html",
+                  context={"users_preferences": users_preferences, "available_genre_seeds": available_genre_seeds})
+
+
 def get_member_feed(request):
     if request.method == 'GET':
         memberlist = list([])
         random.shuffle(memberlist)
-        answer = list(memberlist)[:4] #Could put [:4] in comments
+        answer = list(memberlist)[:4]  # Could put [:4] in comments
         page = request.GET.get('page', 1)
-        paginator = Paginator(memberlist, 20) # len(memberlist)
+        paginator = Paginator(memberlist, 20)  # len(memberlist)
         try:
             numbers = paginator.page(page)
         except PageNotAnInteger:
-            numbers = paginator.page(1) #used to be 1
+            numbers = paginator.page(1)  # used to be 1
         except EmptyPage:
             numbers = paginator.page(paginator.num_pages)
         return render(request=request, template_name='recommender/landing_member.html', context={'memberlist': numbers})
@@ -181,3 +225,8 @@ def get_logout(request):
     logout(request)
     messages.info(request, "You have successfully logged out.")
     return redirect("recommender:get_landing_guest")
+
+
+@login_required
+def user_playlist(request, user_id):
+    return render(request, 'recommender/user_playlist.html', {})

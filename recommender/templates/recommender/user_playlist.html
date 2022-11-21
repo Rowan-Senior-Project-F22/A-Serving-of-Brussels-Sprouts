@@ -3,6 +3,14 @@
 {% block content %}
 {% load static %}
 
+{% block title %}
+    A Serving of Brussels Sprouts
+{% endblock %}
+
+{% block view_title %}
+User Playlist
+{% endblock %}
+
   <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -12,10 +20,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
     <!-- custom css file link  -->
-    <link rel="stylesheet" href="recommender/css/style.css">
+    <link rel="stylesheet" href="{% static '/css/playlist-styles.css' %}">
 
     <!-- custom js file link  -->
-    <script src="recommender/js/script.js" defer></script>
+    <script src="{% static '/js/script.js' %}" defer></script>
 
 </head>
 <body>
@@ -26,87 +34,86 @@
 
         <div class="box-container">
 
-            <div class="box" data-src="{% static 'static/images12/music-1.mp3%''}">
+            <div class="box" data-src="{% static '/images12/music-1.mp3' %}">
                 <div class="image">
                     <div class="play">
                         <i class="fas fa-play"></i>
                     </div>
-                    <img src={% static 'static/images12/album-1.png' %} alt="">
+                    <img src="{% static '/images12/album-1.png' %}" alt="">
                 </div>
                 <div class="content">
                     <h3>NEFFEX cold</h3>
                 </div>
             </div>
 
-            <div class="box" data-src="images/music-2.mp3">
+            <div class="box" data-src="{% static '/images12/music-2.mp3' %}">
                 <div class="image">
                     <div class="play">
                         <i class="fas fa-play"></i>
                     </div>
-                    <img src="images/album-2.png" alt="">
+                    <img src="{% static '/images12/album-2.png' %}" alt="">
                 </div>
                 <div class="content">
                     <h3>rize up</h3>
                 </div>
             </div>
 
-            <div class="box" data-src="images/music-3.mp3">
+            <div class="box" data-src="{% static '/images12/music-3.mp3' %}">
                 <div class="image">
                     <div class="play">
                         <i class="fas fa-play"></i>
                     </div>
-                    <img src="images/album-3.png" alt="">
+                    <img src="{% static '/images12/album-3.png' %}" alt="">
                 </div>
                 <div class="content">
-                    <h3>arround the world</h3>
+                    <h3>around the world</h3>
                 </div>
             </div>
 
-            <div class="box" data-src="images/music-4.mp3">
+            <div class="box" data-src="{% static '/images12/music-4.mp3' %}">
                 <div class="image">
                     <div class="play">
                         <i class="fas fa-play"></i>
                     </div>
-                    <img src="images/album-4.png" alt="">
+                    <img src="{% static '/images12/album-4.png' %}" alt="">
                 </div>
                 <div class="content">
                     <h3>THNK U jay someday</h3>
                 </div>
             </div>
 
-            <div class="box" data-src="images/music-5.mp3">
+            <div class="box" data-src="{% static '/images12/music-5.mp3' %}">
                 <div class="image">
                     <div class="play">
                         <i class="fas fa-play"></i>
                     </div>
-                    <img src="images/album-5.png" alt="">
+                    <img src=" {% static '/images12/album-5.png' %}" alt="">
                 </div>
                 <div class="content">
                     <h3>NEFFEX life</h3>
                 </div>
             </div>
 
-            <div class="box" data-src="images/music-6.mp3">
+            <div class="box" data-src="{% static '/images12/music-6.mp3' %}">
                 <div class="image">
                     <div class="play">
                         <i class="fas fa-play"></i>
                     </div>
-                    <img src="images/album-6.png" alt="">
+                    <img src="{% static '/images12/album-6.png' %}" alt="">
                 </div>
                 <div class="content">
                     <h3>fun house</h3>
                 </div>
             </div>
 
+            <div class="music-player">
+                <div id="close-player" class="fas fa-angle-up"></div>
+                <h3 class="music-title">(play your song)</h3>
+                <audio src="" controls></audio>
+            </div>
+
         </div>
 
     </div>
-
-    <div class="music-player">
-        <div id="close-player" class="fas fa-angle-up"></div>
-        <h3 class="music-title">(play your song)</h3>
-        <audio src="" controls></audio>
-    </div>
-
 
 {% endblock %}
