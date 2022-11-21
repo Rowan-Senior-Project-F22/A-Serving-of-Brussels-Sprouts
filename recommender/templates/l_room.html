@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% block title %}{{ room_name }} | {% endblock %}
+
 {% block content %}
 </br>
 <body>
@@ -22,17 +24,16 @@
     
 
     
-    {{ room_name|json_script:"room_name" }}
+    {{ room_name|json_script:"json_name" }}
+    <!--{{ user_name|json_script:"json_user"}}-->
     <script>
-        const room_name = JSON.parse(document.getElementByID('room_name').textContent);
-        //const user_username = JSON.parse(document.getElementByID('user_username').textContent);
+        //const roomName = JSON.parse(document.getElementByID('json_name').textContent);
+        //const user_username = JSON.parse(document.getElementByID('json_user').textContent);
 
         const chatSocket = new WebSocket(
             'ws://' +
             window.location.host +
-            '/ws/l_room/' +
-            room_name +
-            '/'
+            '/ws/l_room/'
         );
 
         document.querySelector('#submit').onclick = function(e) {

@@ -1,4 +1,4 @@
-import json
+import json, re
 
 from django.shortcuts import render, redirect
 from django.http import Http404
@@ -111,9 +111,9 @@ class CreateMessage(View):
         message.save()
         return redirect('thread', pk=pk)
 
-
-def l_room(request, room_name):
-    return render(request, 'l_room.html', {'room_name': room_name})
+@login_required
+def l_room(request):
+    return render(request, 'l_room.html', {'l_room': l_room})
 
 
 def get_register(request):
