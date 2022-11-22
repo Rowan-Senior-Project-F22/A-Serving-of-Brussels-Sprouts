@@ -1,8 +1,8 @@
 import json
 
 from django.shortcuts import render, redirect
-from django.http import Http404
-from recommender.models import ThreadModel, MessageModel
+from django.http import Http404, HttpResponse
+from recommender.models import ThreadModel, MessageModel, MusicData
 from .forms import ThreadForm, MessageForm
 from .forms import SearchForm
 import random, spotipy
@@ -25,14 +25,71 @@ secret = 'fbf315776bda4ea2aaeeeb1ec559de7d'
 client_credentials = spotipy.oauth2.SpotifyClientCredentials(client_id=cid, client_secret=secret)
 sp = spotipy.Spotify(client_credentials_manager=client_credentials)
 
+'''
+get_new_releases()
+
+Builds an array of dictionaries containing a randomized set of newly released
+song tracks.
+'''
+@login_required
+def get_new_releases(request):
+    count = 2
+    data = [] # context sent to template
+    results = sp.new_releases(country = None, limit = count, offset = 0)
+
+    # check track against MusicData model, creating a new instance if it does
+    # not exist. For each song, create a new post.
+    songs = []
+    for item in results['albums']['items']:
+        # store album info
+        album_id = item['id']
+        album_name = item['name']
+        artist = item['artists'][0]['name']
+        album_cover = item['images'][0]['url']
+        release_date = item['release_date']
+
+        # store track info
+        tracks = sp.album_tracks(album_id)
+        random_index = random.randint(0, item['total_tracks'] - 1) #grab random track
+        track_id = tracks['items'][random_index]['id']
+        track_name = tracks['items'][random_index]['name']
+        preview_url = tracks['items'][random_index]['preview_url']
+
+        # check against model instances
+        obj = MusicData.objects.all().filter(track_id=track_id)
+        if len(obj) == 0:
+            print("Adding " + track_name + " to the database\n")
+            # create new instance
+            song = MusicData(
+                track_id = track_id,
+                track_name = track_name,
+                track_album_id = album_id,
+                track_album_name = album_name,
+                album_cover = album_cover,
+                artist_name = artist,
+                release_date = release_date[0:4],
+                preview_url = preview_url
+            )
+            song.save()
+            data.append(song)
+        else:
+            print(obj[0].track_name + ' exists in the database\n')
+            data.append(obj[0])
+
+    return render(request, 'recommender/test.html', {'data': data})    
+
+def like_view(request, track_id):
+    print('\nLike View\n')
+    print('Track ID:', track_id, '\n')
+    print('Username:', request.user, '\n')
+
+    return get_new_releases(request)
 
 def get_landing_guest(request):
     return render(request, "recommender/landingguest.html")
 
-
 @login_required
 def user_profile(request):
-    # query the DB
     return render(request, 'recommender/user_profile.html', {})
 
 
@@ -174,7 +231,6 @@ def user_account_settings(request):
     if request.method == "POST":
         pass
     return render(request=request, template_name="recommender/settings.html")
-
 
 def get_member_feed(request):
     if request.method == 'GET':
