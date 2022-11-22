@@ -49,7 +49,7 @@ class UserPreferencesForm(forms.Form):
 		"""
         super().__init__(*args, **kwargs)
         self.fields['genre_seed'].widget.attrs.update({'class': 'form-control rounded-pill'})
-        self.fields['genre_seed'].widget.choices = [((i, i) for i in genre_seed_options)]
+        self.fields['genre_seed'].widget.choices = list((i, i) for i in genre_seed_options)
 
     genre_seed = forms.ChoiceField(widget=forms.Select())
 

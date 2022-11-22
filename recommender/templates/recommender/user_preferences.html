@@ -119,11 +119,6 @@ Account Settings
     <form method="POST" action="{% url 'recommender:user_preferences' %}">
       {% csrf_token %}
       {{ preference_form }}
-      <select class="form-control rounded-pill" id="exampleFormControlSelect13">
-        {% for genre in available_genre_seeds %}
-            <option>{{ genre }}</option>
-          {% endfor %}
-        </select>
       <div class="form-footer mt-4">
         <button type="submit" name="preferences_dislike" class="btn btn-primary btn-pill">Add to dislikes</button>
         <button type="submit" name="preferences_like" class="btn btn-primary btn-pill">Add to likes</button>
