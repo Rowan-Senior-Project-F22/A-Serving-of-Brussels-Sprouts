@@ -112,8 +112,9 @@ class CreateMessage(View):
         return redirect('thread', pk=pk)
 
 @login_required
-def l_room(request):
-    return render(request, 'l_room.html', {'l_room': l_room})
+def l_room(request, room_name):
+    #user_name = request.POST.get('username')
+    return render(request, 'l_room.html', {'l_room': l_room, 'room_name': room_name})
 
 
 def get_register(request):

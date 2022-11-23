@@ -2,56 +2,97 @@
 
 {% block title %}{{ room_name }} | {% endblock %}
 
+{% block view_title %}
+    {{room_name}}
+{% endblock %}
+
 {% block content %}
-</br>
+<head>
+    <style>
+        .chat-messages {
+            height: 700px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
 <body>
-    
     <div class="container">
         <div class="row d-flex justify-content-center">
-            <div class="col-6">
+            <div class="col-12">
                 <form>
                     <div class="form-group">
-                        <label for="exampleFormControlTextarea1" class="h4 pt-5">Listening Room</label>
-                        <textarea readonly class="form-control" id="chat-text" rows="10"></textarea><br>
+                        <!--<label for="exampleFormControlTextarea1" class="h2 pt-5">{{room_name}}</label>-->
+                        <!--<textarea readonly class="form-control" id="chat-text" rows="20" columns="20" style="background:white;"></textarea><br>-->
+                        <div class="lg:w-2/4 rounded-xl">
+                            <div class="chat-messages space-y-3" id="chat-messages"></div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <input class="form-control" id="input" type="text"></br>
+                    <div class="input-group mb-3">
+                        <input class="form-control" id="input" type="text" placeholder="Your message here..."></br>
+                        <div class="input-group-append">
+                            <button class="btn btn-secondary" id="submit" type="button">Send</button> 
+                        </div>    
                     </div>
-                    <input class="btn btn-secondary btn-lg btn-block" id="submit" type="button" value="Send">
+                    
                 </form>
             </div>
         </div>
     
-
-    
     {{ room_name|json_script:"json_name" }}
-    <!--{{ user_name|json_script:"json_user"}}-->
+    {{ request.user.username|json_script:"json_user"}}
     <script>
-        //const roomName = JSON.parse(document.getElementByID('json_name').textContent);
-        //const user_username = JSON.parse(document.getElementByID('json_user').textContent);
+        const roomName = JSON.parse(document.getElementById('json_name').textContent);
+        const user_username = JSON.parse(document.getElementById('json_user').textContent);
 
         const chatSocket = new WebSocket(
             'ws://' +
             window.location.host +
-            '/ws/l_room/'
+            '/ws/l_room/' +
+            roomName +
+            '/'
         );
 
+        /*document.getElementById('#input').addEventListener("keyup", function(e){
+            e.preventDefault();
+            if (e.keyCode === 13){
+                document.getElementById('#submit').click();
+            }
+            return false;
+        });*/
+
         document.querySelector('#submit').onclick = function(e) {
+            e.preventDefault();
             const messageInputDom = document.querySelector('#input');
             const message = messageInputDom.value;
             chatSocket.send(JSON.stringify({
                 'message': message,
-                //'user': user_username,
+                'username': user_username,
                 
             }));
             messageInputDom.value = '';
+            return false;
         };
+            
+        
 
         chatSocket.onmessage = function (e) {
             const data = JSON.parse(e.data);
-            document.querySelector('#chat-text').value += (data.message + '\n')
-            //document.querySelector('#chat-text').value += (data.username + ': ' + data.message + '\n')
+            if (data.message){
+                let html = '<div class="p-4 bg-white rounded-xl">';
+                    html += '<p class="font-bold" style="font-size:125%; color:black;"><b>' + data.username + '</b></p>';
+                    html += '<p style="color:black">' + data.message + '</p></div></br>';
+                    document.querySelector('#chat-messages').innerHTML += html;
+                    scrollToBottom();
+            } else {
+                alert('The message is empty');
+            }
         };
+
+        function scrollToBottom() {
+            const objDiv = document.querySelector('#chat-messages');
+            objDiv.scrollTop = objDiv.scrollHeight;
+        }
+        scrollToBottom();
     </script>
 </body>
 {% endblock %}
