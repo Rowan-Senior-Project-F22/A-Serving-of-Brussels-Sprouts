@@ -95,6 +95,7 @@ Handles both a user's likes and dislikes.
 
 Jeremy Juckett
 '''
+@login_required
 def like_view(request):
     like_query_result = Playlist.objects.all().filter(owner=request.user, name='likes')
     dislike_query_result = Playlist.objects.all().filter(owner=request.user, name='dislikes')
