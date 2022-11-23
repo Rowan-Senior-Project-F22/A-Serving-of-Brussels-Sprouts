@@ -32,7 +32,7 @@
             <div class="box-container">
                 <!-- Create a box for each newly released song -->
                 {% for d in data %}
-                    <div class="box" data-src="{{ d.preview_url }}">
+                    <div class="box" data-src="{{ d.preview_url }}"> 
                         <div class="content">
                             <h3><b>Title</b>: {{ d.track_name }}</h3>
                             <h3><b>Artist</b>: {{ d.artist_name }}</h3>
@@ -46,24 +46,22 @@
                             <img src={{ d.album_cover }} alt="">
                         </div>
 
-                        <!-- Eventually, add CSS rule for likes/dislikes -->
-                        <button type="submit" onclick="document.getElementById('like-button').submit()">Like {{ d.likes }}</button> <b>|</b> 
-                        <button type="submit" onclick="document.getElementById('dislike-button').submit()">Dislike {{ d.dislikes }}</button>
+                        <!-- Form for the likes -->
+                        <form id="like-button" method="POST" action="{% url 'recommender:like_song' %}">
+                            {% csrf_token %}
+                            <button type="submit" >Like {{ d.likes }}</button>
+                            <input type="hidden" name="like" value="{{ d.track_id }}">
+                        </form>
+
+                        <!-- Form for the dislikes -->
+                        <form id="dislike-button" method="POST" action="{% url 'recommender:like_song' %}">
+                            {% csrf_token %}
+                            <button type="submit" >Dislike {{ d.dislikes }}</button>
+                            <input type="hidden" name="dislike" value="{{ d.track_id }}">
+                        </form>
 
                     </div>
                 {% endfor %}
-
-                <!-- Form for the likes -->
-                <form id="like-button" method="POST" action="{% url 'recommender:like_song' track_id=0 %}">
-                    {% csrf_token %}
-                    <input type="hidden">
-                </form>
-
-                <!-- Form for the dislikes -->
-                <form id="dislike-button" method="POST" action="{% url 'recommender:like_song' track_id=1 %}">
-                    {% csrf_token %}
-                    <input type="hidden">
-                </form>
 
                 <div class="music-player">
                     <div id="close-player" class="fas fa-angle-up"></div>

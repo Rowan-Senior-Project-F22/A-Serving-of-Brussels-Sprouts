@@ -2,7 +2,7 @@ import json
 
 from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponse
-from recommender.models import ThreadModel, MessageModel, MusicData
+from recommender.models import ThreadModel, MessageModel, MusicData, Playlist
 from .forms import ThreadForm, MessageForm
 from .forms import SearchForm
 import random, spotipy
@@ -28,18 +28,24 @@ sp = spotipy.Spotify(client_credentials_manager=client_credentials)
 '''
 get_new_releases()
 
-Builds an array of dictionaries containing a randomized set of newly released
-song tracks.
+Gets a number of randomly selected, newly released songs. By default, the
+number of random tracks is 10.
+
+Gets new releases from Spotify, which returns a collection of albums. Tracks
+are then selected at random from each returned album.
+If the track_id is not already associated with an instance of MusicData, a new
+MusicData instance is created and stored in the database.
+
+Jeremy Juckett
 '''
 @login_required
 def get_new_releases(request):
-    count = 2
+    count = 10
     data = [] # context sent to template
     results = sp.new_releases(country = None, limit = count, offset = 0)
 
     # check track against MusicData model, creating a new instance if it does
     # not exist. For each song, create a new post.
-    songs = []
     for item in results['albums']['items']:
         # store album info
         album_id = item['id']
@@ -58,7 +64,6 @@ def get_new_releases(request):
         # check against model instances
         obj = MusicData.objects.all().filter(track_id=track_id)
         if len(obj) == 0:
-            print("Adding " + track_name + " to the database\n")
             # create new instance
             song = MusicData(
                 track_id = track_id,
@@ -73,15 +78,119 @@ def get_new_releases(request):
             song.save()
             data.append(song)
         else:
-            print(obj[0].track_name + ' exists in the database\n')
+            # instance already exists in the database
             data.append(obj[0])
 
-    return render(request, 'recommender/test.html', {'data': data})    
+    #print('Deleting all Playlist objects\n')
+    #Playlist.objects.all().delete()
+    #print('Deleting all MusicData objects\n')
+    #MusicData.objects.all().delete()
 
-def like_view(request, track_id):
-    print('\nLike View\n')
-    print('Track ID:', track_id, '\n')
-    print('Username:', request.user, '\n')
+    return render(request, 'recommender/test.html', {'data': data})
+
+'''
+like_view(request)
+
+Handles both a user's likes and dislikes.
+
+Jeremy Juckett
+'''
+def like_view(request):
+    like_query_result = Playlist.objects.all().filter(owner=request.user, name='likes')
+    dislike_query_result = Playlist.objects.all().filter(owner=request.user, name='dislikes')
+
+    # handle liked songs
+    if 'like' in request.POST:
+        liked_track_id = request.POST['like']
+        print('\nAttempting to like', liked_track_id)
+        # if the liked song is already in the dislike-playlist, remove it and update the record.
+        # if the dislike count is not zero, decrement.
+        if len(dislike_query_result) != 0 and liked_track_id in dislike_query_result[0].songs:
+            print(liked_track_id + ' already exists in the dislikes-playlist.')
+            #dislike_playlist[0].songs.split(',').remove(liked_track_id)
+            dislike_query_result[0].songs = dislike_query_result[0].songs.replace(liked_track_id + ',', '')
+            dislike_query_result[0].save()
+
+            obj = MusicData.objects.get(track_id=liked_track_id)
+            if obj.dislikes > 0:
+                obj.dislikes = obj.dislikes - 1
+                obj.save()
+
+        # add song to user's 'likes' playlist.
+        # if the 'likes' playlist doesn't exist, create it.
+        # increment the like count
+        if len(like_query_result) == 0:
+            print('Creating likes playlist')
+            song = liked_track_id + ','
+            like_playlist = Playlist(name='likes', songs=song,
+                is_public=True, owner=request.user)
+            like_playlist.save()
+
+            obj = MusicData.objects.get(track_id=liked_track_id)
+            obj.likes = obj.likes + 1
+            obj.save()
+        else:
+            # if the liked-song is not already in the 'likes' playlist,
+            # then append it.
+            if liked_track_id not in like_query_result[0].songs:
+                like_query_result[0].songs += liked_track_id + ','
+                like_query_result[0].save()
+
+                obj = MusicData.objects.get(track_id=liked_track_id)
+                obj.likes = obj.likes + 1
+                obj.save()
+            else:
+                print(liked_track_id,"already exists in the likes-playlist.")
+        print(liked_track_id, 'likes:', MusicData.objects.filter(track_id=liked_track_id)[0].likes, '\n')
+
+    # handle disliked songs
+    elif 'dislike' in request.POST:
+        disliked_track_id = request.POST['dislike']
+        print('\nAttempting to dislike', disliked_track_id)
+        # if the disliked song is already in the like-playlist, remove it and update the record.
+        # if the like count is not zero, decrement it.
+        if len(like_query_result) != 0 and disliked_track_id in like_query_result[0].songs:
+            print(disliked_track_id + ' already exists in the likes-playlist.')
+            #like_playlist[0].songs.split(',').remove(disliked_track_id)
+            like_query_result[0].songs = like_query_result[0].songs.replace(disliked_track_id + ',', '')
+            like_query_result[0].save()
+
+            obj = MusicData.objects.get(track_id=disliked_track_id)
+            if obj.likes > 0:
+                obj.likes = obj.likes - 1
+                obj.save()
+
+        # add song to user's 'dislikes' playlist.
+        # if the 'dislikes' playlist doesn't exist, create it
+        # increment the dislike count.
+        if len(dislike_query_result) == 0:
+            print('Creating dislikes playlist')
+            song = disliked_track_id + ','
+            dislike_playlist = Playlist(name='dislikes', songs=song,
+                is_public=True, owner=request.user)
+            dislike_playlist.save()
+
+            obj = MusicData.objects.get(track_id=disliked_track_id)
+            obj.dislikes = obj.dislikes + 1
+            obj.save()
+        else:
+            # if the disliked-song is not already in the 'dislikes' playlist,
+            # then append it.
+            if disliked_track_id not in dislike_query_result[0].songs:
+                dislike_query_result[0].songs += disliked_track_id + ','
+                dislike_query_result[0].save()
+
+                obj = MusicData.objects.get(track_id=disliked_track_id)
+                obj.dislikes = obj.dislikes + 1
+                obj.save()
+            else:
+                print(disliked_track_id,"already exists in the dislikes-playlist.")
+
+    if len(like_query_result) != 0:
+        print('\nliked songs:', like_query_result[0].songs)
+    if len(dislike_query_result) != 0:
+        print('\ndisliked songs:', dislike_query_result[0].songs)
+    print()
 
     return get_new_releases(request)
 

@@ -10,8 +10,6 @@ class User(AbstractUser):
     profile_picture = models.ImageField(null=True, blank=True, upload_to="profile/")
     # direct_messages = models.ManyToManyField('DirectMessage') TODO: Update with Design Team 3
     preferences = models.CharField(null=False, default='{}', max_length=1000)
-    playlists = models.CharField()
-
     following = models.ForeignKey('self', null=True, on_delete=models.CASCADE)
 
     USERNAME_FIELD = 'email'
@@ -43,7 +41,7 @@ class MusicData(models.Model):
     album_cover = models.TextField()
     artist_name = models.TextField()
     release_date = models.TextField()
-    preview_url = models.TextField()
+    preview_url = models.TextField(null=True)
     likes = models.IntegerField(default=0)
     dislikes = models.IntegerField(default=0)
 
@@ -82,10 +80,11 @@ class Like(models.Model):
 '''Playlist model to store a user's playlists
 - Brandon Ngo'''
 class Playlist(models.Model):
+    name = models.TextField(default="")
     songs = models.CharField(null=False, default='[]', max_length=100)
     is_public = models.BooleanField(default=False)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
-    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
+    #creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
 
 
 '''Listening room model, contains multiple listeners and the currently playing song

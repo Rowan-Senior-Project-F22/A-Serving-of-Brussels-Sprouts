@@ -21,5 +21,5 @@ urlpatterns = [
     path("logout/", views.get_logout, name="get_logout"),
 
     path("test/", views.get_new_releases, name="test"),
-    path("like_song/<str:track_id>", views.like_view, name="like_song"),
+    path("like_song/", views.like_view, name="like_song"),
 ]
