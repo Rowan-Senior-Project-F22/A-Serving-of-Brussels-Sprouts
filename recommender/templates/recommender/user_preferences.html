@@ -113,9 +113,20 @@ Account Settings
   <div class="card-body">
       Likes
       <hr/>
-      <br/>
+    <ul>
+      {% for like in likes %}
+        <li>{{ like }}</li>
+      {% endfor %}
+    </ul>
+    <br/>
       Dislikes
       <hr/>
+    <ul>
+      {% for dislike in dislikes %}
+        <li>{{ dislike }}</li>
+      {% endfor %}
+    </ul>
+    <br/>
     <form method="POST" action="{% url 'recommender:user_preferences' %}">
       {% csrf_token %}
       {{ preference_form }}

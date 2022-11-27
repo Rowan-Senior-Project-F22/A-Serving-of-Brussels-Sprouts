@@ -1,3 +1,4 @@
+import ast
 import json
 
 from django.shortcuts import render, redirect
@@ -133,7 +134,7 @@ def get_register(request):
 def user_preferences(request):
     """Retrieves the user's preferences. Fetches the current user in session,
     returns their information, parses the preferences to a readable format
-    and passes as context.
+    and passes as context. Inefficient version
 
     """
     # Pulls genre list from Spotify API using the client credentials authentication flow
@@ -142,37 +143,42 @@ def user_preferences(request):
     for i in range(len(genre_list[0])):
         available_genre_seeds.append(genre_list[0][i])
 
+    users_preferences = init_users_preferences(request=request, available_genre_seeds=available_genre_seeds)
+
     if request.method == 'POST':
         # TODO: Handle form logic to remove from the user's preferences.
         form = UserPreferencesForm(genre_seed_options=available_genre_seeds, data=request.POST)
         try:
-            if form.is_valid():
                 user = request.user
-                users_preferences = json.loads(user.preferences)
 
                 if 'likes' not in users_preferences:
                     users_preferences['likes'] = []
                 if 'dislikes' not in users_preferences:
                     users_preferences['dislikes'] = []
 
-                if form.cleaned_data.get('preferences_like'):
-                    users_preferences['likes'].append(form.cleaned_data.get('genre_seeds'))
-                    user.save(preferences=users_preferences)
-                elif form.cleaned_data.get('preferences_dislike'):
-                    users_preferences['dislikes'].append(form.cleaned_data.get('genre_seeds'))
-                    user.save(preferences=users_preferences)
+                if 'preferences_like' in form.data:
+                    users_preferences['likes'].append(form.data["genre_seed"])
+                    user.preferences = users_preferences
+                    user.save()
+                elif 'preferences_dislike' in form.data:
+                    users_preferences['dislikes'].append(form.data["genre_seed"])
+                    user.preferences = users_preferences
+                    user.save()
                 messages.success(request=request, message='Successfully modified user preferences.')
-        except Exception as E:
+        except BaseException as E:
+            print(E)
             # Pass since there was an error, setting the message to
             # let the user know.
             messages.error(request, "An error occurred while processing your request. Please try again.")
 
-    users_preferences = init_users_preferences(request=request, available_genre_seeds=available_genre_seeds)
-    preference_form = UserPreferencesForm(genre_seed_options=available_genre_seeds)
+    # Inefficient for now but works
+    genres_available = list(filter(lambda x: x not in users_preferences['likes'] and x not in users_preferences['dislikes'], available_genre_seeds))
+    preference_form = UserPreferencesForm(genre_seed_options=genres_available)
     playlist_count = Playlist.objects.filter(Q(creator=request.user)).count()
 
     return render(request=request, template_name="recommender/user_preferences.html",
-                        context={"users_preferences": users_preferences, "available_genre_seeds": available_genre_seeds,
+                        context={"likes": users_preferences['likes'],'dislikes': users_preferences['dislikes'],
+                                 "available_genre_seeds": available_genre_seeds,
                                 "playlist_count": playlist_count, "preference_form": preference_form})
 
 
