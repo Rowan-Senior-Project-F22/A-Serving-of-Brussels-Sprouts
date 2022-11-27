@@ -3,7 +3,7 @@ import json
 from django.shortcuts import render, redirect
 from django.http import Http404
 from recommender.models import ThreadModel, MessageModel, Playlist
-from utils.users import get_users_preferences
+from utils.users import init_users_preferences
 from .forms import ThreadForm, MessageForm, UserPreferencesForm
 from .forms import SearchForm
 import random, spotipy
@@ -145,7 +145,6 @@ def user_preferences(request):
     if request.method == 'POST':
         # TODO: Handle form logic to remove from the user's preferences.
         form = UserPreferencesForm(genre_seed_options=available_genre_seeds, data=request.POST)
-        print(form.errors)
         try:
             if form.is_valid():
                 user = request.user
@@ -166,10 +165,9 @@ def user_preferences(request):
         except Exception as E:
             # Pass since there was an error, setting the message to
             # let the user know.
-            print(E)
             messages.error(request, "An error occurred while processing your request. Please try again.")
 
-    users_preferences = get_users_preferences(request=request, available_genre_seeds=available_genre_seeds)
+    users_preferences = init_users_preferences(request=request, available_genre_seeds=available_genre_seeds)
     preference_form = UserPreferencesForm(genre_seed_options=available_genre_seeds)
     playlist_count = Playlist.objects.filter(Q(creator=request.user)).count()
 

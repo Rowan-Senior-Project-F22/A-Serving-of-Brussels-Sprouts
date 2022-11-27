@@ -1,7 +1,7 @@
 import json
 
 
-def get_users_preferences(request, available_genre_seeds):
+def init_users_preferences(request, available_genre_seeds):
     # Retrieve the current user, parse their preferences given the available
     # genre seeds and ensure genre seeds are in the list of Spotify genre seeds.
     current_user = request.user
