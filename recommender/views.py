@@ -1,10 +1,11 @@
 import json, re
 
+from django.template.defaultfilters import slugify
 from django.shortcuts import render, redirect
 from django.http import Http404
 from recommender.models import ThreadModel, MessageModel
 from .forms import ThreadForm, MessageForm
-from .forms import SearchForm
+from .forms import ListeningRoomForm
 import random, spotipy
 from email import message
 from urllib import request
@@ -14,6 +15,7 @@ from django.views import View
 from django.db.models import Q
 from .models import User
 from .forms import CustomUserForm
+from .models import ListeningRoom
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
@@ -111,10 +113,22 @@ class CreateMessage(View):
         message.save()
         return redirect('thread', pk=pk)
 
-@login_required
-def l_room(request, room_name):
-    #user_name = request.POST.get('username')
-    return render(request, 'l_room.html', {'l_room': l_room, 'room_name': room_name})
+def l_room(request, slug):
+    slug = slugify(slug)
+    return render(request, 'l_room.html', {'l_room': l_room, 'slug': slug})
+
+def l_room_create(request):
+    if request.method == "POST":
+        form = ListeningRoomForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data.get('room_name')
+            slug = slugify(name)
+            chat = ListeningRoom(name, slug)
+            chat = form.save()
+            messages.success(request, "Chatroom created successfully")
+            return redirect("recommender:l_room/"+slug)
+    form = ListeningRoomForm()
+    return render(request, 'l_room_create.html')
 
 
 def get_register(request):

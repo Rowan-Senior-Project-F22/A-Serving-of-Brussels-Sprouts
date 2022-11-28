@@ -21,8 +21,6 @@
             <div class="col-12">
                 <form>
                     <div class="form-group">
-                        <!--<label for="exampleFormControlTextarea1" class="h2 pt-5">{{room_name}}</label>-->
-                        <!--<textarea readonly class="form-control" id="chat-text" rows="20" columns="20" style="background:white;"></textarea><br>-->
                         <div class="lg:w-2/4 rounded-xl">
                             <div class="chat-messages space-y-3" id="chat-messages"></div>
                         </div>
@@ -32,12 +30,11 @@
                         <div class="input-group-append">
                             <button class="btn btn-secondary" id="submit" type="button">Send</button> 
                         </div>    
-                    </div>
-                    
+                    </div> 
                 </form>
             </div>
         </div>
-    
+   
     {{ room_name|json_script:"json_name" }}
     {{ request.user.username|json_script:"json_user"}}
     <script>
