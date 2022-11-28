@@ -54,10 +54,10 @@ Account Settings
   <div class="card-footer card-profile-footer">
     <ul class="nav nav-border-top justify-content-center">
       <li class="nav-item">
-        <a class="nav-link active" href="{% url 'recommender:user_preferences' %}">Preferences</a>
+        <a class="nav-link" href="{% url 'recommender:user_preferences' %}">Preferences</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'recommender:user_account_settings' %}">Settings</a>
+        <a class="nav-link active" href="{% url 'recommender:user_account_settings' %}">Settings</a>
       </li>
 
     </ul>
@@ -77,12 +77,12 @@ Account Settings
 
         <ul class="nav nav-settings">
           <li class="nav-item">
-            <a class="nav-link active" href="{% url 'recommender:user_preferences' %}">
+            <a class="nav-link" href="{% url 'recommender:user_preferences' %}">
               <i class="mdi mdi-account-outline mr-1"></i> Preferences
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'recommender:user_account_settings' %}">
+            <a class="nav-link active" href="{% url 'recommender:user_account_settings' %}">
               <i class="mdi mdi-settings-outline mr-1"></i> Account
             </a>
           </li>
@@ -102,41 +102,49 @@ Account Settings
 
       <div class="card-body">
 
-        <div class="card card-default">
-  <div class="card-header">
-    <h2>My Preferences</h2>
-    <a class="btn mdi mdi-code-tags" data-toggle="collapse" href="#collapse-card-1" role="button"
-      aria-expanded="false" aria-controls="collapse-card-1"> </a>
+        <form>
+          <div class="row mb-2">
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label for="firstName">First name</label>
+                <input value="{{ user.first_name }}" type="text" class="form-control" id="firstName" >
+              </div>
+            </div>
 
+            <div class="col-lg-6">
+              <div class="form-group">
+                <label for="lastName">Last name</label>
+                <input value="{{ user.last_name }}" type="text" class="form-control" id="lastName">
+              </div>
+            </div>
+          </div>
 
-  </div>
-  <div class="card-body">
-      Likes
-      <hr/>
-    <ul>
-      {% for like in likes %}
-        <li>{{ like }}</li>
-      {% endfor %}
-    </ul>
-    <br/>
-      Dislikes
-      <hr/>
-    <ul>
-      {% for dislike in dislikes %}
-        <li>{{ dislike }}</li>
-      {% endfor %}
-    </ul>
-    <br/>
-    <form method="POST" action="{% url 'recommender:user_preferences' %}">
-      {% csrf_token %}
-      {{ preference_form }}
-      <div class="form-footer mt-4">
-        <button type="submit" name="preferences_dislike" class="btn btn-primary btn-pill">Add to dislikes</button>
-        <button type="submit" name="preferences_like" class="btn btn-primary btn-pill">Add to likes</button>
-  </div>
-    </form>
-  </div>
-</div>
+          <div class="form-group mb-4">
+            <label for="userName">User name</label>
+            <input value="{{ user.username }}" type="text" class="form-control" id="userName">
+            <span class="d-block mt-1">Accusamus nobis at omnis consequuntur culpa tempore saepe animi.</span>
+          </div>
+
+          <div class="form-group mb-4">
+            <label for="email">Email</label>
+            <input value="{{ user.email }}" type="email" class="form-control" id="email">
+          </div>
+
+          <div class="form-group mb-4">
+            <label for="newPassword">New password</label>
+            <input type="password" class="form-control" id="newPassword">
+          </div>
+
+          <div class="form-group mb-4">
+            <label for="conPassword">Confirm password</label>
+            <input type="password" class="form-control" id="conPassword">
+          </div>
+
+          <div class="d-flex justify-content-end mt-6">
+            <button type="submit" class="btn btn-primary mb-2 btn-pill">Update Profile</button>
+          </div>
+
+        </form>
       </div>
     </div>
 
