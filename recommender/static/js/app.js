@@ -26,7 +26,7 @@ const SHUFFLE = "https://api.spotify.com/v1/me/player/shuffle";
 
 function onPageLoad() {
     client_id = localStorage.setItem("client_id", client_id);
-    client_id = localStorage.setItem("secret_id", secret_id);
+    secret_id = localStorage.setItem("secret_id", secret_id);
     client_id = localStorage.getItem("client_id");
     secret_id = localStorage.getItem("secret_id");
     if (window.location.search.length > 0) {
