@@ -5,6 +5,8 @@ var secret_id = "fbf315776bda4ea2aaeeeb1ec559de7d";
 
 var access_token = null;
 var refresh_token = null;
+var display_name = null;
+var email = null;
 var currentPlaylist = "";
 var radioButtons = [];
 
@@ -23,6 +25,8 @@ const CURRENTLYPLAYING = "https://api.spotify.com/v1/me/player/currently-playing
 const SHUFFLE = "https://api.spotify.com/v1/me/player/shuffle";
 
 function onPageLoad() {
+    client_id = localStorage.setItem("client_id", client_id);
+    client_id = localStorage.setItem("secret_id", secret_id);
     client_id = localStorage.getItem("client_id");
     secret_id = localStorage.getItem("secret_id");
     if (window.location.search.length > 0) {
@@ -108,11 +112,31 @@ function requestAuthorization() {
 
 function getUser(){
     let xhr = new XMLHttpRequest();
-    let body = USERPROFILE;
-    xhr.open("GET", body, true);
+    xhr.open("GET", USERPROFILE, true);
     xhr.setRequestHeader('Accept', 'application/json');
     xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.setRequestHeader('Authorization', 'Bearer '+btoa(access_token));
+    xhr.setRequestHeader('Authorization', 'Bearer '+ localStorage.getItem("access_token"));
     xhr.send(body);
-    xhr.onload= handleRedirect;  
+    xhr.onload = handleUserResponse;
+}
+
+function handleUserResponse() {
+    if (this.status == 200) {
+        var data = JSON.parse(this.responseText);
+        console.log(data);
+        var data = JSON.parse(this.responseText);
+        if (data.display_name != undefined) {
+            display_name = data.display_name;
+            localStorage.setItem("display_name", display_name);
+        }
+        if (data.email != undefined) {
+            email = data.email;
+            localStorage.setItem("email", email);
+        }
+        onPageLoad();
+    }
+    else {
+        console.log(this.responseText);
+        alert(this.responseText);
+    }
 }
