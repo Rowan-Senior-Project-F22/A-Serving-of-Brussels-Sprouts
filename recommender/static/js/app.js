@@ -1,4 +1,4 @@
-var redirect_uri = "http://127.0.0.1:8000/";
+var redirect_uri = "http://127.0.0.1:8000/landing/";
 
 var client_id = "2de1575d99b14786ae4f7e46e33e494e";
 var secret_id = "fbf315776bda4ea2aaeeeb1ec559de7d";
@@ -104,4 +104,15 @@ function requestAuthorization() {
     url += "&show_dialog=true";
     url += "&scope=user-read-private user-read-email user-modify-playback-state user-read-playback-position user-library-read streaming user-read-playback-state user-read-recently-played playlist-read-private";
     window.location.href = url; // Show Spotify's authorization screen
+}
+
+function getUser(){
+    let xhr = new XMLHttpRequest();
+    let body = USERPROFILE;
+    xhr.open("GET", body, true);
+    xhr.setRequestHeader('Accept', 'application/json');
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Authorization', 'Bearer '+btoa(access_token));
+    xhr.send(body);
+    xhr.onload= handleRedirect;  
 }

@@ -1,4 +1,4 @@
-
+{% extends 'base.html' %}
 
 {% block content %}
 </br>
@@ -19,7 +19,10 @@
                 </form>
             </div>
         </div>
-    
+        <div id="tokenSection" class="row">
+            <input class="btn btn-primary btn-lg" type="button" onclick="getUser()"
+                value="Get Spotify User"><br />
+        </div>
 
     
     {{ room_name|json_script:"room_name" }}
@@ -54,6 +57,7 @@
             document.querySelector('#chat-text').value += (data.message + '\n')
             //document.querySelector('#chat-text').value += (data.username + ': ' + data.message + '\n')
         }
+
     </script>
 </body>
 {% endblock %}

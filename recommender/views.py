@@ -112,6 +112,7 @@ class CreateMessage(View):
 
 
 def l_room(request, room_name):
+    
     return render(request, 'l_room.html', {'room_name': room_name})
 
 
