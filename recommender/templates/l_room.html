@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ room_name }} | {% endblock %}
+{% block title %}{{ slug }} | {% endblock %}
 
 {% block view_title %}
-    {{room_name}}
+    {{slug}}
 {% endblock %}
 
 {% block content %}
@@ -35,7 +35,7 @@
             </div>
         </div>
    
-    {{ room_name|json_script:"json_name" }}
+    {{ slug|json_script:"json_name" }}
     {{ request.user.username|json_script:"json_user"}}
     <script>
         const roomName = JSON.parse(document.getElementById('json_name').textContent);
