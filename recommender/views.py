@@ -83,6 +83,7 @@ def get_new_releases(request):
             # instance already exists in the database
             data.append(obj[0])
 
+    ''' Uncomment the following code to remove the database records '''
     #print('Deleting all Playlist objects\n')
     #Playlist.objects.all().delete()
     #print('Deleting all MusicData objects\n')
@@ -105,12 +106,9 @@ def like_view(request):
     # handle liked songs
     if 'like' in request.POST:
         liked_track_id = request.POST['like']
-        print('\nAttempting to like', liked_track_id)
         # if the liked song is already in the dislike-playlist, remove it and update the record.
         # if the dislike count is not zero, decrement.
         if len(dislike_query_result) != 0 and liked_track_id in dislike_query_result[0].songs:
-            print(liked_track_id + ' already exists in the dislikes-playlist.')
-            #dislike_playlist[0].songs.split(',').remove(liked_track_id)
             dislike_query_result[0].songs = dislike_query_result[0].songs.replace(liked_track_id + ',', '')
             dislike_query_result[0].save()
 
@@ -123,7 +121,6 @@ def like_view(request):
         # if the 'likes' playlist doesn't exist, create it.
         # increment the like count
         if len(like_query_result) == 0:
-            print('Creating likes playlist')
             song = liked_track_id + ','
             like_playlist = Playlist(name='likes', songs=song,
                 is_public=True, owner=request.user)
@@ -142,19 +139,13 @@ def like_view(request):
                 obj = MusicData.objects.get(track_id=liked_track_id)
                 obj.likes = obj.likes + 1
                 obj.save()
-            else:
-                print(liked_track_id,"already exists in the likes-playlist.")
-        print(liked_track_id, 'likes:', MusicData.objects.filter(track_id=liked_track_id)[0].likes, '\n')
 
     # handle disliked songs
     elif 'dislike' in request.POST:
         disliked_track_id = request.POST['dislike']
-        print('\nAttempting to dislike', disliked_track_id)
         # if the disliked song is already in the like-playlist, remove it and update the record.
         # if the like count is not zero, decrement it.
         if len(like_query_result) != 0 and disliked_track_id in like_query_result[0].songs:
-            print(disliked_track_id + ' already exists in the likes-playlist.')
-            #like_playlist[0].songs.split(',').remove(disliked_track_id)
             like_query_result[0].songs = like_query_result[0].songs.replace(disliked_track_id + ',', '')
             like_query_result[0].save()
 
@@ -167,7 +158,6 @@ def like_view(request):
         # if the 'dislikes' playlist doesn't exist, create it
         # increment the dislike count.
         if len(dislike_query_result) == 0:
-            print('Creating dislikes playlist')
             song = disliked_track_id + ','
             dislike_playlist = Playlist(name='dislikes', songs=song,
                 is_public=True, owner=request.user)
@@ -186,23 +176,61 @@ def like_view(request):
                 obj = MusicData.objects.get(track_id=disliked_track_id)
                 obj.dislikes = obj.dislikes + 1
                 obj.save()
-            else:
-                print(disliked_track_id,"already exists in the dislikes-playlist.")
-
-    if len(like_query_result) != 0:
-        print('\nliked songs:', like_query_result[0].songs)
-    if len(dislike_query_result) != 0:
-        print('\ndisliked songs:', dislike_query_result[0].songs)
-    print()
 
     return get_new_releases(request)
 
-def get_landing_guest(request):
-    return render(request, "recommender/landingguest.html")
 
+'''
+user_profile(request)
+
+Jeremy Juckett
+'''
 @login_required
 def user_profile(request):
-    return render(request, 'recommender/user_profile.html', {})
+    number_of_loads = 4
+    like_query_result = Playlist.objects.all().filter(owner=request.user, name='likes')
+    dislike_query_result = Playlist.objects.all().filter(owner=request.user, name='dislikes')
+
+    # handle the likes
+    if len(like_query_result) != 0 or like_query_result[0].songs != "":
+        # populate the context with music data from random liked track ids
+        liked_track_ids = like_query_result[0].songs.split(",")
+        liked_track_ids.remove('') # remove the empty entry at the end
+        
+        if number_of_loads >= len(liked_track_ids):
+            random_likes = random.choices(liked_track_ids, k=len(liked_track_ids))
+        else:
+            random_likes = random.choices(liked_track_ids, k=number_of_loads)
+        liked_music_data = []
+        for r in random_likes:
+            liked_music_data.append(MusicData.objects.all().filter(track_id=r)[0])
+
+    # handle the dislikes
+    if len(dislike_query_result) != 0 or dislike_query_result[0].songs != "":
+        # populate the context with music data from random disliked track ids
+        disliked_track_ids = dislike_query_result[0].songs.split(",")
+        disliked_track_ids.remove('') # remove the empty entry at the end
+        
+        if number_of_loads >= len(disliked_track_ids):
+            random_dislikes = disliked_track_ids
+        else:
+            random_dislikes = []
+            for i in range(number_of_loads):
+                pass
+        disliked_music_data = []
+        for r in random_dislikes:
+            disliked_music_data.append(MusicData.objects.all().filter(track_id=r)[0])
+
+    context = {
+        'liked_music': liked_music_data,
+        'disliked_music': disliked_music_data
+    }
+
+    return render(request, 'recommender/user_profile.html', context)
+
+
+def get_landing_guest(request):
+    return render(request, "recommender/landingguest.html")
 
 
 class ListThreads(View):
