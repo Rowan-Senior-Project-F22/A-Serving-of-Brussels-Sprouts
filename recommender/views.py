@@ -440,4 +440,32 @@ def get_logout(request):
 
 @login_required
 def user_playlist(request, user_id):
-    return render(request, 'recommender/user_playlist.html', {})
+    like_query_result = Playlist.objects.all().filter(owner=request.user, name='likes')
+    dislike_query_result = Playlist.objects.all().filter(owner=request.user, name='dislikes')
+
+    # fetch like playlist
+    if len(like_query_result) != 0 or like_query_result[0].songs != "":
+        # populate the context with music data from random liked track ids
+        liked_track_ids = like_query_result[0].songs.split(",")
+        liked_track_ids.remove('') # remove the empty entry at the end
+        
+        liked_music_data = []
+        for l in liked_track_ids:
+            liked_music_data.append(MusicData.objects.all().filter(track_id=l)[0])
+
+    # fetch the dislike playlist
+    if len(dislike_query_result) != 0 or dislike_query_result[0].songs != "":
+        # populate the context with music data from random liked track ids
+        disliked_track_ids = dislike_query_result[0].songs.split(",")
+        disliked_track_ids.remove('') # remove the empty entry at the end
+        
+        disliked_music_data = []
+        for d in disliked_track_ids:
+            disliked_music_data.append(MusicData.objects.all().filter(track_id=d)[0])
+
+    context = {
+        'liked_music': liked_music_data,
+        'disliked_music': disliked_music_data
+    }
+
+    return render(request, 'recommender/user_playlist.html', context)
