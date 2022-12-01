@@ -4,7 +4,7 @@ import json
 from django.shortcuts import render, redirect
 from django.http import Http404
 from recommender.models import ThreadModel, MessageModel, Playlist
-from utils.users import init_users_preferences
+from utils.users import init_users_preferences, generate_friend_recommendations
 from .forms import ThreadForm, MessageForm, UserPreferencesForm
 from .forms import SearchForm
 import random, spotipy
@@ -216,6 +216,25 @@ def get_member_feed(request):
         except EmptyPage:
             numbers = paginator.page(paginator.num_pages)
         return render(request=request, template_name='recommender/landing_member.html', context={'memberlist': numbers})
+
+
+def friend_recommendation(request):
+    # Get the current user.
+    # Parse out their preferences using ast.literal_eval()
+
+    user_preferences = init_users_preferences(request=request, available_genre_seeds=None)
+
+    # Check their preferences field for one of four options to determine
+    # the fit algorithm:
+
+    # Similar
+    # Opposite
+    # Disparate
+    # Default
+
+    recommendations = generate_friend_recommendations(preference=user_preferences['friends'])
+
+    return render(request=request, template_name='recommender/friend_recommender.html', context={'memberlist': []})
 
 
 def get_login(request):
