@@ -177,7 +177,8 @@ def like_view(request):
                 obj.dislikes = obj.dislikes + 1
                 obj.save()
 
-    return get_new_releases(request)
+    #return get_new_releases(request)
+    return render(request, "recommender/landing")
 
 
 '''
@@ -198,12 +199,13 @@ def user_profile(request):
         liked_track_ids.remove('') # remove the empty entry at the end
         
         if number_of_loads >= len(liked_track_ids):
-            random_likes = random.choices(liked_track_ids, k=len(liked_track_ids))
+            likes_subset = liked_track_ids
         else:
-            random_likes = random.choices(liked_track_ids, k=number_of_loads)
+            likes_subset = liked_track_ids[0:number_of_loads - 1]
+
         liked_music_data = []
-        for r in random_likes:
-            liked_music_data.append(MusicData.objects.all().filter(track_id=r)[0])
+        for l in likes_subset:
+            liked_music_data.append(MusicData.objects.all().filter(track_id=l)[0])
 
     # handle the dislikes
     if len(dislike_query_result) != 0 or dislike_query_result[0].songs != "":
@@ -212,14 +214,13 @@ def user_profile(request):
         disliked_track_ids.remove('') # remove the empty entry at the end
         
         if number_of_loads >= len(disliked_track_ids):
-            random_dislikes = disliked_track_ids
+            dislikes_subset = disliked_track_ids
         else:
-            random_dislikes = []
-            for i in range(number_of_loads):
-                pass
+            dislikes_subset = disliked_track_ids[0:number_of_loads - 1]
+
         disliked_music_data = []
-        for r in random_dislikes:
-            disliked_music_data.append(MusicData.objects.all().filter(track_id=r)[0])
+        for d in dislikes_subset:
+            disliked_music_data.append(MusicData.objects.all().filter(track_id=d)[0])
 
     context = {
         'liked_music': liked_music_data,
