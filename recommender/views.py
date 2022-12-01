@@ -178,7 +178,7 @@ def like_view(request):
                 obj.save()
 
     #return get_new_releases(request)
-    return render(request, "recommender/landing")
+    return user_profile(request)
 
 
 '''
