@@ -5,7 +5,7 @@ from django.http import Http404
 from recommender.models import ThreadModel, MessageModel,Notification
 from .forms import ThreadForm, MessageForm
 from .forms import SearchForm
-import random, spotipy
+import random
 from email import message
 from urllib import request
 from django.contrib.auth import login, authenticate, logout
@@ -20,10 +20,6 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
 
-cid = '2de1575d99b14786ae4f7e46e33e494e'
-secret = 'fbf315776bda4ea2aaeeeb1ec559de7d'
-client_credentials = spotipy.oauth2.SpotifyClientCredentials(client_id=cid, client_secret=secret)
-sp = spotipy.Spotify(client_credentials_manager=client_credentials)
 
 
 
