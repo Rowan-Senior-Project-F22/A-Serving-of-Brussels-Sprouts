@@ -25,8 +25,6 @@ const CURRENTLYPLAYING = "https://api.spotify.com/v1/me/player/currently-playing
 const SHUFFLE = "https://api.spotify.com/v1/me/player/shuffle";
 
 function onPageLoad() {
-    client_id = localStorage.setItem("client_id", client_id);
-    secret_id = localStorage.setItem("secret_id", secret_id);
     client_id = localStorage.getItem("client_id");
     secret_id = localStorage.getItem("secret_id");
     if (window.location.search.length > 0) {
@@ -76,6 +74,15 @@ function callAuthorizationApi(body) {
     xhr.onload = handleAuthorizationResponse;
 }
 
+function callApi(method, url, body, callback){
+    let xhr = new XMLHttpRequest();
+    xhr.open(method, url, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem("access_token"));
+    xhr.send(body);
+    xhr.onload = callback;
+}
+
 function handleAuthorizationResponse() {
     if (this.status == 200) {
         var data = JSON.parse(this.responseText);
@@ -111,13 +118,7 @@ function requestAuthorization() {
 }
 
 function getUser(){
-    let xhr = new XMLHttpRequest();
-    xhr.open("GET", USERPROFILE, true);
-    xhr.setRequestHeader('Accept', 'application/json');
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.setRequestHeader('Authorization', 'Bearer '+ localStorage.getItem("access_token"));
-    xhr.send(body);
-    xhr.onload = handleUserResponse;
+    callApi("GET", USERPROFILE, true, handleUserResponse); 
 }
 
 function handleUserResponse() {
@@ -138,5 +139,85 @@ function handleUserResponse() {
     else {
         console.log(this.responseText);
         alert(this.responseText);
+    }  
+}
+
+function refreshDevices(){
+    callApi( "GET", DEVICES, null, handleDevicesResponse );
+}
+
+function handleDevicesResponse(){
+    if ( this.status == 200 ){
+        var data = JSON.parse(this.responseText);
+        console.log(data);
+        removeAllItems( "devices" );
+        data.devices.forEach(item => addDevice(item));
+    }
+    else if ( this.status == 401 ){
+        refreshAccessToken()
+    }
+    else {
+        console.log(this.responseText);
+        alert(this.responseText);
     }
 }
+
+function addDevice(item){
+    let node = document.createElement("option");
+    node.value = item.id;
+    node.innerHTML = item.name;
+    document.getElementById("devices").appendChild(node); 
+}
+
+
+function deviceId(){
+    return document.getElementById("devices").value;
+}
+
+function addDeviceWithName(){
+    
+}
+
+function play(){
+    let body = {};
+    body.context_uri = "spotify:album:6mUdeDZCsExyJLMdAfDuwh";
+    body.offset = {};
+    body.offset.position = 0;
+    body.offset.position_ms = 0;
+    callApi( "PUT", PLAY + "?device_id=fa8cf59f057e6e8136d12b8c7e88269e0e38aa1a", JSON.stringify(body), handleApiResponse);
+}
+
+function request_playback() {
+    let xhr = new XMLHttpRequest();
+    let body = {}
+    body.context_uri = "spotify:album:6mUdeDZCsExyJLMdAfDuwh";
+    body.offset = {};
+    body.offset.position = 0;
+    body.offset.position_ms = 0;
+    xhr.open("PUT", PLAY, true);
+    xhr.setRequestHeader('Accept', 'application/json');
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Authorization', 'Bearer '+ localStorage.getItem("access_token"));
+    xhr.send(body);
+    xhr.onload = handleApiResponse;
+}
+
+function handleApiResponse(){
+    if ( this.status == 200){
+        console.log(this.responseText);
+        setTimeout(currentlyPlaying, 2000);
+    }
+    else if ( this.status == 204 ){
+        setTimeout(currentlyPlaying, 2000);
+    }
+    else if ( this.status == 401 ){
+        refreshAccessToken()
+    }
+    else {
+        console.log(this.responseText);
+        alert(this.responseText);
+    }    
+}
+
+
+

@@ -1,9 +1,12 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 </br>
+
+
 <body>
-    
+
     <div class="container">
         <div class="row d-flex justify-content-center">
             <div class="col-6">
@@ -20,46 +23,75 @@
             </div>
         </div>
         <div id="tokenSection" class="row">
-            <input class="btn btn-primary btn-lg" type="button" onclick="getUser()"
-                value="Get Spotify User"><br />
+            <input class="btn btn-primary btn-lg" type="button" id="play" value="Play"><br />
         </div>
 
-    
-    {{ room_name|json_script:"room_name" }}
-    <script>
-        const room_name = JSON.parse(document.getElementByID('room_name').textContent);
-        //const user_username = JSON.parse(document.getElementByID('user_username').textContent);
-
-        document.querySelector('#submit').onclick = function(e) {
-            const messageInputDom = document.querySelector('#input');
-            const message = messageInputDom.value;
-            chatSocket.send(JSON.stringify({
-                'message': message,
-                //'user': user_username,
-                
-            }));
-            messageInputDom.value = '';
-        };
         
+        {{ room_name|json_script:"room_name" }}
+        <script src="https://sdk.scdn.co/spotify-player.js"></script>
+        <script src="{%static 'js/player.js' %}" type="module"></script>
         
-        const chatSocket = new WebSocket(
-            'ws://' +
-            window.location.host +
-            '/ws/l_room/' +
-            room_name +
-            '/'
-        );
+        <script>
+            const room_name = JSON.parse(document.getElementById('room_name').textContent);
+            //const user_username = JSON.parse(document.getElementByID('user_username').textContent);
+
+            document.querySelector('#submit').onclick = function (e) {
+                const messageInputDom = document.querySelector('#input');
+                const message = messageInputDom.value;
+                chatSocket.send(JSON.stringify({
+                    'message': message,
+                    //'user': user_username,
+
+                }));
+                messageInputDom.value = '';
+            };
+
+
+            const chatSocket = new WebSocket(
+                'ws://' +
+                window.location.host +
+                '/ws/l_room/' +
+                room_name +
+                '/'
+            );
 
 
 
-        chatSocket.onmessage = function (e) {
-            const data = JSON.parse(e.data);
-            document.querySelector('#chat-text').value += (data.message + '\n')
-            //document.querySelector('#chat-text').value += (data.username + ': ' + data.message + '\n')
-        }
+            chatSocket.onmessage = function (e) {
+                const data = JSON.parse(e.data);
+                document.querySelector('#chat-text').value += (data.message + '\n')
+                //document.querySelector('#chat-text').value += (data.username + ': ' + data.message + '\n')
+            }
 
-    </script>
+            window.onSpotifyWebPlaybackSDKReady = () => {
+                const token = localStorage.getItem("access_token");
+                const player = new Spotify.Player({
+                    name: 'A Serving of Brussel Sprouts',
+                    getOAuthToken: cb => { cb(token); },
+                    volume: 0.5
+                });
+
+                player.addListener('ready', ({ device_id }) => {
+                    console.log('Ready with Device ID', device_id);
+                });
+
+                // Not Ready
+                player.addListener('not_ready', ({ device_id }) => {
+                    console.log('Device ID has gone offline', device_id);
+                });
+
+                player.connect();
+            };
+
+            document.getElementById('play').onclick = function () {
+                player.togglePlay();
+            };
+
+
+
+        </script>
 </body>
+
 {% endblock %}
 
 

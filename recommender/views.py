@@ -112,7 +112,6 @@ class CreateMessage(View):
 
 
 def l_room(request, room_name):
-    
     return render(request, 'l_room.html', {'room_name': room_name})
 
 
@@ -126,6 +125,7 @@ def get_register(request):
             return redirect("recommender:user_profile")
         messages.error(request, "Unsuccessful registration. Invalid information.")
     form = CustomUserForm()
+    
     return render(request=request, template_name="recommender/register.html", context={"register_form": form})
 
 
