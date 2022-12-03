@@ -20,6 +20,6 @@ urlpatterns = [
     path("register/", views.get_register, name="get_register"),
     path("logout/", views.get_logout, name="get_logout"),
 
-    path("test/", views.get_new_releases, name="test"),
+    path("new_releases/", views.get_new_releases, name="new_releases"),
     path("like_song/", views.like_view, name="like_song"),
 ]

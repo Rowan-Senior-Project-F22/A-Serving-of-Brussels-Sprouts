@@ -81,7 +81,7 @@ class Like(models.Model):
 - Brandon Ngo'''
 class Playlist(models.Model):
     name = models.TextField(default="")
-    songs = models.CharField(null=False, default='[]', max_length=100)
+    songs = models.CharField(null=False, default='', max_length=100)
     is_public = models.BooleanField(default=False)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
     #creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
