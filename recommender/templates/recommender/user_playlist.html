@@ -30,86 +30,105 @@ User Playlist
 
     <div class="container">
 
-        <h1 class="heading"> Liked Music </h1>
-        <div class="box-container">
-            {% for l in liked_music %}
-            <div class="box" data-src="{{ l.preview_url }}"> 
-                <div class="content">
-                    <h3><b>Title</b>: {{ l.track_name }}</h3>
-                    <h3><b>Artist</b>: {{ l.artist_name }}</h3>
-                    <h3><b>Album</b>: {{ l.album_name }} ({{ l.release_date }})</h3>
-                </div>
-                
-                <div class="image">
-                    <div class="play">
-                        <i class="fas fa-play"></i>
+        <ul class="nav nav-tabs mb-3" id="pills-tab" role="tablist">
+
+            <li class="nav-item">
+                <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#nav-tabs-likes" role="tab"
+                    aria-controls="nav-tabs" aria-selected="true">Likes</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" id="nav-profile-tab" data-toggle="pill" href="#nav-profile" role="tab"
+                    aria-controls="nav-profile" aria-selected="false">Dislikes</a>
+            </li>
+            
+        </ul>
+
+        <div class="tab-content mt-5" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-tabs-likes" role="tabpanel" aria-labelledby="nav-home-tab">
+                <h1 class="heading"> Liked Music </h1>
+                <div class="box-container">
+                    {% for l in liked_music %}
+                    <div class="box" data-src="{{ l.preview_url }}"> 
+                        <div class="content">
+                            <h3><b>Title</b>: {{ l.track_name }}</h3>
+                            <h3><b>Artist</b>: {{ l.artist_name }}</h3>
+                            <h3><b>Album</b>: {{ l.album_name }} ({{ l.release_date }})</h3>
+                        </div>
+                        
+                        <div class="image">
+                            <div class="play">
+                                <i class="fas fa-play"></i>
+                            </div>
+                            <img src={{ l.album_cover }} alt="">
+                        </div>
+        
+                        <!-- Form for the likes -->
+                        <form id="like-button" method="POST" action="{% url 'recommender:like_song' %}">
+                            {% csrf_token %}
+                            <button type="submit" >Like {{ l.likes }}</button>
+                            <input type="hidden" name="like" value="{{ l.track_id }}">
+                        </form>
+        
+                        <!-- Form for the dislikes -->
+                        <form id="dislike-button" method="POST" action="{% url 'recommender:like_song' %}">
+                            {% csrf_token %}
+                            <button type="submit" >Dislike {{ l.dislikes }}</button>
+                            <input type="hidden" name="dislike" value="{{ l.track_id }}">
+                        </form>
+        
                     </div>
-                    <img src={{ l.album_cover }} alt="">
-                </div>
-
-                <!-- Form for the likes -->
-                <form id="like-button" method="POST" action="{% url 'recommender:like_song' %}">
-                    {% csrf_token %}
-                    <button type="submit" >Like {{ l.likes }}</button>
-                    <input type="hidden" name="like" value="{{ l.track_id }}">
-                </form>
-
-                <!-- Form for the dislikes -->
-                <form id="dislike-button" method="POST" action="{% url 'recommender:like_song' %}">
-                    {% csrf_token %}
-                    <button type="submit" >Dislike {{ l.dislikes }}</button>
-                    <input type="hidden" name="dislike" value="{{ l.track_id }}">
-                </form>
-
-            </div>
-            {% endfor %}
-
-            <div class="music-player">
-                <div id="close-player" class="fas fa-angle-up"></div>
-                <h3 class="music-title">(play your song)</h3>
-                <audio src="" controls></audio>
-            </div>
-        </div>
-
-        <h1 class="heading"> Disliked Music </h1>
-        <div class="box-container">
-
-            {% for d in disliked_music %}
-            <div class="box" data-src="{{ d.preview_url }}"> 
-                <div class="content">
-                    <h3><b>Title</b>: {{ d.track_name }}</h3>
-                    <h3><b>Artist</b>: {{ d.artist_name }}</h3>
-                    <h3><b>Album</b>: {{ d.album_name }} ({{ d.release_date }})</h3>
-                </div>
-                
-                <div class="image">
-                    <div class="play">
-                        <i class="fas fa-play"></i>
+                    {% endfor %}
+        
+                    <div class="music-player">
+                        <div id="close-player" class="fas fa-angle-up"></div>
+                        <h3 class="music-title">(play your song)</h3>
+                        <audio src="" controls></audio>
                     </div>
-                    <img src={{ d.album_cover }} alt="">
                 </div>
-
-                <!-- Form for the likes -->
-                <form id="like-button" method="POST" action="{% url 'recommender:like_song' %}">
-                    {% csrf_token %}
-                    <button type="submit" >Like {{ d.likes }}</button>
-                    <input type="hidden" name="like" value="{{ d.track_id }}">
-                </form>
-
-                <!-- Form for the dislikes -->
-                <form id="dislike-button" method="POST" action="{% url 'recommender:like_song' %}">
-                    {% csrf_token %}
-                    <button type="submit" >Dislike {{ d.dislikes }}</button>
-                    <input type="hidden" name="dislike" value="{{ d.track_id }}">
-                </form>
-
             </div>
-            {% endfor %}
+            <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                <h1 class="heading"> Disliked Music </h1>
+                    <div class="box-container">
 
-            <div class="music-player">
-                <div id="close-player" class="fas fa-angle-up"></div>
-                <h3 class="music-title">(play your song)</h3>
-                <audio src="" controls></audio>
+                        {% for d in disliked_music %}
+                        <div class="box" data-src="{{ d.preview_url }}"> 
+                            <div class="content">
+                                <h3><b>Title</b>: {{ d.track_name }}</h3>
+                                <h3><b>Artist</b>: {{ d.artist_name }}</h3>
+                                <h3><b>Album</b>: {{ d.album_name }} ({{ d.release_date }})</h3>
+                            </div>
+                            
+                            <div class="image">
+                                <div class="play">
+                                    <i class="fas fa-play"></i>
+                                </div>
+                                <img src={{ d.album_cover }} alt="">
+                            </div>
+
+                            <!-- Form for the likes -->
+                            <form id="like-button" method="POST" action="{% url 'recommender:like_song' %}">
+                                {% csrf_token %}
+                                <button type="submit" >Like {{ d.likes }}</button>
+                                <input type="hidden" name="like" value="{{ d.track_id }}">
+                            </form>
+
+                            <!-- Form for the dislikes -->
+                            <form id="dislike-button" method="POST" action="{% url 'recommender:like_song' %}">
+                                {% csrf_token %}
+                                <button type="submit" >Dislike {{ d.dislikes }}</button>
+                                <input type="hidden" name="dislike" value="{{ d.track_id }}">
+                            </form>
+
+                        </div>
+                        {% endfor %}
+
+                        <div class="music-player">
+                            <div id="close-player" class="fas fa-angle-up"></div>
+                            <h3 class="music-title">(play your song)</h3>
+                            <audio src="" controls></audio>
+                        </div>
+                    </div>
             </div>
         </div>
 
