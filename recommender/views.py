@@ -42,7 +42,7 @@ Jeremy Juckett
 '''
 @login_required
 def get_new_releases(request):
-    count = 10
+    count = 25
     data = [] # context sent to template
     results = sp.new_releases(country = None, limit = count, offset = 0)
 
@@ -89,7 +89,7 @@ def get_new_releases(request):
     #print('Deleting all MusicData objects\n')
     #MusicData.objects.all().delete()
 
-    return render(request, 'recommender/test.html', {'data': data})
+    return render(request, 'recommender/new_releases.html', {'data': data})
 
 '''
 like_view(request)
@@ -102,6 +102,9 @@ Jeremy Juckett
 def like_view(request):
     like_query_result = Playlist.objects.all().filter(owner=request.user, name='likes')
     dislike_query_result = Playlist.objects.all().filter(owner=request.user, name='dislikes')
+
+    print("Dislike Size:", len(dislike_query_result))
+    print("Like Size:", len(like_query_result))
 
     # handle liked songs
     if 'like' in request.POST:
@@ -117,28 +120,16 @@ def like_view(request):
                 obj.dislikes = obj.dislikes - 1
                 obj.save()
 
-        # add song to user's 'likes' playlist.
-        # if the 'likes' playlist doesn't exist, create it.
+        # if the liked-song is not already in the 'likes' playlist,
+        # then append it.
         # increment the like count
-        if len(like_query_result) == 0:
-            song = liked_track_id + ','
-            like_playlist = Playlist(name='likes', songs=song,
-                is_public=True, owner=request.user)
-            like_playlist.save()
+        if liked_track_id not in like_query_result[0].songs:
+            like_query_result[0].songs += liked_track_id + ','
+            like_query_result[0].save()
 
             obj = MusicData.objects.get(track_id=liked_track_id)
             obj.likes = obj.likes + 1
             obj.save()
-        else:
-            # if the liked-song is not already in the 'likes' playlist,
-            # then append it.
-            if liked_track_id not in like_query_result[0].songs:
-                like_query_result[0].songs += liked_track_id + ','
-                like_query_result[0].save()
-
-                obj = MusicData.objects.get(track_id=liked_track_id)
-                obj.likes = obj.likes + 1
-                obj.save()
 
     # handle disliked songs
     elif 'dislike' in request.POST:
@@ -154,28 +145,16 @@ def like_view(request):
                 obj.likes = obj.likes - 1
                 obj.save()
 
-        # add song to user's 'dislikes' playlist.
-        # if the 'dislikes' playlist doesn't exist, create it
+        # if the disliked-song is not already in the 'dislikes' playlist,
+        # then append it.
         # increment the dislike count.
-        if len(dislike_query_result) == 0:
-            song = disliked_track_id + ','
-            dislike_playlist = Playlist(name='dislikes', songs=song,
-                is_public=True, owner=request.user)
-            dislike_playlist.save()
+        if disliked_track_id not in dislike_query_result[0].songs:
+            dislike_query_result[0].songs += disliked_track_id + ','
+            dislike_query_result[0].save()
 
             obj = MusicData.objects.get(track_id=disliked_track_id)
             obj.dislikes = obj.dislikes + 1
             obj.save()
-        else:
-            # if the disliked-song is not already in the 'dislikes' playlist,
-            # then append it.
-            if disliked_track_id not in dislike_query_result[0].songs:
-                dislike_query_result[0].songs += disliked_track_id + ','
-                dislike_query_result[0].save()
-
-                obj = MusicData.objects.get(track_id=disliked_track_id)
-                obj.dislikes = obj.dislikes + 1
-                obj.save()
 
     #return get_new_releases(request)
     return user_profile(request)
@@ -192,8 +171,17 @@ def user_profile(request):
     like_query_result = Playlist.objects.all().filter(owner=request.user, name='likes')
     dislike_query_result = Playlist.objects.all().filter(owner=request.user, name='dislikes')
 
+    liked_music_data = []
+    disliked_music_data = []
+
+    print('Likes:', like_query_result[0].songs.split(","))
+    print('Dislikes:', dislike_query_result[0].songs.split(","))
+
+    print("Dislike Size:", len(dislike_query_result))
+    print("Like Size:", len(like_query_result))
+
     # handle the likes
-    if len(like_query_result) != 0 or like_query_result[0].songs != "":
+    if len(like_query_result) != 0 and like_query_result[0].songs != "":
         # populate the context with music data from random liked track ids
         liked_track_ids = like_query_result[0].songs.split(",")
         liked_track_ids.remove('') # remove the empty entry at the end
@@ -202,8 +190,7 @@ def user_profile(request):
             likes_subset = liked_track_ids
         else:
             likes_subset = liked_track_ids[0:number_of_loads - 1]
-
-        liked_music_data = []
+        
         for l in likes_subset:
             liked_music_data.append(MusicData.objects.all().filter(track_id=l)[0])
 
@@ -218,7 +205,6 @@ def user_profile(request):
         else:
             dislikes_subset = disliked_track_ids[0:number_of_loads - 1]
 
-        disliked_music_data = []
         for d in dislikes_subset:
             disliked_music_data.append(MusicData.objects.all().filter(track_id=d)[0])
 
@@ -318,8 +304,21 @@ def get_register(request):
         form = CustomUserForm(request.POST)
         if form.is_valid():
             user = form.save()
+
+            # create the default likes and dislikes playlists
+            like_playlist = Playlist(name='likes',
+                is_public=True, owner=user)
+            like_playlist.save()
+            print("\n\n\nCREATED LIKE PLAYLIST\n\n\n")
+
+            dislike_playlist = Playlist(name='dislikes',
+                is_public=True, owner=user)
+            dislike_playlist.save()
+            print("\n\n\nCREATED LIKE PLAYLIST\n\n\n")
+
             login(request, user)
             messages.success(request, "Registration successful.")
+
             return redirect("recommender:user_profile")
         messages.error(request, "Unsuccessful registration. Invalid information.")
     form = CustomUserForm()

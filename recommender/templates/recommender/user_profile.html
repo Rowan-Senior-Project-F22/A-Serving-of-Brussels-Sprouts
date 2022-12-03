@@ -41,8 +41,8 @@
 
         <!-- Display User's Liked Music -->
         <h1 class="heading">Liked Songs</h1>
+            
         <div class="box-container">
-            <!-- Create a box for each newly released song -->
             {% for l in liked_music %}
             <div class="box" data-src="{{ l.preview_url }}"> 
                 <div class="content">
@@ -79,8 +79,8 @@
 
         <!-- Display User's Disliked Music -->
         <h1 class="heading">Disliked Songs</h1>
+
         <div class="box-container">
-            <!-- Create a box for each newly released song -->
             {% for d in disliked_music %}
             <div class="box" data-src="{{ d.preview_url }}"> 
                 <div class="content">
@@ -114,6 +114,7 @@
             {% endfor %}
 
         </div> <!-- End box-container -->
+
     </div> <!-- End container -->
 </body>
 {% endblock %}
