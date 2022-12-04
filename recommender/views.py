@@ -40,8 +40,7 @@ MusicData instance is created and stored in the database.
 
 Jeremy Juckett
 '''
-@login_required
-def get_new_releases(request):
+def get_new_releases():
     count = 25
     data = [] # context sent to template
     results = sp.new_releases(country = None, limit = count, offset = 0)
@@ -52,6 +51,7 @@ def get_new_releases(request):
         # store album info
         album_id = item['id']
         album_name = item['name']
+        #genre = sp.get_artist(item['artists'][0]['id'])
         artist = item['artists'][0]['name']
         album_cover = item['images'][0]['url']
         release_date = item['release_date']
@@ -72,6 +72,7 @@ def get_new_releases(request):
                 track_name = track_name,
                 track_album_id = album_id,
                 track_album_name = album_name,
+                #track_genre = genre,
                 album_cover = album_cover,
                 artist_name = artist,
                 release_date = release_date[0:4],
@@ -89,7 +90,7 @@ def get_new_releases(request):
     #print('Deleting all MusicData objects\n')
     #MusicData.objects.all().delete()
 
-    return render(request, 'recommender/new_releases.html', {'data': data})
+    return data
 
 '''
 like_view(request)
@@ -397,19 +398,34 @@ def user_account_settings(request):
     })
 
 def get_member_feed(request):
-    if request.method == 'GET':
-        memberlist = list([])
-        random.shuffle(memberlist)
-        answer = list(memberlist)[:4]  # Could put [:4] in comments
-        page = request.GET.get('page', 1)
-        paginator = Paginator(memberlist, 20)  # len(memberlist)
-        try:
-            numbers = paginator.page(page)
-        except PageNotAnInteger:
-            numbers = paginator.page(1)  # used to be 1
-        except EmptyPage:
-            numbers = paginator.page(paginator.num_pages)
-        return render(request=request, template_name='recommender/landing_member.html', context={'memberlist': numbers})
+    # No Likes, No Dislikes:    new releases
+    # No Likes, Dislikes:       new releases
+    # Likes, No Dislikes:       new releases
+    # Likes, Dislikes:          2:1 recommender
+
+    # if not, load new-releases
+    like_query_result = Playlist.objects.all().filter(owner=request.user, name='likes')
+    dislike_query_result = Playlist.objects.all().filter(owner=request.user, name='dislikes')
+
+    # check if the user has likes and dislikes
+    if (
+        len(like_query_result) != 0 and like_query_result[0].songs != "" and
+        len(dislike_query_result) != 0 and dislike_query_result[0].songs != ""
+    ):
+        # Otherwise, grab content from Spotify based on genre
+        # Issue: Spotify is not returning genre data
+        print("\n\n\nThe user has likes and dislikes\n\n\n")
+        data = get_new_releases()
+    else:
+        print("\n\n\nThe user does not have likes and dislikes\n\n\n")
+        data = get_new_releases()
+
+    context = {
+        'data': data
+    }
+
+    return render(request=request, template_name='recommender/landing_member.html', context=context)
+    
 
 
 def get_login(request):
