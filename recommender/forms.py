@@ -61,3 +61,18 @@ class UserAccountSettingsForm(UserChangeForm):
 
 	"""
     pass
+    def save(self, commit=True):
+        user = super(CustomUserForm, self).save(commit=False)
+        user.email = self.cleaned_data['email']
+        if commit:
+            user.save()
+        return user
+
+class ListeningRoomForm(forms.Form):
+	room_name = forms.CharField(label='', max_length=25)
+
+	def save(self, commit=True):
+		room = super(ListeningRoomForm, self).save(commit=False)
+		if commit:
+			room.save()
+		return room

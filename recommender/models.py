@@ -94,3 +94,7 @@ class ListeningRoom(models.Model):
     listeners = models.ManyToManyField(User)
     currently_playing = models.IntegerField()
     genre = models.CharField(max_length=150)
+
+class ChatRoom(models.Model):
+    room_name = models.CharField(max_length=25)
+    room_slug = models.SlugField(unique=True)

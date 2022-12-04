@@ -1,12 +1,13 @@
 import ast
-import json
+import json, re
 
+from django.template.defaultfilters import slugify
 from django.shortcuts import render, redirect
 from recommender.models import ThreadModel, MessageModel, MusicData, Playlist
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from utils.users import init_users_preferences
 from .forms import ThreadForm, MessageForm, UserPreferencesForm
-from .forms import SearchForm
+from .forms import SearchForm, ListeningRoomForm
 import random, spotipy
 from email import message
 from urllib import request
@@ -16,6 +17,7 @@ from django.views import View
 from django.db.models import Q
 from .models import User
 from .forms import CustomUserForm
+from .models import ListeningRoom, ChatRoom
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
@@ -294,9 +296,27 @@ class CreateMessage(View):
         message.save()
         return redirect('recommender:thread', pk=pk)
 
+def l_room(request, slug):
+    slug = slugify(slug)
+    if (ChatRoom.objects.filter(room_slug = slug)):
+        return render(request, 'l_room.html', {'l_room': l_room, 'slug': slug})
+    else:
+        messages.error(request, "This room does not exist")
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    
 
-def l_room(request, room_name):
-    return render(request, 'l_room.html', {'room_name': room_name})
+def l_room_create(request):
+    if request.method == "POST":
+        form = ListeningRoomForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data.get('room_name')
+            slug = slugify(name)
+            chat = ListeningRoom(name, slug)
+            chat = form.save()
+            messages.success(request, "Chatroom created successfully")
+            return redirect("recommender:l_room/"+slug)
+    form = ListeningRoomForm()
+    return render(request, 'l_room_create.html')
 
 
 def get_register(request):
