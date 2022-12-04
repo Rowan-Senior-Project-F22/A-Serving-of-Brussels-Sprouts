@@ -38,6 +38,7 @@ class MusicData(models.Model):
     track_name = models.TextField()
     track_album_id  = models.TextField()
     track_album_name = models.TextField()
+    track_genre = models.TextField(default='')
     album_cover = models.TextField()
     artist_name = models.TextField()
     release_date = models.TextField()

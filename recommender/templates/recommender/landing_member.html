@@ -1,27 +1,81 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block title %}
     For You Page
 {% endblock %}
+
 {% block view_title %}
 For You Page
 {% endblock %}
+
 {% block content %}
-    <h4>Songs to scroll:</h4>
-    {% if memberlist %}
-    <!--<div class="table-wrapper">
-    <table class="table">
-    <tbody>
-    <tr>-->
-    {% for members in memberlist %}
-    <!--<td>-->
-    <iframe src="https://open.spotify.com/embed/track/{{ members.track_id }}" width="240" height="304"
-    frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
-    <!--</td>-->
-    {% endfor %}
-    <!--</tr>
-    </tbody>
-    </table>
-    <div class="table-wrapper">-->
-    {% endif %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- font awesome cdn link  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <!-- custom css file link  -->
+    <link rel="stylesheet" href="{% static '/css/playlist-styles.css' %}">
+
+    <!-- custom js file link  -->
+    <script src="{% static '/js/script.js' %}" defer></script>
+
+</head>
+
+<body>
+
+    <div class="container">
+        
+        <h1 class="heading">For You</h1>
+        <div class="box-container">
+            <!-- Create a box for each newly released song -->
+            {% for d in data %}
+                <div class="box" data-src="{{ d.preview_url }}"> 
+                    <div class="content">
+                        <h3><b>Title</b>: {{ d.track_name }}</h3>
+                        <h3><b>Artist</b>: {{ d.artist_name }}</h3>
+                        <h3><b>Album</b>: {{ d.album_name }} ({{ d.release_date }})</h3>
+                    </div>
+                    
+                    <div class="image">
+                        <div class="play">
+                            <i class="fas fa-play"></i>
+                        </div>
+                        <img src={{ d.album_cover }} alt="">
+                    </div>
+
+                    <!-- Form for the likes -->
+                    <form id="like-button" method="POST" action="{% url 'recommender:like_song' %}">
+                        {% csrf_token %}
+                        <button type="submit" >Like {{ d.likes }}</button>
+                        <input type="hidden" name="like" value="{{ d.track_id }}">
+                    </form>
+
+                    <!-- Form for the dislikes -->
+                    <form id="dislike-button" method="POST" action="{% url 'recommender:like_song' %}">
+                        {% csrf_token %}
+                        <button type="submit" >Dislike {{ d.dislikes }}</button>
+                        <input type="hidden" name="dislike" value="{{ d.track_id }}">
+                    </form>
+
+                </div>
+            {% endfor %}
+
+            <div class="music-player">
+                <div id="close-player" class="fas fa-angle-up"></div>
+                <h3 class="music-title">(play your song)</h3>
+                <audio src="" controls></audio>
+            </div>
+
+        </div> <!-- End box-container -->
+
+    </div> <!-- End container -->
+
+</body>
+
 {% endblock %}
