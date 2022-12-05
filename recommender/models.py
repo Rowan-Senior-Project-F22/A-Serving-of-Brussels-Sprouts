@@ -46,6 +46,15 @@ class MusicData(models.Model):
     likes = models.IntegerField(default=0)
     dislikes = models.IntegerField(default=0)
 
+class Notification(models.Model):
+    notification_type = models.IntegerField()
+    to_user = models.ForeignKey(User, related_name = 'notification_to', on_delete = models.CASCADE, null = True)
+    from_user = models.ForeignKey(User, related_name = 'notification_from', on_delete = models.CASCADE, null = True)
+    thread = models.ForeignKey('ThreadModel', on_delete = models.CASCADE, related_name = '+', blank = True, null = True)
+    date = models.DateTimeField(default = timezone.now)
+    user_has_seen = models.BooleanField(default = False)
+
+
 '''
 Post model designed for the post feed.
 - Brandon Ngo
@@ -95,3 +104,7 @@ class ListeningRoom(models.Model):
     listeners = models.ManyToManyField(User)
     currently_playing = models.IntegerField()
     genre = models.CharField(max_length=150)
+
+class ChatRoom(models.Model):
+    room_name = models.CharField(max_length=25)
+    room_slug = models.SlugField(unique=True)

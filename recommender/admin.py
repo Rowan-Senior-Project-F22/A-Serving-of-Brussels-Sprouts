@@ -3,10 +3,11 @@ from .models import ThreadModel
 
 # Register your models here.
 admin.site.register(ThreadModel)
-from .models import User, ListeningRoom, Post, Playlist
+from .models import User, ListeningRoom, Post, Playlist, ChatRoom
 
 # Register your models here.
 admin.site.register(ListeningRoom)
+admin.site.register(ChatRoom)
 admin.site.register(Post)
 admin.site.register(Playlist)
 
