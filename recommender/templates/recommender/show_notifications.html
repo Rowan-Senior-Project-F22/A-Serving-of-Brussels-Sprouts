@@ -1,0 +1,27 @@
+<li class="custom-dropdown">
+    <button class="notify-toggler custom-dropdown-toggler">
+      <i class="mdi mdi-bell-outline icon"></i>
+      <span class="badge badge-xs rounded-circle">{{notifications.count}}</span>
+    </button>
+    <div class="dropdown-notify">
+      <div class="" data-simplebar style="height: 325px;">
+        <div class="tab-content" id="myTabContent">
+          <div class="tab-pane fade show active" id="all" role="tabpanel" aria-labelledby="all-tabs">
+            <div class="media media-sm">
+              <div class="media-sm-wrapper">
+              </div>
+              <div class="media-body">
+               {% for notification in notifications %}
+                {% if notification.thread %}   
+                <a href="{% url 'recommender:thread-notification' notification.pk notification.thread.pk %}">
+                  <span class = "title mb-0">{{notification.from_user.username}} sent you a message </span>
+                  <span class = "time"> at {{notification.date}}</span>   
+                </a>
+                {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+
+    </div>
+  </li>
+

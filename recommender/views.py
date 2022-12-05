@@ -24,10 +24,6 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
 
-cid = '2de1575d99b14786ae4f7e46e33e494e'
-secret = 'fbf315776bda4ea2aaeeeb1ec559de7d'
-client_credentials = spotipy.oauth2.SpotifyClientCredentials(client_id=cid, client_secret=secret)
-sp = spotipy.Spotify(client_credentials_manager=client_credentials)
 
 '''
 get_new_releases()
@@ -264,6 +260,7 @@ class CreateThread(View):
                 thread.save()
                 return redirect('recommender:thread', pk=thread.pk)
         except:
+            messages.error(request, 'Invalid username')
             return redirect('recommender:create-thread')
 
 
@@ -295,6 +292,13 @@ class CreateMessage(View):
             body=request.POST.get('message')
         )
         message.save()
+
+        notification = Notification.objects.create(
+            notification_type = 4,
+            from_user = request.user,
+            to_user = receiver,
+            thread = thread
+        )
         return redirect('recommender:thread', pk=pk)
 
 def l_room(request, slug):
@@ -318,6 +322,17 @@ def l_room_create(request):
             return redirect("recommender:l_room/"+slug)
     form = ListeningRoomForm()
     return render(request, 'l_room_create.html')
+class ThreadNotification(View):
+    def get(self, request, notification_pk, object_pk, *args, **kwargs):
+        notification = Notification.objects.get(pk = notification_pk)
+        thread = ThreadModel.objects.get(pk = object_pk)
+
+        notification.user_has_seen = True
+        notification.save()
+
+        return redirect('recommender:thread', pk = object_pk)
+def l_room(request, room_name):
+    return render(request, 'l_room.html', {'room_name': room_name})
 
 
 def get_register(request):
