@@ -3,7 +3,7 @@ import json, re
 
 from django.template.defaultfilters import slugify
 from django.shortcuts import render, redirect
-from recommender.models import ThreadModel, MessageModel, MusicData, Playlist
+from recommender.models import ThreadModel, MessageModel, MusicData, Playlist, Notification
 from django.http import Http404, HttpResponseRedirect
 from utils.users import init_users_preferences
 from .forms import ThreadForm, MessageForm, UserPreferencesForm
@@ -23,6 +23,12 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
+
+
+cid = '2de1575d99b14786ae4f7e46e33e494e'
+secret = 'fbf315776bda4ea2aaeeeb1ec559de7d'
+client_credentials = spotipy.oauth2.SpotifyClientCredentials(client_id=cid, client_secret=secret)
+sp = spotipy.Spotify(client_credentials_manager=client_credentials)
 
 
 '''
@@ -331,8 +337,6 @@ class ThreadNotification(View):
         notification.save()
 
         return redirect('recommender:thread', pk = object_pk)
-def l_room(request, room_name):
-    return render(request, 'l_room.html', {'room_name': room_name})
 
 
 def get_register(request):
@@ -405,7 +409,7 @@ def user_preferences(request):
     # Inefficient for now but works
     genres_available = list(filter(lambda x: x not in users_preferences['likes'] and x not in users_preferences['dislikes'], available_genre_seeds))
     preference_form = UserPreferencesForm(genre_seed_options=genres_available)
-    playlist_count = Playlist.objects.filter(Q(creator=request.user)).count()
+    playlist_count = Playlist.objects.filter(Q(owner=request.user)).count()
 
     return render(request=request, template_name="recommender/user_preferences.html",
                         context={"likes": users_preferences['likes'],'dislikes': users_preferences['dislikes'],
@@ -426,7 +430,7 @@ def user_account_settings(request):
     user = request.user
 
     # Retrieves the user's post count.
-    playlist_count = Playlist.objects.filter(Q(creator=user)).count()
+    playlist_count = Playlist.objects.filter(Q(owner=user)).count()
 
     return render(request=request, template_name="recommender/settings.html", context={
         "playlist_count": playlist_count
