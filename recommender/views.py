@@ -1,6 +1,5 @@
 import ast
 import json, re
-
 from django.template.defaultfilters import slugify
 from django.shortcuts import render, redirect
 from recommender.models import ThreadModel, MessageModel, MusicData, Playlist
@@ -304,17 +303,21 @@ def l_room(request, slug):
         messages.error(request, "This room does not exist")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
     
-
+@login_required
 def l_room_create(request):
     if request.method == "POST":
         form = ListeningRoomForm(request.POST)
         if form.is_valid():
             name = form.cleaned_data.get('room_name')
             slug = slugify(name)
-            chat = ListeningRoom(name, slug)
-            chat = form.save()
+            if ChatRoom.objects.filter(room_slug=slug):
+                messages.error(request, "This chatroom already exists")
+                form = ListeningRoomForm()
+                return render(request, 'l_room_create.html')
+            chat = ChatRoom(room_name=name, room_slug=slug)
+            chat.save()
             messages.success(request, "Chatroom created successfully")
-            return redirect("recommender:l_room/"+slug)
+            return redirect("recommender:l_room", slug)
     form = ListeningRoomForm()
     return render(request, 'l_room_create.html')
 
