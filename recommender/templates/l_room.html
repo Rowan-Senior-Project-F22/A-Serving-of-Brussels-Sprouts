@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ slug }} | {% endblock %}
+{% block title %}{{ room_name }} | {% endblock %}
 
 {% block view_title %}
     {{slug}}
@@ -36,6 +36,7 @@
         </div>
    
     {{ slug|json_script:"json_name" }}
+    {{ room_name|json_script:"json_room_name"}}
     {{ request.user.username|json_script:"json_user"}}
     <script>
         const roomName = JSON.parse(document.getElementById('json_name').textContent);
@@ -48,14 +49,6 @@
             roomName +
             '/'
         );
-
-        /*document.getElementById('#input').addEventListener("keyup", function(e){
-            e.preventDefault();
-            if (e.keyCode === 13){
-                document.getElementById('#submit').click();
-            }
-            return false;
-        });*/
 
         document.querySelector('#submit').onclick = function(e) {
             e.preventDefault();

@@ -1,9 +1,8 @@
 import ast
 import json, re
-
 from django.template.defaultfilters import slugify
 from django.shortcuts import render, redirect
-from recommender.models import ThreadModel, MessageModel, MusicData, Playlist, Notification
+from recommender.models import ThreadModel, MessageModel, MusicData, Playlist
 from django.http import Http404, HttpResponseRedirect
 from utils.users import init_users_preferences
 from .forms import ThreadForm, MessageForm, UserPreferencesForm
@@ -315,28 +314,23 @@ def l_room(request, slug):
         messages.error(request, "This room does not exist")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
     
-
+@login_required
 def l_room_create(request):
     if request.method == "POST":
         form = ListeningRoomForm(request.POST)
         if form.is_valid():
             name = form.cleaned_data.get('room_name')
             slug = slugify(name)
-            chat = ListeningRoom(name, slug)
-            chat = form.save()
+            if ChatRoom.objects.filter(room_slug=slug):
+                messages.error(request, "This chatroom already exists")
+                form = ListeningRoomForm()
+                return render(request, 'l_room_create.html')
+            chat = ChatRoom(room_name=name, room_slug=slug)
+            chat.save()
             messages.success(request, "Chatroom created successfully")
-            return redirect("recommender:l_room/"+slug)
+            return redirect("recommender:l_room", slug)
     form = ListeningRoomForm()
     return render(request, 'l_room_create.html')
-class ThreadNotification(View):
-    def get(self, request, notification_pk, object_pk, *args, **kwargs):
-        notification = Notification.objects.get(pk = notification_pk)
-        thread = ThreadModel.objects.get(pk = object_pk)
-
-        notification.user_has_seen = True
-        notification.save()
-
-        return redirect('recommender:thread', pk = object_pk)
 
 
 def get_register(request):
