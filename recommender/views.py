@@ -2,7 +2,7 @@ import ast
 import json, re
 from django.template.defaultfilters import slugify
 from django.shortcuts import render, redirect
-from recommender.models import ThreadModel, MessageModel, MusicData, Playlist
+from recommender.models import ThreadModel, MessageModel, MusicData, Playlist, Notification
 from django.http import Http404, HttpResponseRedirect
 from utils.users import init_users_preferences
 from .forms import ThreadForm, MessageForm, UserPreferencesForm
@@ -331,6 +331,12 @@ def l_room_create(request):
             return redirect("recommender:l_room", slug)
     form = ListeningRoomForm()
     return render(request, 'l_room_create.html')
+
+class ThreadNotification(View):
+    def get(self, request, notification_pk, object_pk, *args, **kwargs):
+        notification = Notification.objects.get(pk = notification_pk)
+        thread = ThreadModel.objects.get(pk = object_pk)
+
 
 
 def get_register(request):
