@@ -4,7 +4,7 @@ from django.template.defaultfilters import slugify
 from django.shortcuts import render, redirect
 from recommender.models import ThreadModel, MessageModel, MusicData, Playlist
 from django.http import Http404, HttpResponseRedirect
-from utils.users import init_users_preferences
+from utils.users import init_users_preferences, generate_friend_recommendations
 from .forms import ThreadForm, MessageForm, UserPreferencesForm
 from .forms import SearchForm, ListeningRoomForm
 import random, spotipy
@@ -306,6 +306,16 @@ class CreateMessage(View):
         )
         return redirect('recommender:thread', pk=pk)
 
+class ThreadNotification(View):
+     def get(self, request, notification_pk, object_pk, *args, **kwargs):
+         notification = Notification.objects.get(pk = notification_pk)
+         thread = ThreadModel.objects.get(pk = object_pk)
+
+         notification.user_has_seen = True
+         notification.save()
+
+         return redirect('recommender:thread', pk = object_pk)
+
 def l_room(request, slug):
     slug = slugify(slug)
     if (ChatRoom.objects.filter(room_slug = slug)):
@@ -459,6 +469,25 @@ def get_member_feed(request):
 
     return render(request=request, template_name='recommender/landing_member.html', context=context)
     
+
+def friend_recommendation(request):
+    # Get the current user.
+    # Parse out their preferences using ast.literal_eval()
+
+    user_preferences = init_users_preferences(request=request, available_genre_seeds=None)
+
+    # Check their preferences field for one of four options to determine
+    # the fit algorithm:
+
+    # Similar
+    # Opposite
+    # Disparate
+    # Default
+
+    recommendations = generate_friend_recommendations(request, preference=user_preferences['friends'])
+    print(recommendations)
+
+    return render(request=request, template_name='recommender/friend_recommender.html', context={'memberlist': recommendations})
 
 
 def get_login(request):
