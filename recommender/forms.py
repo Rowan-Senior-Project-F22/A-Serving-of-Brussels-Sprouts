@@ -40,6 +40,10 @@ class CustomUserForm(UserCreationForm):
         return user
 
 
+class UserSearchForm(forms.Form):
+    search_query = forms.CharField(label="", required=False, widget=forms.TextInput(attrs={'size': '50', 'class': 'form-control', 'placeholder': 'Search users...'}))
+
+
 class UserPreferencesForm(forms.Form):
 
     def __init__(self, genre_seed_options, *args, **kwargs):

@@ -1,13 +1,12 @@
 import ast
 import json, re
-
 from django.template.defaultfilters import slugify
 from django.shortcuts import render, redirect
 from recommender.models import ThreadModel, MessageModel, MusicData, Playlist, Notification
 from django.http import Http404, HttpResponseRedirect
-from utils.users import init_users_preferences
+from utils.users import init_users_preferences, generate_friend_recommendations
 from .forms import ThreadForm, MessageForm, UserPreferencesForm
-from .forms import SearchForm, ListeningRoomForm
+from .forms import SearchForm, ListeningRoomForm, UserSearchForm
 import random, spotipy
 from email import message
 from urllib import request
@@ -307,6 +306,16 @@ class CreateMessage(View):
         )
         return redirect('recommender:thread', pk=pk)
 
+class ThreadNotification(View):
+     def get(self, request, notification_pk, object_pk, *args, **kwargs):
+         notification = Notification.objects.get(pk = notification_pk)
+         thread = ThreadModel.objects.get(pk = object_pk)
+
+         notification.user_has_seen = True
+         notification.save()
+
+         return redirect('recommender:thread', pk = object_pk)
+
 def l_room(request, slug):
     slug = slugify(slug)
     if (ChatRoom.objects.filter(room_slug = slug)):
@@ -315,28 +324,29 @@ def l_room(request, slug):
         messages.error(request, "This room does not exist")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
     
-
+@login_required
 def l_room_create(request):
     if request.method == "POST":
         form = ListeningRoomForm(request.POST)
         if form.is_valid():
             name = form.cleaned_data.get('room_name')
             slug = slugify(name)
-            chat = ListeningRoom(name, slug)
-            chat = form.save()
+            if ChatRoom.objects.filter(room_slug=slug):
+                messages.error(request, "This chatroom already exists")
+                form = ListeningRoomForm()
+                return render(request, 'l_room_create.html')
+            chat = ChatRoom(room_name=name, room_slug=slug)
+            chat.save()
             messages.success(request, "Chatroom created successfully")
-            return redirect("recommender:l_room/"+slug)
+            return redirect("recommender:l_room", slug)
     form = ListeningRoomForm()
     return render(request, 'l_room_create.html')
+
 class ThreadNotification(View):
     def get(self, request, notification_pk, object_pk, *args, **kwargs):
         notification = Notification.objects.get(pk = notification_pk)
         thread = ThreadModel.objects.get(pk = object_pk)
 
-        notification.user_has_seen = True
-        notification.save()
-
-        return redirect('recommender:thread', pk = object_pk)
 
 
 def get_register(request):
@@ -465,6 +475,39 @@ def get_member_feed(request):
 
     return render(request=request, template_name='recommender/landing_member.html', context=context)
     
+
+def friend_recommendation(request):
+    # Get the current user.
+    # Parse out their preferences using ast.literal_eval()
+
+    user_preferences = init_users_preferences(request=request, available_genre_seeds=None)
+
+    # Check their preferences field for one of four options to determine
+    # the fit algorithm:
+
+    # Similar
+    # Opposite
+    # Disparate
+    # Default
+
+    if request.method == 'POST':
+        search_form = UserSearchForm(data=request.POST)
+        if search_form.is_valid():
+            username_query = search_form.cleaned_data['search_query']
+            if username_query == "":
+                recommendations = generate_friend_recommendations(request, preference=user_preferences['friends'])
+                return render(request=request, template_name='recommender/friend_recommender.html', context={'memberlist': recommendations, 'form': search_form})
+            results = User.objects.filter(username__contains=username_query)
+            return render(request=request, template_name='recommender/friend_recommender.html', context={
+                "memberlist": results,
+                "form": search_form
+            })
+    else:
+        recommendations = generate_friend_recommendations(request, preference=user_preferences['friends'])
+        print(recommendations)
+        search_form = UserSearchForm()
+
+        return render(request=request, template_name='recommender/friend_recommender.html', context={'memberlist': recommendations, 'form': search_form})
 
 
 def get_login(request):
