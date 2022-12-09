@@ -6,7 +6,7 @@ from recommender.models import ThreadModel, MessageModel, MusicData, Playlist, N
 from django.http import Http404, HttpResponseRedirect
 from utils.users import init_users_preferences, generate_friend_recommendations
 from .forms import ThreadForm, MessageForm, UserPreferencesForm
-from .forms import SearchForm, ListeningRoomForm
+from .forms import SearchForm, ListeningRoomForm, UserSearchForm
 import random, spotipy
 from email import message
 from urllib import request
@@ -490,10 +490,24 @@ def friend_recommendation(request):
     # Disparate
     # Default
 
-    recommendations = generate_friend_recommendations(request, preference=user_preferences['friends'])
-    print(recommendations)
+    if request.method == 'POST':
+        search_form = UserSearchForm(data=request.POST)
+        if search_form.is_valid():
+            username_query = search_form.cleaned_data['search_query']
+            if username_query == "":
+                recommendations = generate_friend_recommendations(request, preference=user_preferences['friends'])
+                return render(request=request, template_name='recommender/friend_recommender.html', context={'memberlist': recommendations, 'form': search_form})
+            results = User.objects.filter(username__contains=username_query)
+            return render(request=request, template_name='recommender/friend_recommender.html', context={
+                "memberlist": results,
+                "form": search_form
+            })
+    else:
+        recommendations = generate_friend_recommendations(request, preference=user_preferences['friends'])
+        print(recommendations)
+        search_form = UserSearchForm()
 
-    return render(request=request, template_name='recommender/friend_recommender.html', context={'memberlist': recommendations})
+        return render(request=request, template_name='recommender/friend_recommender.html', context={'memberlist': recommendations, 'form': search_form})
 
 
 def get_login(request):

@@ -29,6 +29,16 @@ Discover Friends
         </div>
         <hr/>
         <div class="card-body">
+          <form method="POST" action="{% url 'recommender:friend_recommendation' %}">
+            {% csrf_token %}
+            {{ form }}
+            <br/>
+            <div class="form-footer">
+              <button type="submit" class="btn btn-secondary">Search</button>
+            </div>
+          
+          </form>
+          <br/>
       <h5 class="card-title">Discover Friends</h5>
       <p class="card-text pb-3">Discover new friends recommended for you! By default, we'll show you 2 users who share your
         likes for every 1 who shares your dislikes! You can tweak this at any time in 'Account Settings'.
@@ -77,7 +87,6 @@ Discover Friends
         </tbody>
       </table>
     <br/>
-      <a href="#" class="btn btn-outline-primary btn-pill">Button</a>
     </div>
   </div>
 
