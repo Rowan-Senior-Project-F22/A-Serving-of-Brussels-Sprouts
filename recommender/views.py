@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from recommender.models import ThreadModel, MessageModel, MusicData, Playlist, Notification
 from django.http import Http404, HttpResponseRedirect
 from utils.users import init_users_preferences, generate_friend_recommendations
-from .forms import ThreadForm, MessageForm, UserPreferencesForm
+from .forms import ThreadForm, MessageForm, UserFriendSettingsForm, UserPreferencesForm
 from .forms import SearchForm, ListeningRoomForm, UserSearchForm
 import random, spotipy
 from email import message
@@ -432,19 +432,31 @@ def user_account_settings(request):
     """Retrieves the user's account settings.
 
     """
-    # TODO: Handle post request for account settings
-    if request.method == "POST":
-        pass
-
-    # Represents the current user.
-    user = request.user
 
     # Retrieves the user's post count.
-    playlist_count = Playlist.objects.filter(Q(owner=user)).count()
+    playlist_count = Playlist.objects.filter(Q(owner=request.user)).count()
 
-    return render(request=request, template_name="recommender/settings.html", context={
+    context = {
         "playlist_count": playlist_count
-    })
+    }
+
+    new_preferences = init_users_preferences(request=request, available_genre_seeds=None)
+
+    context['friends'] = new_preferences['friends'] or 'Default'
+
+    if request.method == "POST":
+        user_friend_settings_form = UserFriendSettingsForm(data=request.POST)
+        if user_friend_settings_form.is_valid():
+            new_setting = user_friend_settings_form.cleaned_data['preference']
+            new_preferences['friends'] = new_setting
+            request.user.preferences = new_preferences
+            request.user.save()
+            messages.success(request=request, message=f'You have changed your recommendation preferences to: {new_setting}')
+            context['form'] = user_friend_settings_form
+    else:
+        context['form'] = UserFriendSettingsForm()
+
+    return render(request=request, template_name="recommender/settings.html", context=context)
 
 def get_member_feed(request):
     # No Likes, No Dislikes:    new releases

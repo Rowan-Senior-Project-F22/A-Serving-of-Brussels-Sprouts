@@ -41,7 +41,8 @@ class CustomUserForm(UserCreationForm):
 
 
 class UserSearchForm(forms.Form):
-    search_query = forms.CharField(label="", required=False, widget=forms.TextInput(attrs={'size': '50', 'class': 'form-control', 'placeholder': 'Search users...'}))
+    search_query = forms.CharField(label="", required=False, widget=forms.TextInput(
+        attrs={'size': '50', 'class': 'form-control', 'placeholder': 'Search users...'}))
 
 
 class UserPreferencesForm(forms.Form):
@@ -58,6 +59,14 @@ class UserPreferencesForm(forms.Form):
     genre_seed = forms.ChoiceField(widget=forms.Select(choices=[]))
 
 
+class UserFriendSettingsForm(forms.Form):
+    preference = forms.ChoiceField(choices=[('Similar', 'Similar'), ('Opposite', 'Opposite'),
+                                            ('Disparate', 'Disparate'), ('Default', 'Default')],
+                                   initial="Default",
+                                   widget=forms.Select(attrs={'class': "form-control rounded-0"}),
+                                   label="Friend Recommendation Preference")
+
+
 class UserAccountSettingsForm(UserChangeForm):
     """Represents a form that would allow a user to modify
 	their existing account settings from within the Account
@@ -65,6 +74,7 @@ class UserAccountSettingsForm(UserChangeForm):
 
 	"""
     pass
+
     def save(self, commit=True):
         user = super(CustomUserForm, self).save(commit=False)
         user.email = self.cleaned_data['email']
@@ -72,11 +82,12 @@ class UserAccountSettingsForm(UserChangeForm):
             user.save()
         return user
 
-class ListeningRoomForm(forms.Form):
-	room_name = forms.CharField(label='', max_length=25)
 
-	def save(self, commit=True):
-		room = super(ListeningRoomForm, self).save(commit=False)
-		if commit:
-			room.save()
-		return room
+class ListeningRoomForm(forms.Form):
+    room_name = forms.CharField(label='', max_length=25)
+
+    def save(self, commit=True):
+        room = super(ListeningRoomForm, self).save(commit=False)
+        if commit:
+            room.save()
+        return room
