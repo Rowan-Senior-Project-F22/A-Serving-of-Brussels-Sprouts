@@ -102,6 +102,18 @@ Account Settings
 
       <div class="card-body">
 
+        <strong>Current: </strong> {{ friends }}
+
+        <form method="POST" action="{% url 'recommender:user_account_settings' %}">
+          {% csrf_token %}
+          {{ form }}
+          <div class="d-flex justify-content-start mt-6">
+            <button type="submit" class="btn btn-primary mb-2 btn-pill">Change Preference</button>
+          </div>
+        </form>
+
+        <br/>
+
         <form>
           <div class="row mb-2">
             <div class="col-lg-6">
