@@ -51,17 +51,38 @@ def get_new_releases():
     # check track against MusicData model, creating a new instance if it does
     # not exist. For each song, create a new post.
     for item in results['albums']['items']:
-        # store album info
         album_id = item['id']
         album_name = item['name']
-        #genre = sp.get_artist(item['artists'][0]['id'])
-        artist = item['artists'][0]['name']
+
+        # get the genres as a single, comma-separated string
+        genre_list = sp.artist(item['artists'][0]['id'])['genres']
+        genres = ''
+        for i in range(len(genre_list)):
+            genres += genre_list[i] + ','
+            i += 1
+
         album_cover = item['images'][0]['url']
         release_date = item['release_date']
 
         # store track info
-        tracks = sp.album_tracks(album_id)
-        random_index = random.randint(0, item['total_tracks'] - 1) #grab random track
+        tracks = sp.album_tracks(album_id)                
+
+        # The upper limit of the random index interval should not exceed 50
+        # to prevent an out of bounds index.
+        # Spotify seems to return 50 tracks at most, even if the album has
+        # more than 50 tracks total.
+        if item['total_tracks'] >= 50:
+            random_index = random.randint(0, 50) #grab random track
+        else:
+            random_index = random.randint(0, item['total_tracks'] - 1) #grab random track
+
+        # get track artists
+        artist_name = ''
+        artist_id = ''
+        for track_artist in tracks['items'][random_index]['artists']:
+            artist_name += track_artist['name'] + ','
+            artist_id += track_artist['id'] + ','
+
         track_id = tracks['items'][random_index]['id']
         track_name = tracks['items'][random_index]['name']
         preview_url = tracks['items'][random_index]['preview_url']
@@ -75,9 +96,10 @@ def get_new_releases():
                 track_name = track_name,
                 track_album_id = album_id,
                 track_album_name = album_name,
-                #track_genre = genre,
+                track_genre = genres,
                 album_cover = album_cover,
-                artist_name = artist,
+                artist_name = artist_name,
+                #artist_id = artist_id,
                 release_date = release_date[0:4],
                 preview_url = preview_url
             )
