@@ -108,3 +108,5 @@ class ListeningRoom(models.Model):
 class ChatRoom(models.Model):
     room_name = models.CharField(max_length=25)
     room_slug = models.SlugField(unique=True)
+    isActive = models.BooleanField(default=True)
+    album = models.CharField(default='', max_length=25)
