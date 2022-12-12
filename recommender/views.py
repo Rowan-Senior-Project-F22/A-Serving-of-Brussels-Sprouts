@@ -340,8 +340,16 @@ class ThreadNotification(View):
 
 def l_room(request, slug):
     slug = slugify(slug)
+    if (slug == "main"):
+        room = ChatRoom.objects.get(room_slug=slug)
+        albums = sp.new_releases()
+        album_id = albums['albums']['items'][0]['id']
+        room.album = album_id
+        room.save()
+        return render(request, 'l_room.html', {'l_room': l_room, 'slug': slug, 'album': album_id})
     if (ChatRoom.objects.filter(room_slug = slug)):
-        return render(request, 'l_room.html', {'l_room': l_room, 'slug': slug})
+        room = ChatRoom.objects.get(room_slug=slug)
+        return render(request, 'l_room.html', {'l_room': l_room, 'slug': slug, 'album': room.album})
     else:
         messages.error(request, "This room does not exist")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
@@ -355,7 +363,9 @@ def l_room_create(request):
             album = form.data.get('album')
             slug = slugify(name)
             album_uri = sp.search(q='album:' + album, type="album")
-            album_uri = album_uri['albums']['items'][3]['id']
+            album_uri = album_uri['albums']['items'][0]['id']
+            genres = sp.artist(sp.album(album_uri)['artists'][0]['uri'])['genres']
+            #genres_json = json.dumps(genres)
             if ChatRoom.objects.filter(room_slug=slug):
                 messages.error(request, "This chatroom already exists")
                 form = ListeningRoomForm()
