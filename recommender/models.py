@@ -8,7 +8,6 @@ from django.utils.translation import gettext_lazy as _
 class User(AbstractUser):
     email = models.EmailField(_('email'), unique=True)
     profile_picture = models.ImageField(null=True, blank=True, upload_to="profile/")
-    # direct_messages = models.ManyToManyField('DirectMessage') TODO: Update with Design Team 3
     preferences = models.CharField(null=False, default='{}', max_length=1000)
     following = models.ForeignKey('self', null=True, on_delete=models.CASCADE)
 

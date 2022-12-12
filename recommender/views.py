@@ -370,6 +370,54 @@ class ThreadNotification(View):
         thread = ThreadModel.objects.get(pk = object_pk)
 
 
+def import_spotify_playlist(request, playlist_id):
+    """Handles logic to import a playlist from Spotify. When the user clicks the 'import'
+    button on the import_spotify view, passes the playlist ID in. This view
+    will get all tracks on the playlist, collate the track IDs, copy the name and transfer
+    those track IDs into a comma-separated list which will be persisted into the user's
+    playlists.
+    """
+    playlist_details = sp.playlist_tracks(playlist_id=playlist_id)
+    if playlist_details is None:
+        # If the details are invalid, signal an error message and route the user to the import spotify
+        # view.
+        messages.error(request=request, message="A playlist does not exist by that ID!")
+        return import_spotify(request=request)
+    print(playlist_details)
+    track_ids = []
+    for i in range(0, len(playlist_details['items'])):
+        track_ids.append(map(lambda x: playlist_details['items'][i]['external_urls']))
+    messages.success(request=request, message=f'You have successfully imported the playlist.')
+    return user_profile(request=request)
+
+
+def import_spotify(request):
+    """Allows the user to import playlists from Spotify. First, if a user is authenticated
+    via Spotify oAuth, lists the user's playlist using the Get Current User's Playlists
+    API call. Then, aggregates this data into a list containing fields for the title,
+    the Playlist image, and the track IDs.
+    """
+    playlists = sp.user_playlists('spotify')
+    available_playlists = []
+    while playlists:
+        for i, playlist in enumerate(playlists['items']):
+            # print("%4d %s %s" % (i + 1 + playlists['offset'], playlist['uri'],  playlist['name']))
+            print(str(playlist) + '\n')
+            available_playlists.append({
+                'name': playlist['name'],
+                'uri': playlist['uri'],
+                'thumbnail': playlist['images'][0]['url'] if ('images' in playlist and len(playlist['images']) > 0) else None,
+                'tracksRef': playlist['tracks']
+            })
+        if playlists['next']:
+            playlists = sp.next(playlists)
+        else:
+            playlists = None
+    return render(request=request, template_name="recommender/import_spotify.html", context={
+        'spotify_playlists': playlists
+    })
+
+
 
 def get_register(request):
     if request.method == "POST":
@@ -576,7 +624,7 @@ def user_playlist(request, user_id):
     dislike_query_result = Playlist.objects.all().filter(owner=request.user, name='dislikes')
 
     # fetch like playlist
-    if len(like_query_result) != 0 or like_query_result[0].songs != "":
+    if len(like_query_result) > 0 or like_query_result[0].songs != "":
         # populate the context with music data from random liked track ids
         liked_track_ids = like_query_result[0].songs.split(",")
         liked_track_ids.remove('') # remove the empty entry at the end
@@ -586,7 +634,7 @@ def user_playlist(request, user_id):
             liked_music_data.append(MusicData.objects.all().filter(track_id=l)[0])
 
     # fetch the dislike playlist
-    if len(dislike_query_result) != 0 or dislike_query_result[0].songs != "":
+    if len(dislike_query_result) > 0 or dislike_query_result[0].songs != "":
         # populate the context with music data from random liked track ids
         disliked_track_ids = dislike_query_result[0].songs.split(",")
         disliked_track_ids.remove('') # remove the empty entry at the end
