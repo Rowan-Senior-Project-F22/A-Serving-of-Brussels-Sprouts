@@ -74,6 +74,21 @@ def generate_friend_recommendations(request, preference, search_query=None):
         result_set = []
         similar_likes_users = list((filter(lambda x: any(y in x[1] for y in current_users_preferences['likes']), initialized_users)))
         similar_dislikes_users = list((filter(lambda x: any(y in x[2] for y in current_users_preferences['dislikes']), initialized_users)))
+        num_likes_users = 0		
+        num_dislikes_users = 0		
+        for i in range(0, 9):		
+             if len(similar_likes_users) == 0 and len(similar_dislikes_users) == 0:		
+                 break		
+             if i < 2 or (num_likes_users / num_dislikes_users != 2 and len(similar_likes_users) > 0):		
+                 new_user = similar_likes_users[random.randint(0, len(similar_likes_users) - 1)]		
+                 similar_likes_users.remove(new_user)		
+                 result_set.append(new_user)		
+                 num_likes_users += 1		
+             elif len(similar_dislikes_users) > 0:		
+                 new_user = similar_dislikes_users[random.randint(0, len(similar_dislikes_users) - 1)]		
+                 similar_dislikes_users.remove(new_user)		
+                 result_set.append(new_user)		
+                 num_dislikes_users += 1
 
     full_results = list(map(lambda x: x[0], result_set))
 
