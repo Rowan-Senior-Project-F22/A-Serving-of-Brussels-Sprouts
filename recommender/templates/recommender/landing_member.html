@@ -41,29 +41,108 @@ For You Page
         </li>
 
         <li class="nav-item">
-            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Reserved</a>
+            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Listening Rooms</a>
         </li>
     </ul>
 
     <div class="tab-content mt-5" id="nav-tabContent">
+        <!-- For You Content -->
         <div class="tab-pane fade show active" id="pills-for-you-justify-content-between" role="tabpanel"
         aria-labelledby="pills-home-tab">
-            <!---->
-        </div>
+            <!-- For You Container -->
+            <div class="container">
+                <h3 class="heading">{{ for_you_message }}</h3>
+                <div class="box-container">
+                    <!-- Create a box for each recommended song -->
+                    {% for recommended in for_you_data %}
+                        <!-- Iterate over likes -->
+                        {% for like in recommended.likes  %}
+                            <div class="box" data-src="{{ like.preview_url }}"> 
+                                <div class="content">
+                                    <h3><b>Title</b>: {{ like.track_name }}</h3>
+                                    <h3><b>Artist</b>: {{ like.artist_name }}</h3>
+                                    <h3><b>Album</b>: {{ like.track_album_name }} ({{ like.release_date }})</h3>
+                                </div>
+                                
+                                <div class="image">
+                                    <div class="play">
+                                        <i class="fas fa-play"></i>
+                                    </div>
+                                    <img src={{ like.album_cover }} alt="">
+                                </div>
 
+                                <!-- Form for the likes -->
+                                <form id="like-button" method="POST" action="{% url 'recommender:like_song' %}">
+                                    {% csrf_token %}
+                                    <button type="submit" >Like {{ like.likes }}</button>
+                                    <input type="hidden" name="like" value="{{ like.track_id }}">
+                                </form>
+
+                                <!-- Form for the dislikes -->
+                                <form id="dislike-button" method="POST" action="{% url 'recommender:like_song' %}">
+                                    {% csrf_token %}
+                                    <button type="submit" >Dislike {{ like.dislikes }}</button>
+                                    <input type="hidden" name="dislike" value="{{ like.track_id }}">
+                                </form>
+                            </div>
+                        {% endfor %}
+
+                        <!-- Iterate over dislikes -->
+                        {% for dislike in recommended.dislikes %}
+                            <div class="box" data-src="{{ dislike.preview_url }}"> 
+                                <div class="content">
+                                    <h3><b>Title</b>: {{ dislike.track_name }}</h3>
+                                    <h3><b>Artist</b>: {{ dislike.artist_name }}</h3>
+                                    <h3><b>Album</b>: {{ dislike.track_album_name }} ({{ dislike.release_date }})</h3>
+                                </div>
+                                
+                                <div class="image">
+                                    <div class="play">
+                                        <i class="fas fa-play"></i>
+                                    </div>
+                                    <img src={{ dislike.album_cover }} alt="">
+                                </div>
+
+                                <!-- Form for the likes -->
+                                <form id="like-button" method="POST" action="{% url 'recommender:like_song' %}">
+                                    {% csrf_token %}
+                                    <button type="submit" >Like {{ dislike.likes }}</button>
+                                    <input type="hidden" name="like" value="{{ dislike.track_id }}">
+                                </form>
+
+                                <!-- Form for the dislikes -->
+                                <form id="dislike-button" method="POST" action="{% url 'recommender:like_song' %}">
+                                    {% csrf_token %}
+                                    <button type="submit" >Dislike {{ dislike.dislikes }}</button>
+                                    <input type="hidden" name="dislike" value="{{ dislike.track_id }}">
+                                </form>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+
+                    <div class="music-player">
+                        <div id="close-player" class="fas fa-angle-up"></div>
+                        <h3 class="music-title">(play your song)</h3>
+                        <audio src="" controls></audio>
+                    </div>
+
+                </div> <!-- End box-container -->
+            </div> <!-- End For You Container -->
+        </div> <!-- End For You Content -->
+
+        <!-- New Release Content -->
         <div class="tab-pane fade" id="pills-new-releases-justify-content-between" role="tabpanel"
         aria-labelledby="nav-profile-tab">
             <!-- New Releases Container -->
             <div class="container">
-                <h1 class="heading">For You</h1>
                 <div class="box-container">
                     <!-- Create a box for each newly released song -->
-                    {% for d in data %}
+                    {% for d in new_release_data %}
                         <div class="box" data-src="{{ d.preview_url }}"> 
                             <div class="content">
                                 <h3><b>Title</b>: {{ d.track_name }}</h3>
                                 <h3><b>Artist</b>: {{ d.artist_name }}</h3>
-                                <h3><b>Album</b>: {{ d.album_name }} ({{ d.release_date }})</h3>
+                                <h3><b>Album</b>: {{ d.track_album_name }} ({{ d.release_date }})</h3>
                             </div>
                             
                             <div class="image">
@@ -98,7 +177,8 @@ For You Page
 
                 </div> <!-- End box-container -->
             </div> <!-- End New Releases Container -->
-        </div>
+        </div> <!-- End New Release Content -->
+
     </div>
 
 </body>

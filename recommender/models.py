@@ -41,6 +41,7 @@ class MusicData(models.Model):
     track_genre = models.TextField(default='')
     album_cover = models.TextField()
     artist_name = models.TextField()
+    artist_id = models.TextField(default='')
     release_date = models.TextField()
     preview_url = models.TextField(null=True)
     likes = models.IntegerField(default=0)

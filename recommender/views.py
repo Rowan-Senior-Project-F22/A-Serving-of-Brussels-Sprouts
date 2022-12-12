@@ -13,7 +13,7 @@ from urllib import request
 from django.contrib.auth import login, authenticate, logout
 from django.dispatch import receiver
 from django.views import View
-from django.db.models import Q
+from django.db.models import Q, Model
 from .models import User
 from .forms import CustomUserForm
 from .models import ListeningRoom, ChatRoom
@@ -29,6 +29,9 @@ secret = 'fbf315776bda4ea2aaeeeb1ec559de7d'
 client_credentials = spotipy.oauth2.SpotifyClientCredentials(client_id=cid, client_secret=secret)
 sp = spotipy.Spotify(client_credentials_manager=client_credentials)
 
+
+def update_musicdata_model(items):
+    pass
 
 '''
 get_new_releases()
@@ -72,7 +75,7 @@ def get_new_releases():
         # Spotify seems to return 50 tracks at most, even if the album has
         # more than 50 tracks total.
         if item['total_tracks'] >= 50:
-            random_index = random.randint(0, 50) #grab random track
+            random_index = random.randint(0, 49) #grab random track
         else:
             random_index = random.randint(0, item['total_tracks'] - 1) #grab random track
 
@@ -99,7 +102,7 @@ def get_new_releases():
                 track_genre = genres,
                 album_cover = album_cover,
                 artist_name = artist_name,
-                #artist_id = artist_id,
+                artist_id = artist_id,
                 release_date = release_date[0:4],
                 preview_url = preview_url
             )
@@ -480,35 +483,143 @@ def user_account_settings(request):
 
     return render(request=request, template_name="recommender/settings.html", context=context)
 
-def get_member_feed(request):
-    # No Likes, No Dislikes:    new releases
-    # No Likes, Dislikes:       new releases
-    # Likes, No Dislikes:       new releases
-    # Likes, Dislikes:          2:1 recommender
+def update_music_data(song):
+    track_id = song['id']
+    obj = MusicData.objects.all().filter(track_id=track_id)
+    if len(obj) == 0:
+        # create the obj and add to db
+        track_name = song['name']
+        track_album_id = song['album']['id']
+        track_album_name = song['album']['name']
 
-    # if not, load new-releases
-    like_query_result = Playlist.objects.all().filter(owner=request.user, name='likes')
-    dislike_query_result = Playlist.objects.all().filter(owner=request.user, name='dislikes')
+        genre_list = sp.artist(song['artists'][0]['id'])['genres']
+        genres = ''
+        for genre in genre_list:
+            genres += genre + ','
 
-    # check if the user has likes and dislikes
-    if (
-        len(like_query_result) != 0 and like_query_result[0].songs != "" and
-        len(dislike_query_result) != 0 and dislike_query_result[0].songs != ""
-    ):
-        # Otherwise, grab content from Spotify based on genre
-        # Issue: Spotify is not returning genre data
-        print("\n\n\nThe user has likes and dislikes\n\n\n")
-        data = get_new_releases()
+        album_cover = song['album']['images'][0]['url']
+
+        artist_name = ''
+        artist_id = ''
+        for artist in song['artists']:
+            artist_name += artist['name'] + ','
+            artist_id += artist['id'] + ','
+        
+        release_date = song['album']['release_date']
+        preview_url = song['preview_url']
+
+        song = MusicData(
+            track_id = track_id,
+            track_name = track_name,
+            track_album_id = track_album_id,
+            track_album_name = track_album_name,
+            track_genre = genres,
+            album_cover = album_cover,
+            artist_name = artist_name,
+            artist_id = artist_id,
+            release_date = release_date[0:4],
+            preview_url = preview_url
+        )
+
+        song.save()
+        return song
     else:
-        print("\n\n\nThe user does not have likes and dislikes\n\n\n")
-        data = get_new_releases()
+        return obj[0]
+
+'''
+recommend_songs_by_genre(user, count)
+
+Returns a list of recommended music based on the given user's preferences.
+Each item in the list is a triplet containing two songs related to two liked
+genres, and one song related to one disliked genre.
+The number of triplets returned is specified by the count argument.
+
+Jeremy Juckett
+'''
+def recommend_songs_by_genre(like_list, dislike_list, count):
+    recommendations = [] # [like recommendations, dislike recommendations]
+
+    # create 'count' recommended triplets
+    for i in range(count):
+        likes = []
+        dislikes = []
+
+        # loop until tracks are returned for a random liked genres.
+        # This will loop forever if none of the genres return any results.
+        # Not ideal
+        loop = True
+        while loop:
+            # select a random liked genre to include in the search query
+            random_index = random.randint(0, len(like_list) - 1)
+            random_like_genre = like_list[random_index]
+            like_search_query = 'genre:' + random_like_genre
+            like_result = sp.search(q=like_search_query, limit=2, offset=random.randint(0,10), market=None)
+
+            # If no tracks are returned, pick another random liked genre and try again.
+            like_tracks = like_result['tracks']
+            if like_tracks['items']:
+                # Get the ID for each track and check them against the MusicData model.
+                # If a track does not exits in the database, add it.
+                for item in like_tracks['items']:
+                    song = update_music_data(item)
+                    #recommendations[0].append(song)
+                    likes.append(song)
+                loop = False
+            else:
+                print("No tracks returned for " + random_like_genre)
+
+        loop = True
+        while loop:
+            # select a random liked genre to include in the search query
+            random_index = random.randint(0, len(dislike_list) - 1)
+            random_dislike_genre = dislike_list[random_index]
+            dislike_search_query = 'genre:' + random_dislike_genre
+            dislike_result = sp.search(q=dislike_search_query, limit=1, offset=random.randint(0,10), market=None)
+
+            # If no tracks are returned, pick another random liked genre and try again.
+            dislike_tracks = dislike_result['tracks']
+            if dislike_tracks['items']:
+                # Get the ID for each track and check them against the MusicData model.
+                # If a track does not exits in the database, add it.
+                song = update_music_data(dislike_tracks['items'][0])
+                #recommendations[0].append(song)
+                dislikes.append(song)
+
+                loop = False
+            else:
+                print("No tracks returned for " + random_like_genre)
+
+        recommendations.append({'likes': likes, 'dislikes': dislikes})        
+
+    return recommendations
+
+
+@login_required
+def get_member_feed(request):
+    #like_query_result = Playlist.objects.all().filter(owner=request.user, name='likes')
+    #dislike_query_result = Playlist.objects.all().filter(owner=request.user, name='dislikes')
+    preferences = ast.literal_eval(User.objects.get(email=request.user.email).preferences)
+    likes = preferences['likes']
+    dislikes = preferences['dislikes'] 
+
+    # check if the user has likes and dislikes and get for-you data
+    for_you_data = []
+    if len(likes) != 0 and len(dislikes) != 0:
+        # Otherwise, grab content from Spotify based on genre
+        for_you_message = 'Recommended Content'
+        for_you_data = recommend_songs_by_genre(likes, dislikes, 4)
+    else:
+        for_you_message = 'To get recommendation, customize your music preferences.'
+
+    new_release_data = get_new_releases()
 
     context = {
-        'data': data
+        'for_you_message': for_you_message,
+        'for_you_data': for_you_data,
+        'new_release_data': new_release_data
     }
 
     return render(request=request, template_name='recommender/landing_member.html', context=context)
-    
 
 def friend_recommendation(request):
     # Get the current user.
