@@ -111,3 +111,4 @@ class ChatRoom(models.Model):
     room_slug = models.SlugField(unique=True)
     isActive = models.BooleanField(default=True)
     album = models.CharField(default='', max_length=25)
+    genres = models.TextField()

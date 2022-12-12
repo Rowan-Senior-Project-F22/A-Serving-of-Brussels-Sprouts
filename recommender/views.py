@@ -344,7 +344,10 @@ def l_room(request, slug):
         room = ChatRoom.objects.get(room_slug=slug)
         albums = sp.new_releases()
         album_id = albums['albums']['items'][0]['id']
+        genres = sp.artist(sp.album(album_id)['artists'][0]['uri'])['genres']
+        genres_json = json.dumps(genres)
         room.album = album_id
+        room.genres = genres_json
         room.save()
         return render(request, 'l_room.html', {'l_room': l_room, 'slug': slug, 'album': album_id})
     if (ChatRoom.objects.filter(room_slug = slug)):
@@ -365,12 +368,12 @@ def l_room_create(request):
             album_uri = sp.search(q='album:' + album, type="album")
             album_uri = album_uri['albums']['items'][0]['id']
             genres = sp.artist(sp.album(album_uri)['artists'][0]['uri'])['genres']
-            #genres_json = json.dumps(genres)
+            genres_json = json.dumps(genres)
             if ChatRoom.objects.filter(room_slug=slug):
                 messages.error(request, "This chatroom already exists")
                 form = ListeningRoomForm()
                 return render(request, 'l_room_create.html', {})
-            chat = ChatRoom(room_name=name, room_slug=slug, album=album_uri)
+            chat = ChatRoom(room_name=name, room_slug=slug, album=album_uri, genres=genres_json)
             chat.save()
             messages.success(request, "Chatroom created successfully")
             return redirect("recommender:l_room", slug)
