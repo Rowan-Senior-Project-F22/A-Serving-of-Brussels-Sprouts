@@ -352,17 +352,20 @@ def l_room_create(request):
         form = ListeningRoomForm(request.POST)
         if form.is_valid():
             name = form.cleaned_data.get('room_name')
+            album = form.data.get('album')
             slug = slugify(name)
+            album_uri = sp.search(q='album:' + album, type="album")
+            album_uri = album_uri['albums']['items'][3]['id']
             if ChatRoom.objects.filter(room_slug=slug):
                 messages.error(request, "This chatroom already exists")
                 form = ListeningRoomForm()
-                return render(request, 'l_room_create.html')
-            chat = ChatRoom(room_name=name, room_slug=slug)
+                return render(request, 'l_room_create.html', {})
+            chat = ChatRoom(room_name=name, room_slug=slug, album=album_uri)
             chat.save()
             messages.success(request, "Chatroom created successfully")
             return redirect("recommender:l_room", slug)
     form = ListeningRoomForm()
-    return render(request, 'l_room_create.html')
+    return render(request, 'l_room_create.html', {})
 
 class ThreadNotification(View):
     def get(self, request, notification_pk, object_pk, *args, **kwargs):
