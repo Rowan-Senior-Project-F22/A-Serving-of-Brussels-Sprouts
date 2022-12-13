@@ -3,10 +3,11 @@
 {% block title %}{{ room_name }} | {% endblock %}
 
 {% block view_title %}
-    {{slug}}
+    {{room_name}}
 {% endblock %}
 
 {% block content %}
+
 <head>
     <style>
         .chat-messages {
@@ -14,12 +15,14 @@
             overflow-y: auto;
         }
     </style>
+    <script src="https://open.spotify.com/embed-album/iframe-api/v1" async></script>
 </head>
+
 <body>
     <div class="container">
         <div class="row d-flex justify-content-center">
             <div class="col-12">
-                <form>
+                <form onsubmit="return messageSubmit()">
                     <div class="form-group">
                         <div class="lg:w-2/4 rounded-xl">
                             <div class="chat-messages space-y-3" id="chat-messages"></div>
@@ -28,63 +31,80 @@
                     <div class="input-group mb-3">
                         <input class="form-control" id="input" type="text" placeholder="Your message here..."></br>
                         <div class="input-group-append">
-                            <button class="btn btn-secondary" id="submit" type="button">Send</button> 
-                        </div>    
-                    </div> 
+                            <button class="btn btn-secondary" id="submit" type="button">Send</button>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>
-   
-    {{ slug|json_script:"json_name" }}
-    {{ room_name|json_script:"json_room_name"}}
-    {{ request.user.username|json_script:"json_user"}}
-    <script>
-        const roomName = JSON.parse(document.getElementById('json_name').textContent);
-        const user_username = JSON.parse(document.getElementById('json_user').textContent);
+        <center>
+        <iframe style="border-radius:12px"
+            src="https://open.spotify.com/embed/album/{{ album }}?utm_source=generator" width="100%"
+            height="100" frameBorder="0" allowfullscreen=""
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </center>
 
-        const chatSocket = new WebSocket(
-            'ws://' +
-            window.location.host +
-            '/ws/l_room/' +
-            roomName +
-            '/'
-        );
+        {{ slug|json_script:"json_name" }}
+        {{ room_name|json_script:"json_room_name"}}
+        {{ request.user.username|json_script:"json_user"}}
+        <script>
+            const roomName = JSON.parse(document.getElementById('json_room_name').textContent);
+            const user_username = JSON.parse(document.getElementById('json_user').textContent);
+            const roomSlug = JSON.parse(document.getElementById('json_name').textContent);
 
-        document.querySelector('#submit').onclick = function(e) {
-            e.preventDefault();
-            const messageInputDom = document.querySelector('#input');
-            const message = messageInputDom.value;
-            chatSocket.send(JSON.stringify({
-                'message': message,
-                'username': user_username,
-                
-            }));
-            messageInputDom.value = '';
-            return false;
-        };
-            
-        
+            const chatSocket = new WebSocket(
+                'ws://' +
+                window.location.host +
+                '/ws/l_room/' +
+                roomSlug +
+                '/'
+            );
 
-        chatSocket.onmessage = function (e) {
-            const data = JSON.parse(e.data);
-            if (data.message){
-                let html = '<div class="p-4 bg-white rounded-xl">';
+            document.querySelector('#submit').onclick = function (e) {
+                e.preventDefault();
+                const messageInputDom = document.querySelector('#input');
+                const message = messageInputDom.value;
+                chatSocket.send(JSON.stringify({
+                    'message': message,
+                    'username': user_username,
+
+                }));
+                messageInputDom.value = '';
+                return false;
+            };
+
+            function messageSubmit(){
+                const messageInputDom = document.querySelector('#input');
+                const message = messageInputDom.value;
+                chatSocket.send(JSON.stringify({
+                    'message': message,
+                    'username': user_username,
+
+                }));
+                messageInputDom.value = '';
+                return false;
+            }
+
+
+
+            chatSocket.onmessage = function (e) {
+                const data = JSON.parse(e.data);
+                if (data.message) {
+                    let html = '<div class="p-4 bg-white rounded-xl">';
                     html += '<p class="font-bold" style="font-size:125%; color:black;"><b>' + data.username + '</b></p>';
                     html += '<p style="color:black">' + data.message + '</p></div></br>';
                     document.querySelector('#chat-messages').innerHTML += html;
                     scrollToBottom();
-            } else {
-                alert('The message is empty');
-            }
-        };
+                } else {
+                    alert('The message is empty');
+                }
+            };
 
-        function scrollToBottom() {
-            const objDiv = document.querySelector('#chat-messages');
-            objDiv.scrollTop = objDiv.scrollHeight;
-        }
-        scrollToBottom();
-    </script>
+            function scrollToBottom() {
+                const objDiv = document.querySelector('#chat-messages');
+                objDiv.scrollTop = objDiv.scrollHeight;
+            }
+            scrollToBottom();
+        </script>
 </body>
 {% endblock %}
-
-

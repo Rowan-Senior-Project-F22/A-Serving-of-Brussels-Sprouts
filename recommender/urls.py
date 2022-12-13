@@ -23,5 +23,7 @@ urlpatterns = [
     path("logout/", views.get_logout, name="get_logout"),
     path("new_releases/", views.get_new_releases, name="new_releases"),
     path("like_song/", views.like_view, name="like_song"),
-    path("recommendation", views.friend_recommendation, name="friend_recommendation")
+    path("recommendation", views.friend_recommendation, name="friend_recommendation"),
+    path("import_spotify", views.import_spotify, name="import_spotify"),
+    path("import_spotify_playlist/<str:playlist_id>", views.import_spotify_playlist, name="import_spotify_playlist"),
 ]

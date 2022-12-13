@@ -7,10 +7,11 @@ from django.utils.translation import gettext_lazy as _
 - Brandon Ngo'''
 class User(AbstractUser):
     email = models.EmailField(_('email'), unique=True)
-    profile_picture = models.ImageField(null=True, blank=True, upload_to="profile/")
-    # direct_messages = models.ManyToManyField('DirectMessage') TODO: Update with Design Team 3
+    profile_picture = models.CharField(null=False, default="", max_length=9999)
     preferences = models.CharField(null=False, default='{}', max_length=1000)
     following = models.ForeignKey('self', null=True, on_delete=models.CASCADE)
+    friend_count = models.IntegerField(default=0)
+    friends_list = models.ManyToManyField('self')
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -109,3 +110,6 @@ class ListeningRoom(models.Model):
 class ChatRoom(models.Model):
     room_name = models.CharField(max_length=25)
     room_slug = models.SlugField(unique=True)
+    isActive = models.BooleanField(default=True)
+    album = models.CharField(default='', max_length=25)
+    genres = models.TextField()
