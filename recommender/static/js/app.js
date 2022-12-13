@@ -1,4 +1,4 @@
-var redirect_uri = "http://127.0.0.1:8000/landing/";
+var redirect_uri = "http://127.0.0.1:8000/spotify_success/";
 
 var client_id = "2de1575d99b14786ae4f7e46e33e494e";
 var secret_id = "fbf315776bda4ea2aaeeeb1ec559de7d";
@@ -134,7 +134,7 @@ function handleUserResponse() {
             email = data.email;
             localStorage.setItem("email", email);
         }
-        onPageLoad();
+        authenticateSpotifyUser();
     }
     else {
         console.log(this.responseText);
@@ -219,5 +219,20 @@ function handleApiResponse(){
     }    
 }
 
-
-
+function authenticateSpotifyUser() {
+    var email = localStorage.getItem("email");
+    var username = localStorage.getItem("display_name").replace(/\s/g, "")
+    var password           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < 12; i++ ) {
+        password += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", 'landing_spotify/', true);
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.setRequestHeader("email", email);
+    xhr.setRequestHeader("username", username);
+    xhr.setRequestHeader("password", password);
+    xhr.send(body);
+}

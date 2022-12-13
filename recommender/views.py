@@ -1,7 +1,7 @@
 import json
-
+from django.conf import settings
 from django.shortcuts import render, redirect
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from recommender.models import ThreadModel, MessageModel
 from .forms import ThreadForm, MessageForm
 from .forms import SearchForm
@@ -17,6 +17,7 @@ from .forms import CustomUserForm
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
 
@@ -122,7 +123,7 @@ def get_register(request):
             user = form.save()
             login(request, user)
             messages.success(request, "Registration successful.")
-            return redirect("recommender:user_profile")
+            return redirect("recommender:landing_member")
         messages.error(request, "Unsuccessful registration. Invalid information.")
     form = CustomUserForm()
     
@@ -203,7 +204,7 @@ def get_login(request):
             if user is not None:
                 login(request, user)
                 messages.info(request, f"You are now logged in as {email}.")
-                return redirect("recommender:user_profile")
+                return redirect("recommender:landing_member")
             else:
                 messages.error(request, "Invalid username or password.")
         else:
@@ -222,3 +223,31 @@ def get_logout(request):
 @login_required
 def user_playlist(request, user_id):
     return render(request, 'recommender/user_playlist.html', {})
+
+def spotify_success(request):
+    return render(request=request, template_name="recommender/spotify_success.html")
+
+@csrf_exempt
+def authenticate_spotify_user(request):
+    if request.method == "GET":
+        username = request.POST.get("username")
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        if User.objects.filter(email=email).exists():
+            user = User.objects.get(email=email)
+            user.backend = settings.AUTHENTICATION_BACKENDS[0]
+            login(request, user)
+            messages.info(request, f"You are now logged in as {email}.")
+            return redirect("recommender:landing_member")
+        else:
+            print(email)
+            print(username)
+            print(password)
+            User.objects.create_user(email=email, username=username, password=password)
+            user.save()
+            user.backend = settings.AUTHENTICATION_BACKENDS[0]
+            login(request, user)
+            messages.info(request, f"You are now logged in as {email}.")
+            return redirect("recommender:landing_member")
+    return HttpResponse()
+    
