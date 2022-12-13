@@ -349,10 +349,10 @@ def l_room(request, slug):
         room.album = album_id
         room.genres = genres_json
         room.save()
-        return render(request, 'l_room.html', {'l_room': l_room, 'slug': slug, 'album': album_id})
+        return render(request, 'l_room.html', {'l_room': l_room, 'room_name': room.room_name, 'slug': slug, 'album': album_id})
     if (ChatRoom.objects.filter(room_slug = slug)):
         room = ChatRoom.objects.get(room_slug=slug)
-        return render(request, 'l_room.html', {'l_room': l_room, 'slug': slug, 'album': room.album})
+        return render(request, 'l_room.html', {'l_room': l_room, 'room_name': room.room_name, 'slug': slug, 'album': room.album})
     else:
         messages.error(request, "This room does not exist")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
@@ -365,6 +365,7 @@ def l_room_create(request):
             name = form.cleaned_data.get('room_name')
             album = form.data.get('album')
             slug = slugify(name)
+            slug = slug.replace('-', '')
             album_uri = sp.search(q='album:' + album, type="album")
             album_uri = album_uri['albums']['items'][0]['id']
             genres = sp.artist(sp.album(album_uri)['artists'][0]['uri'])['genres']

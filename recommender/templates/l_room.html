@@ -3,7 +3,7 @@
 {% block title %}{{ room_name }} | {% endblock %}
 
 {% block view_title %}
-{{slug}}
+    {{room_name}}
 {% endblock %}
 
 {% block content %}
@@ -39,8 +39,8 @@
         </div>
         <center>
         <iframe style="border-radius:12px"
-            src="https://open.spotify.com/embed/album/{{ album }}?utm_source=generator" width="70%"
-            height="252" frameBorder="0" allowfullscreen=""
+            src="https://open.spotify.com/embed/album/{{ album }}?utm_source=generator" width="100%"
+            height="100" frameBorder="0" allowfullscreen=""
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
         </center>
 
@@ -48,14 +48,15 @@
         {{ room_name|json_script:"json_room_name"}}
         {{ request.user.username|json_script:"json_user"}}
         <script>
-            const roomName = JSON.parse(document.getElementById('json_name').textContent);
+            const roomName = JSON.parse(document.getElementById('json_room_name').textContent);
             const user_username = JSON.parse(document.getElementById('json_user').textContent);
+            const roomSlug = JSON.parse(document.getElementById('json_name').textContent);
 
             const chatSocket = new WebSocket(
                 'ws://' +
                 window.location.host +
                 '/ws/l_room/' +
-                roomName +
+                roomSlug +
                 '/'
             );
 
