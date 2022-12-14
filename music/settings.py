@@ -26,7 +26,7 @@ AUTH_USER_MODEL = "recommender.User"
 SECRET_KEY = 'i*w6b9s6g&e2*a%s15(r7nww*l272#9vxtf!(%n=)c@b7kkjis'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['senior-project-dev.azurewebsites.net', '127.0.0.1']
 
@@ -128,11 +128,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_ROOT = ''
-
-STATIC_URL = '/static/'
-
-STATICFILES_DIRS = ('static',)
+STATIC_URL = '/recommender/static/'
 
 CHANNEL_LAYERS = {
     "default": {
