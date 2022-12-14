@@ -1,8 +1,6 @@
 from django.urls import path
 from .views import CreateThread, ListThreads, ThreadView, CreateMessage, ThreadNotification
 from . import views
-from django.conf import settings
-from django.conf.urls.static import static
 
 app_name = 'recommender'
 
@@ -29,5 +27,5 @@ urlpatterns = [
     path("like_song/", views.like_view, name="like_song"),
     path("recommendation", views.friend_recommendation, name="friend_recommendation"),
     path("import_spotify", views.import_spotify, name="import_spotify"),
-    path("import_spotify_playlist/<str:playlist_id>", views.import_spotify_playlist, name="import_spotify_playlist") + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT),
+    path("import_spotify_playlist/<str:playlist_id>", views.import_spotify_playlist, name="import_spotify_playlist"),
 ]
