@@ -197,10 +197,13 @@ user_profile(request)
 Jeremy Juckett
 '''
 @login_required
-def user_profile(request):
+def user_profile(request, user_name):
+    user = User.objects.get(username=user_name)
+    if(user == ''):
+        user = request.user
     number_of_loads = 4
-    like_query_result = Playlist.objects.all().filter(owner=request.user, name='likes')
-    dislike_query_result = Playlist.objects.all().filter(owner=request.user, name='dislikes')
+    like_query_result = Playlist.objects.all().filter(owner=user, name='likes')
+    dislike_query_result = Playlist.objects.all().filter(owner=user, name='dislikes')
 
     liked_music_data = []
     disliked_music_data = []
@@ -220,13 +223,13 @@ def user_profile(request):
         liked_track_ids = like_query_result[0].songs.split(",")
         liked_track_ids.remove('') # remove the empty entry at the end
         like_count = len(liked_track_ids)
-        
+            
         random.shuffle(liked_track_ids)
         if number_of_loads >= len(liked_track_ids):
             likes_subset = liked_track_ids
         else:
             likes_subset = liked_track_ids[0:number_of_loads]
-        
+            
         for l in likes_subset:
             liked_music_data.append(MusicData.objects.all().filter(track_id=l)[0])
 
@@ -236,7 +239,7 @@ def user_profile(request):
         disliked_track_ids = dislike_query_result[0].songs.split(",")
         disliked_track_ids.remove('') # remove the empty entry at the end
         dislike_count = len(disliked_track_ids)
-        
+            
         random.shuffle(disliked_track_ids)
         if number_of_loads >= len(disliked_track_ids):
             dislikes_subset = disliked_track_ids
@@ -247,9 +250,9 @@ def user_profile(request):
             disliked_music_data.append(MusicData.objects.all().filter(track_id=d)[0])
 
     context = {
-        'username': request.user.username,
-        'user_email': request.user.email,
-        'friend_count': request.user.friend_count,
+        'username': user.username,
+        'user_email': user.email,
+        'friend_count': user.friend_count,
         'like_count': like_count,
         'dislike_count': dislike_count,
         'liked_music': liked_music_data,
@@ -257,6 +260,7 @@ def user_profile(request):
     }
 
     return render(request, 'recommender/user_profile.html', context)
+    
 
 
 def get_landing_guest(request):

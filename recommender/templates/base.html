@@ -75,7 +75,7 @@
             <!-- Aplication Brand -->
             <div class="app-brand">
                 {% if user.is_authenticated %}
-                <a href="{% url 'recommender:user_profile' %}">
+                <a href="{% url 'recommender:user_profile' user.username %}">
                 {% else %}
                 <a href="{% url 'recommender:get_landing_guest' %}">
                 {% endif %}
@@ -95,7 +95,7 @@
                             </a>
                         </li>
                         <li>
-                            <a class="sidenav-item-link" href="{% url 'recommender:user_profile' %}">
+                            <a class="sidenav-item-link" href="{% url 'recommender:user_profile' user.username %}">
                                 <i class="mdi mdi-teamviewer"></i>
                                 <span class="nav-text">User Profile</span>
                             </a>
@@ -207,7 +207,7 @@
                             </button>
                             <ul class="dropdown-menu dropdown-menu-right">
                                 <li>
-                                    <a class="dropdown-link-item" href="{% url 'recommender:user_profile' %}">
+                                    <a class="dropdown-link-item" href="{% url 'recommender:user_profile' user.username %}">
                                         <i class="mdi mdi-account-outline"></i>
                                         <span class="nav-text">My Profile</span>
                                     </a>
