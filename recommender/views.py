@@ -415,7 +415,8 @@ def import_spotify_playlist(request, playlist_id):
     those track IDs into a comma-separated list which will be persisted into the user's
     playlists.
     """
-    playlist_details = sp.playlist_tracks(playlist_id=playlist_id)
+    spotify_playlist_id = playlist_id.split(':')[2]
+    playlist_details = sp.playlist_tracks(playlist_id=spotify_playlist_id)
     if playlist_details is None:
         # If the details are invalid, signal an error message and route the user to the import spotify
         # view.
@@ -452,7 +453,7 @@ def import_spotify(request):
         else:
             playlists = None
     return render(request=request, template_name="recommender/import_spotify.html", context={
-        'spotify_playlists': playlists
+        'spotify_playlists': available_playlists
     })
 
 

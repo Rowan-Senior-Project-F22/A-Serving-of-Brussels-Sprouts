@@ -13,19 +13,26 @@ Discover Friends
 
 <div class="card mb-5">
     <div class="card-body">
-        <ul class="nav nav-pills mb-3 justify-content-between" id="pills-tab12" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link" id="nav-profile-tab" data-toggle="pill" href="#nav-profile-underline-primary" role="tab"
-                  aria-controls="nav-profile" aria-selected="false"><i class="mdi mdi-newspaper"></i> For You</a>
-              </li>
-            <li class="nav-item">
-              <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#nav-home-underline-primary" role="tab"
-                aria-controls="nav-tabs" aria-selected="true"><i class="mdi mdi-magnify"></i> Discover Friends</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-            </li>
-          </ul>
+      <ul class="nav nav-pills mb-3 justify-content-between" id="pills-tab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link" id="pills-home-tab" data-toggle="pill" href="#pills-for-you-justify-content-between"
+            role="tab" aria-controls="pills-home" aria-selected="true"><a href="{% url 'recommender:landing_member' %}"><i class="mdi mdi-comment-text"></i> For You</a></a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-new-releases-justify-content-between"
+            role="tab" aria-controls="pills-profile" aria-selected="false"><i class="mdi mdi-newspaper"></i> New Releases</a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"><i class="mdi mdi-music"></i> Listening Rooms</a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link active" id="pills-profile-tab" data-toggle="pill" href="{% url 'recommender:friend_recommendation' %}"
+            role="tab" aria-controls="pills-profile" aria-selected="false"><i class="mdi mdi-magnify"></i> Discover Friends</a>
+        </li>
+    </ul>
         </div>
         <hr/>
         <div class="card-body">
@@ -76,8 +83,8 @@ Discover Friends
                     </a>
           
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                      <a class="dropdown-item" href="#">View Profile</a>
-                      <a class="dropdown-item" href="#">Follow</a>
+                      <a class="dropdown-item" href="{% url 'recommender:user_profile' username=member.username %}">View Profile</a>
+                      <a class="dropdown-item" href="#">Add Friend</a>
                       <a class="dropdown-item" href="#">DM User</a>
                     </div>
                   </div>
