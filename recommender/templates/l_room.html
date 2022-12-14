@@ -53,7 +53,7 @@
             const roomSlug = JSON.parse(document.getElementById('json_name').textContent);
 
             const chatSocket = new WebSocket(
-                'ws://' +
+                'wss://' +
                 window.location.host +
                 '/ws/l_room/' +
                 roomSlug +
