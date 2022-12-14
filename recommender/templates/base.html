@@ -49,10 +49,11 @@
     <![endif]-->
     <script src="{%static 'plugins/nprogress/nprogress.js' %}"></script>
     <script src="https://unpkg.com/htmx.org@1.8.0"></script>
+    <script src="{%static 'js/app.js' %}"></script>
 </head>
 
 
-<body class="navbar-fixed sidebar-fixed" id="body">
+<body class="navbar-fixed sidebar-fixed" id="body" onload="onPageLoad()">
 <script>
       NProgress.configure({ showSpinner: false });
       NProgress.start();

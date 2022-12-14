@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
 <!--Login-->
 <div>
     <h1>Login</h1>
@@ -17,5 +16,9 @@
     </form>
     <p>Don't have an account? <a href="{% url 'recommender:get_register' %}">Create an account</a>.</p>
 </div>
+<div id="tokenSection" class="row">
+    <input class="btn btn-primary btn-lg" type="button" onclick="requestAuthorization()"
+        value="Log in with Spotify"><br />
+  </div>
 
 {% endblock %}

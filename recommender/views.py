@@ -7,6 +7,7 @@ from django.http import Http404, HttpResponseRedirect
 from utils.users import init_users_preferences, generate_friend_recommendations
 from .forms import ThreadForm, MessageForm, UserFriendSettingsForm, UserPreferencesForm
 from .forms import SearchForm, ListeningRoomForm, UserSearchForm
+from django.conf import settings
 import random, spotipy
 from email import message
 from urllib import request
@@ -20,6 +21,7 @@ from .models import ListeningRoom, ChatRoom
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
 
@@ -474,10 +476,10 @@ def get_register(request):
 
             login(request, user)
             messages.success(request, "Registration successful.")
-
-            return redirect("recommender:user_profile")
+            return redirect("recommender:landing_member")
         messages.error(request, "Unsuccessful registration. Invalid information.")
     form = CustomUserForm()
+    
     return render(request=request, template_name="recommender/register.html", context={"register_form": form})
 
 
@@ -746,7 +748,7 @@ def get_login(request):
             if user is not None:
                 login(request, user)
                 messages.info(request, f"You are now logged in as {email}.")
-                return redirect("recommender:user_profile")
+                return redirect("recommender:landing_member")
             else:
                 messages.error(request, "Invalid username or password.")
         else:
@@ -793,3 +795,29 @@ def user_playlist(request, user_id):
     }
 
     return render(request, 'recommender/user_playlist.html', context)
+
+def spotify_success(request):
+    return render(request=request, template_name="recommender/spotify_success.html")
+
+@csrf_exempt
+def authenticate_spotify_user(request):
+    if request.method == "POST":
+        user_data = json.loads(request.body)
+        username = user_data["username"]
+        email = user_data["email"]
+        password = user_data["password"]
+        if User.objects.filter(email=email).exists():
+            user = User.objects.get(email=email)
+            user.backend = settings.AUTHENTICATION_BACKENDS[0]
+            login(request, user)
+            messages.info(request, f"You are now logged in as {email}.")
+            return redirect("recommender:landing_member")
+        else:
+            User.objects.create_user(email=email, username=username, password=password)
+            user = User.objects.get(email=email)
+            user.save()
+            user.backend = settings.AUTHENTICATION_BACKENDS[0]
+            login(request, user)
+            messages.info(request, f"You are now logged in as {email}.")
+            return redirect("recommender:landing_member")
+    return render(request, 'recommender/landing_spotify.html')
