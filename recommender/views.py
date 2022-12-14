@@ -364,10 +364,13 @@ def l_room_create(request):
         if form.is_valid():
             name = form.cleaned_data.get('room_name')
             album = form.data.get('album')
+            artist = form.data.get('artist')
             slug = slugify(name)
             slug = slug.replace('-', '')
-            album_uri = sp.search(q='album:' + album, type="album")
-            album_uri = album_uri['albums']['items'][0]['id']
+            if artist == '':
+                album_uri = sp.search(q='album:' + album, type="album")['albums']['items'][0]['id']
+            else:
+                album_uri = sp.search(q='album:' + album+', artist:'+artist, type="album")['albums']['items'][0]['id']
             genres = sp.artist(sp.album(album_uri)['artists'][0]['uri'])['genres']
             genres_json = json.dumps(genres)
             if ChatRoom.objects.filter(room_slug=slug):
@@ -380,6 +383,7 @@ def l_room_create(request):
             return redirect("recommender:l_room", slug)
     form = ListeningRoomForm()
     return render(request, 'l_room_create.html', {})
+
 
 class ThreadNotification(View):
     def get(self, request, notification_pk, object_pk, *args, **kwargs):
