@@ -406,11 +406,6 @@ def l_room_create(request):
     return render(request, 'l_room_create.html', {})
 
 
-class ThreadNotification(View):
-    def get(self, request, notification_pk, object_pk, *args, **kwargs):
-        notification = Notification.objects.get(pk = notification_pk)
-        thread = ThreadModel.objects.get(pk = object_pk)
-
 
 def import_spotify_playlist(request, playlist_id):
     """Handles logic to import a playlist from Spotify. When the user clicks the 'import'
@@ -812,6 +807,7 @@ def authenticate_spotify_user(request):
         email = user_data["email"]
         password = user_data["password"]
         preferences = user_data["preferences"]
+        
         if User.objects.filter(email=email).exists():
             user = User.objects.get(email=email)
             user.backend = settings.AUTHENTICATION_BACKENDS[0]
@@ -822,6 +818,10 @@ def authenticate_spotify_user(request):
             User.objects.create_user(email=email, username=username, password=password, preferences=preferences)
             user = User.objects.get(email=email)
             user.save()
+            like_playlist = Playlist(name='likes', is_public=True, owner=user)
+            like_playlist.save()
+            dislike_playlist = Playlist(name='dislikes', is_public=True, owner=user)
+            dislike_playlist.save()
             user.backend = settings.AUTHENTICATION_BACKENDS[0]
             login(request, user)
             messages.info(request, f"You are now logged in as {email}.")
