@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% for p in spotify_playlists %}
+    <h1>Import Playlist Page</h1>
+    <form action="{% url 'recommender:import_spotify_playlist' playlist_id=p.uri %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <button type="submit">Import</button>
+    </form>
+{% endfor %} 
+{% endblock %}
