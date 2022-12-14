@@ -83,7 +83,7 @@ Discover Friends
                     </a>
           
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                      <a class="dropdown-item" href="{% url 'recommender:user_profile' user.username %}">View Profile</a>
+                      <a class="dropdown-item" href="{% url 'recommender:user_profile' user_name=member.username %}">View Profile</a>
                       <a class="dropdown-item" href="#">Add Friend</a>
                       <a class="dropdown-item" href="#">DM User</a>
                     </div>
