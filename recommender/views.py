@@ -806,6 +806,7 @@ def authenticate_spotify_user(request):
         username = user_data["username"]
         email = user_data["email"]
         password = user_data["password"]
+        preferences = user_data["preferences"]
         if User.objects.filter(email=email).exists():
             user = User.objects.get(email=email)
             user.backend = settings.AUTHENTICATION_BACKENDS[0]
@@ -813,7 +814,7 @@ def authenticate_spotify_user(request):
             messages.info(request, f"You are now logged in as {email}.")
             return redirect("recommender:landing_member")
         else:
-            User.objects.create_user(email=email, username=username, password=password)
+            User.objects.create_user(email=email, username=username, password=password, preferences=preferences)
             user = User.objects.get(email=email)
             user.save()
             user.backend = settings.AUTHENTICATION_BACKENDS[0]

@@ -233,6 +233,7 @@ function authenticateSpotifyUser() {
         "username" : username,
         "email"    : email,
         "password" : password,
+        "preferences" : "{'friends': 'Default', 'likes': [], 'dislikes': []}"
     });
     xhr.open("POST", 'landing_spotify/', true);
     xhr.setRequestHeader("Content-type", "application/json");
