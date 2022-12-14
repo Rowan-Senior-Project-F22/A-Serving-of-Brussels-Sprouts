@@ -52,16 +52,16 @@ function fetchAccessToken(code) {
     let body = "grant_type=authorization_code";
     body += "&code=" + code;
     body += "&redirect_uri=" + encodeURI(redirect_uri);
-    body += "&client_id=" + client_id;
-    body += "&secret_id=" + secret_id;
+    body += "&client_id=" + localStorage.getItem("client_id");
+    body += "&secret_id=" + localStorage.getItem("secret_id");
     callAuthorizationApi(body);
 }
 
 function refreshAccessToken() {
     refresh_token = localStorage.getItem("refresh_token");
     let body = "grant_type=refresh_token";
-    body += "&refresh_token=" + refresh_token;
-    body += "&client_id=" + client_id;
+    body += "&refresh_token=" + localStorage.getItem("refresh_token");
+    body += "&client_id=" + localStorage.getItem("client_id");
     callAuthorizationApi(body);
 }
 
