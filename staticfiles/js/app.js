@@ -239,7 +239,7 @@ function authenticateSpotifyUser() {
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.onload = function () {
         if (this.status >= 200 && this.status < 300) {
-            window.location.href = 'http://127.0.0.1:8000/landing/';
+            window.location.href = `${window.location.origin}/landing/`;
             resolve(xhr.response);
         } else {
             // TODO: Handle an error.
