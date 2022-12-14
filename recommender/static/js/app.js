@@ -229,10 +229,31 @@ function authenticateSpotifyUser() {
         password += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
     let xhr = new XMLHttpRequest();
-    xhr.open("GET", 'landing_spotify/', true);
+    let body = JSON.stringify({
+        "username" : username,
+        "email"    : email,
+        "password" : password,
+    });
+    xhr.open("POST", 'landing_spotify/', true);
     xhr.setRequestHeader("Content-type", "application/json");
-    xhr.setRequestHeader("email", email);
-    xhr.setRequestHeader("username", username);
-    xhr.setRequestHeader("password", password);
+    xhr.onload = function () {
+        if (this.status >= 200 && this.status < 300) {
+            window.location.href = 'http://127.0.0.1:8000/landing/';
+            resolve(xhr.response);
+        } else {
+            // TODO: Handle an error.
+            reject({
+                status: this.status,
+                statusText: xhr.statusText
+            });
+        }
+    };
+    xhr.onerror = function () {
+        reject({
+            status: this.status,
+            statusText: xhr.statusText
+        });
+    };
     xhr.send(body);
+
 }

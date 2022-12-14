@@ -229,10 +229,11 @@ def spotify_success(request):
 
 @csrf_exempt
 def authenticate_spotify_user(request):
-    if request.method == "GET":
-        username = request.POST.get("username")
-        email = request.POST.get("email")
-        password = request.POST.get("password")
+    if request.method == "POST":
+        user_data = json.loads(request.body)
+        username = user_data["username"]
+        email = user_data["email"]
+        password = user_data["password"]
         if User.objects.filter(email=email).exists():
             user = User.objects.get(email=email)
             user.backend = settings.AUTHENTICATION_BACKENDS[0]
@@ -240,14 +241,12 @@ def authenticate_spotify_user(request):
             messages.info(request, f"You are now logged in as {email}.")
             return redirect("recommender:landing_member")
         else:
-            print(email)
-            print(username)
-            print(password)
             User.objects.create_user(email=email, username=username, password=password)
+            user = User.objects.get(email=email)
             user.save()
             user.backend = settings.AUTHENTICATION_BACKENDS[0]
             login(request, user)
             messages.info(request, f"You are now logged in as {email}.")
             return redirect("recommender:landing_member")
-    return HttpResponse()
+    return render(request, 'recommender/landing_spotify.html')
     
