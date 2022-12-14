@@ -203,6 +203,9 @@ def user_profile(request):
     liked_music_data = []
     disliked_music_data = []
 
+    like_count = 0
+    dislike_count = 0
+
     print('Likes:', like_query_result[0].songs.split(","))
     print('Dislikes:', dislike_query_result[0].songs.split(","))
 
@@ -214,11 +217,13 @@ def user_profile(request):
         # populate the context with music data from random liked track ids
         liked_track_ids = like_query_result[0].songs.split(",")
         liked_track_ids.remove('') # remove the empty entry at the end
+        like_count = len(liked_track_ids)
         
+        random.shuffle(liked_track_ids)
         if number_of_loads >= len(liked_track_ids):
             likes_subset = liked_track_ids
         else:
-            likes_subset = liked_track_ids[0:number_of_loads - 1]
+            likes_subset = liked_track_ids[0:number_of_loads]
         
         for l in likes_subset:
             liked_music_data.append(MusicData.objects.all().filter(track_id=l)[0])
@@ -228,16 +233,23 @@ def user_profile(request):
         # populate the context with music data from random disliked track ids
         disliked_track_ids = dislike_query_result[0].songs.split(",")
         disliked_track_ids.remove('') # remove the empty entry at the end
+        dislike_count = len(disliked_track_ids)
         
+        random.shuffle(disliked_track_ids)
         if number_of_loads >= len(disliked_track_ids):
             dislikes_subset = disliked_track_ids
         else:
-            dislikes_subset = disliked_track_ids[0:number_of_loads - 1]
+            dislikes_subset = disliked_track_ids[0:number_of_loads]
 
         for d in dislikes_subset:
             disliked_music_data.append(MusicData.objects.all().filter(track_id=d)[0])
 
     context = {
+        'username': request.user.username,
+        'user_email': request.user.email,
+        'friend_count': request.user.friend_count,
+        'like_count': like_count,
+        'dislike_count': dislike_count,
         'liked_music': liked_music_data,
         'disliked_music': disliked_music_data
     }

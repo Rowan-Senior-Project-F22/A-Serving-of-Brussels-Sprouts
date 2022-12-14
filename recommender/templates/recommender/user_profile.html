@@ -33,88 +33,100 @@
 
     <!-- custom js file link  -->
     <script src="{% static '/js/script.js' %}" defer></script>
-
 </head>
 
 <body>
-    <div class="container">
-
-        <!-- Display User's Liked Music -->
-        <h1 class="heading">Liked Songs</h1>
+    <div class="content-wrapper">
+        <div class="content">
+            <!-- Profile Card -->
+            <div class="card card-default card-profile">
+                <div class="card-header-bg" style="background-image:url(assets/img/user/user-bg-01.jpg)"></div>
+                <div class="card-body card-profile-body">
+                    <div class="profile-avata">
+                        <img class="rounded-circle" src="images/user/user-md-01.jpg" alt="Avata Image">
+                        <span class="h5 d-block mt-3 mb-2">{{ username }}</span>
+                        <span class="d-block">{{ user_email }}</span>
+                    </div>
             
-        <div class="box-container">
-            {% for l in liked_music %}
-            <div class="box" data-src="{{ l.preview_url }}"> 
-                <div class="content">
-                    <h3><b>Title</b>: {{ l.track_name }}</h3>
-                    <h3><b>Artist</b>: {{ l.artist_name }}</h3>
-                    <h3><b>Album</b>: {{ l.track_album_name }} ({{ l.release_date }})</h3>
+                    <ul class="nav nav-profile-follow">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <span class="h5 d-block">{{ friend_count }}</span>
+                                <span class="text-color d-block">Friends</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <span class="h5 d-block">{{ like_count }}</span>
+                                <span class="text-color d-block">Likes</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <span class="h5 d-block">{{ dislike_count }}</span>
+                                <span class="text-color d-block">Dislikes</span>
+                            </a>
+                        </li>
+                    </ul>
                 </div>
-                
-                <div class="image">
-                    <div class="play">
-                        <i class="fas fa-play"></i>
-                    </div>
-                    <img src={{ l.album_cover }} alt="">
+            </div> <!-- End Profile Card -->
+
+            <!-- Liked Songs -->
+            <h1 style="text-align:center">Likes</h1>
+            <div class="card-group">
+                {% for l in liked_music %}
+                <div class="card">
+                <img class="card-img-top" src="{{ l.album_cover }}" alt="Album Cover">
+                <div class="card-body">
+                    <h4 class="card-title text-primary">{{ l.track_name }}</h4>
+                    <h5>{{ l.artist_name }}</h5>
+                    <h5>{{ l.track_album_name }} ({{ l.release_date }})</h5><br/>
+                    <!-- Form for the likes -->
+                    <form id="like-button" method="POST" action="{% url 'recommender:like_song' %}">
+                        {% csrf_token %}
+                        <button type="submit" >Like {{ l.likes }}</button>
+                        <input type="hidden" name="like" value="{{ l.track_id }}">
+                    </form>
+                    <!-- Form for the dislikes -->
+                    <form id="dislike-button" method="POST" action="{% url 'recommender:like_song' %}">
+                        {% csrf_token %}
+                        <button type="submit" >Dislike {{ l.dislikes }}</button>
+                        <input type="hidden" name="dislike" value="{{ l.track_id }}">
+                    </form>
                 </div>
-
-                <!-- Form for the likes -->
-                <form id="like-button" method="POST" action="{% url 'recommender:like_song' %}">
-                    {% csrf_token %}
-                    <button type="submit" >Like {{ l.likes }}</button>
-                    <input type="hidden" name="like" value="{{ l.track_id }}">
-                </form>
-
-                <!-- Form for the dislikes -->
-                <form id="dislike-button" method="POST" action="{% url 'recommender:like_song' %}">
-                    {% csrf_token %}
-                    <button type="submit" >Dislike {{ l.dislikes }}</button>
-                    <input type="hidden" name="dislike" value="{{ l.track_id }}">
-                </form>
-
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
 
-        </div> <!-- End box-container -->
+            <br/>
 
-        <!-- Display User's Disliked Music -->
-        <h1 class="heading">Disliked Songs</h1>
-
-        <div class="box-container">
-            {% for d in disliked_music %}
-            <div class="box" data-src="{{ d.preview_url }}"> 
-                <div class="content">
-                    <h3><b>Title</b>: {{ d.track_name }}</h3>
-                    <h3><b>Artist</b>: {{ d.artist_name }}</h3>
-                    <h3><b>Album</b>: {{ d.track_album_name }} ({{ d.release_date }})</h3>
+            <!-- Disliked Songs -->
+            <h1 style="text-align:center">Dislikes</h1>
+            <div class="card-group">
+                {% for d in disliked_music %}
+                <div class="card">
+                <img class="card-img-top" src="{{ d.album_cover }}" alt="Album Cover">
+                <div class="card-body">
+                    <h4 class="card-title text-primary">{{ d.track_name }}</h4>
+                    <h5>{{ d.artist_name }}</h5>
+                    <h5>{{ d.track_album_name }} ({{ d.release_date }})</h5><br/>
+                    <!-- Form for the likes -->
+                    <form id="like-button" method="POST" action="{% url 'recommender:like_song' %}">
+                        {% csrf_token %}
+                        <button type="submit" >Like {{ d.likes }}</button>
+                        <input type="hidden" name="like" value="{{ d.track_id }}">
+                    </form>
+                    <!-- Form for the dislikes -->
+                    <form id="dislike-button" method="POST" action="{% url 'recommender:like_song' %}">
+                        {% csrf_token %}
+                        <button type="submit" >Dislike {{ d.dislikes }}</button>
+                        <input type="hidden" name="dislike" value="{{ d.track_id }}">
+                    </form>
                 </div>
-                
-                <div class="image">
-                    <div class="play">
-                        <i class="fas fa-play"></i>
-                    </div>
-                    <img src={{ d.album_cover }} alt="">
                 </div>
-
-                <!-- Form for the likes -->
-                <form id="like-button" method="POST" action="{% url 'recommender:like_song' %}">
-                    {% csrf_token %}
-                    <button type="submit" >Like {{ d.likes }}</button>
-                    <input type="hidden" name="like" value="{{ d.track_id }}">
-                </form>
-
-                <!-- Form for the dislikes -->
-                <form id="dislike-button" method="POST" action="{% url 'recommender:like_song' %}">
-                    {% csrf_token %}
-                    <button type="submit" >Dislike {{ d.dislikes }}</button>
-                    <input type="hidden" name="dislike" value="{{ d.track_id }}">
-                </form>
-
+                {% endfor %}
             </div>
-            {% endfor %}
-
-        </div> <!-- End box-container -->
-
-    </div> <!-- End container -->
+        </div> <!-- End Content -->
+    </div> <!-- End Content-Wrapper -->
 </body>
 {% endblock %}
