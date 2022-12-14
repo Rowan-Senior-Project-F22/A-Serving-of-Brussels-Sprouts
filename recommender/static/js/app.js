@@ -1,8 +1,5 @@
 var redirect_uri = "http://127.0.0.1:8000/spotify_success/";
 
-var client_id = "2de1575d99b14786ae4f7e46e33e494e";
-var secret_id = "fbf315776bda4ea2aaeeeb1ec559de7d";
-
 var access_token = null;
 var refresh_token = null;
 var display_name = null;
@@ -105,6 +102,9 @@ function handleAuthorizationResponse() {
 }
 
 function requestAuthorization() {
+    var client_id = "2de1575d99b14786ae4f7e46e33e494e";
+    var secret_id = "fbf315776bda4ea2aaeeeb1ec559de7d";
+    
     localStorage.setItem("client_id", client_id);
     localStorage.setItem("secret_id", secret_id); // In a real app you should not expose your secret_id to the user
 
