@@ -109,7 +109,7 @@ function requestAuthorization() {
     localStorage.setItem("secret_id", secret_id); // In a real app you should not expose your secret_id to the user
 
     let url = AUTHORIZE;
-    url += "?client_id=" + client_id;
+    url += "?client_id=" + localStorage.getItem("client_id");
     url += "&response_type=code";
     url += "&redirect_uri=" + encodeURI(redirect_uri);
     url += "&show_dialog=true";
