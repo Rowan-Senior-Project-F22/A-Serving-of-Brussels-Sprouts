@@ -2,3 +2,4 @@ Django==3.2.15
 Pillow
 channels==3.0.5
 spotipy
+whitenoise

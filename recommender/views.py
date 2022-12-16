@@ -211,11 +211,11 @@ def user_profile(request, user_name):
     like_count = 0
     dislike_count = 0
 
-    print('Likes:', like_query_result[0].songs.split(","))
-    print('Dislikes:', dislike_query_result[0].songs.split(","))
+    # print('Likes:', like_query_result[0].songs.split(","))
+    # print('Dislikes:', dislike_query_result[0].songs.split(","))
 
-    print("Dislike Size:", len(dislike_query_result))
-    print("Like Size:", len(like_query_result))
+    # print("Dislike Size:", len(dislike_query_result))
+    # print("Like Size:", len(like_query_result))
 
     # handle the likes
     if len(like_query_result) != 0 and like_query_result[0].songs != "":
@@ -234,7 +234,7 @@ def user_profile(request, user_name):
             liked_music_data.append(MusicData.objects.all().filter(track_id=l)[0])
 
     # handle the dislikes
-    if len(dislike_query_result) != 0 or dislike_query_result[0].songs != "":
+    if len(dislike_query_result) != 0 and dislike_query_result[0].songs != "":
         # populate the context with music data from random disliked track ids
         disliked_track_ids = dislike_query_result[0].songs.split(",")
         disliked_track_ids.remove('') # remove the empty entry at the end
