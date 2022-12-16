@@ -1,11 +1,22 @@
 {% extends 'base.html' %}
 
+{% block title %} Import playlists | {% endblock %}
+
+{% block view_title %}
+    Import Spotify Playlists
+{% endblock %}
+
 {% block content %}
-{% for p in spotify_playlists %}
-    <h1>Import Playlist Page</h1>
-    <form action="{% url 'recommender:import_spotify_playlist' playlist_id=p.uri %}" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <button type="submit">Import</button>
-    </form>
-{% endfor %} 
+<center>
+    {% for p in spotify_playlists %}
+        <img src="{{p.thumbnail}}" alt="{{p.name}}" height="400" width="400"></img>
+        <h1>{{p.name}}</h1>
+        <br>
+        <form action="{% url 'recommender:import_spotify_playlist' playlist_id=p.uri %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-secondary" style="width: 350px;">Import</button>
+        </form>
+        <br>
+    {% endfor %} 
+</center>
 {% endblock %}

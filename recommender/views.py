@@ -429,12 +429,12 @@ def import_spotify_playlist(request, playlist_id):
         # view.
         messages.error(request=request, message="A playlist does not exist by that ID!")
         return import_spotify(request=request)
-    print(playlist_details)
     track_ids = []
     for i in range(0, len(playlist_details['items'])):
         track_ids.append(map(lambda x: playlist_details['items'][i]['external_urls']))
+        #tracks_ids.append(playlist_details['items'][0]['track']['id'])
     messages.success(request=request, message=f'You have successfully imported the playlist.')
-    return user_profile(request=request)
+    return user_profile(request, request.user.username)
 
 
 def import_spotify(request):
@@ -447,7 +447,6 @@ def import_spotify(request):
     available_playlists = []
     while playlists:
         for i, playlist in enumerate(playlists['items']):
-            # print("%4d %s %s" % (i + 1 + playlists['offset'], playlist['uri'],  playlist['name']))
             print(str(playlist) + '\n')
             available_playlists.append({
                 'name': playlist['name'],
