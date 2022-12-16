@@ -188,7 +188,7 @@ def like_view(request):
             obj.save()
 
     #return get_new_releases(request)
-    return user_profile(request)
+    return user_profile(request, request.user.username)
 
 
 '''
@@ -389,9 +389,17 @@ def l_room_create(request):
             slug = slugify(name)
             slug = slug.replace('-', '')
             if artist == '':
-                album_uri = sp.search(q='album:' + album, type="album")['albums']['items'][0]['id']
+                try:
+                    album_uri = sp.search(q='album:' + album, type="album")['albums']['items'][0]['id']
+                except:
+                    messages.error(request, "This is not a valid album")
+                    return render(request, 'l_room_create.html', {})
             else:
-                album_uri = sp.search(q='album:' + album+', artist:'+artist, type="album")['albums']['items'][0]['id']
+                try:
+                    album_uri = sp.search(q='album:' + album+', artist:'+artist, type="album")['albums']['items'][0]['id']
+                except:
+                    messages.error(request, "There is no album by that artist")
+                    return render(request, 'l_room_create.html', {})
             genres = sp.artist(sp.album(album_uri)['artists'][0]['uri'])['genres']
             genres_json = json.dumps(genres)
             if ChatRoom.objects.filter(room_slug=slug):
