@@ -7,7 +7,7 @@ name: Build and deploy Python app to Azure Web App - senior-project-dev
 on:
   push:
     branches:
-      - production
+      - staging
   workflow_dispatch:
 
 jobs:
