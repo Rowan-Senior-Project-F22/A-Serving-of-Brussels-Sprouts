@@ -683,6 +683,25 @@ def recommend_songs_by_genre(like_list, dislike_list, count):
 
     return recommendations
 
+def l_room_recommend(request):
+    recommendations = []
+    rooms = ChatRoom.objects.all()
+    like_list = ast.literal_eval(request.user.preferences)['likes']
+    #dislike_list = ast.literal_eval(request.user.preferences['dislikes'])
+    random_index = random.randint(0, len(like_list) -1)
+    random_genre = like_list[random_index]
+    
+    for room in rooms:
+        room_genres = eval(room.genres)
+        for genre in room_genres:
+            if(genre == random_genre):
+                recommendations.append(room)
+
+    random.shuffle(recommendations)
+    #return recommendations[:20]
+    pass
+
+
 
 @login_required
 def get_member_feed(request):
@@ -702,11 +721,13 @@ def get_member_feed(request):
         for_you_message = 'To get recommendation, customize your music preferences.'
 
     new_release_data = get_new_releases()
+    l_room_data = l_room_recommend(request)
 
     context = {
         'for_you_message': for_you_message,
         'for_you_data': for_you_data,
-        'new_release_data': new_release_data
+        'new_release_data': new_release_data,
+        'l_room_data': l_room_data
     }
 
     return render(request=request, template_name='recommender/landing_member.html', context=context)
