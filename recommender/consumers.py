@@ -1,3 +1,4 @@
+import datetime
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import ChatRoom
@@ -41,8 +42,14 @@ class L_RoomConsumer(AsyncWebsocketConsumer):
     async def chatroom_message(self, event):
         message = event['message']
         username = event['username']
+        # current dateTime
+        now = datetime.datetime.now()
+
+        # convert to string
+        timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
         await self.send(text_data=json.dumps({
             'message': message,
             'username': username,
+            'timestamp': timestamp
         }))
     pass   

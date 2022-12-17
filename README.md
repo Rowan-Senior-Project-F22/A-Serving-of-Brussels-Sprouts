@@ -10,6 +10,12 @@ The social concept of the system is to introduce its users to new people and
 new music. By providing friend and music suggestions to the user, the system
 will initiate conversations.
 
+## Requirements
+
+*   Python 3.10 or newer
+*   Latest version of Node.js installed (for deployment)
+*   Latest version of Git CLI installed
+
 ## Project Structure
 This is a Django application broken out by application. Applications are specified in the primary
 directory.
@@ -36,10 +42,18 @@ Run pip install -r requirements.txt to grab the dependencies, then run the serve
 
 ## Deployment
 There is an Azure Web Application that is connected to the application thru a CI/CD pipeline via GitHub workflow automation.
-This leverages the ```staging``` branch as the deployment code base. Merges to this branch require a pull request, which can come
+This leverages the ```production``` branch as the deployment code base. Merges to this branch require a pull request, which can come
 from any of the three design teams' individual branches. Note that changes should only be pushed to ```staging``` if they are
 ready for testing and review by other team members. Once code is tested, pull requests can be created to ```main```, pending a
-successful deployment, which requires approval by a majority  of the group (5 members).
+successful deployment to ```production```, which requires approval by a majority  of the group (5 members).
+
+You can request a deploy to ```production``` by running
+
+```commandline
+npm run deploy:dev
+```
+
+This will clear the static cache and commit all files and changes in the working directory to ```production```.
 
 ## Contributors
 - Chris Rinaldi <rinald43@students.rowan.edu>
