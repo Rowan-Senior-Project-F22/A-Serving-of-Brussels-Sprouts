@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from recommender.models import ThreadModel, MessageModel, MusicData, Playlist, Notification
 from django.http import Http404, HttpResponseRedirect
 from utils.users import init_users_preferences, generate_friend_recommendations
-from .forms import ThreadForm, MessageForm, UserFriendSettingsForm, UserPreferencesForm
+from .forms import LandingAuthForm, ThreadForm, MessageForm, UserFriendSettingsForm, UserPreferencesForm
 from .forms import SearchForm, ListeningRoomForm, UserSearchForm
 from django.conf import settings
 import random, spotipy
@@ -760,7 +760,7 @@ def get_login(request):
                 messages.error(request, "Invalid username or password.")
         else:
             messages.error(request, "Invalid username or password.")
-    form = AuthenticationForm()
+    form = LandingAuthForm()
     return render(request=request, template_name="recommender/login.html", context={"login_form": form})
 
 

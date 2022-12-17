@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm, AuthenticationForm
 from django.contrib.auth.models import User
 
 
@@ -38,6 +38,21 @@ class CustomUserForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+class LandingAuthForm(AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].label = ""
+        self.fields['username'].widget = forms.widgets.TextInput(attrs={
+                'class': 'form-group col-md-12 form-control input-lg',
+                'placeholder': 'email',
+                'size': '100'
+            })
+        self.fields['password'].label = ""
+        self.fields['password'].widget = forms.widgets.PasswordInput(attrs={
+                'class': 'form-group col-md-12 form-control input-lg',
+                'placeholder': 'password'
+            })
 
 
 class UserSearchForm(forms.Form):
