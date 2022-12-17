@@ -1,5 +1,4 @@
 var redirect_uri = `${window.location.origin}/spotify_success`;
-console.log(redirect_uri)
 
 
 var access_token = null;
@@ -237,7 +236,7 @@ function authenticateSpotifyUser() {
         "password" : password,
         "preferences" : "{'friends': 'Default', 'likes': [], 'dislikes': []}"
     });
-    xhr.open("POST", 'landing_spotify/', true);
+    xhr.open("POST", 'spotify_success/landing_spotify/', true);
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.onload = function () {
         if (this.status >= 200 && this.status < 300) {

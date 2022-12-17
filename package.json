@@ -1,0 +1,21 @@
+{
+  "name": "a-serving-of-brussels-sprouts",
+  "version": "1.0.0",
+  "description": "Senior project git repository.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy:prod": "rm -rf staticfiles && python3 manage.py collectstatic && git add . && git commit -am 'Production prep' && git checkout production && git push origin production"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rowan-Senior-Project-F22/A-Serving-of-Brussels-Sprouts.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Rowan-Senior-Project-F22/A-Serving-of-Brussels-Sprouts/issues"
+  },
+  "homepage": "https://github.com/Rowan-Senior-Project-F22/A-Serving-of-Brussels-Sprouts#readme"
+}
