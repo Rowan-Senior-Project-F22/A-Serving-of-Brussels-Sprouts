@@ -1,4 +1,4 @@
-var redirect_uri = `${window.location.origin}/spotify_success`;
+var redirect_uri = `${window.location.origin.includes('azure') ? window.location.origin : window.location.origin + ':8000'}/spotify_success`;
 
 var access_token = null;
 var refresh_token = null;
