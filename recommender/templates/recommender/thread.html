@@ -7,11 +7,12 @@
 	<div class="row">
 		<div class="card col-md-12 mt-5 p-3 shadow-sm">
 			{% if thread.receiver == request.user %}
-				<h5>{{ thread.user.username }}</h5>
-				<h5>{{ thread.user.profile_picture}}</h5>
+				<h5><img class="user-image rounded-circle" style="width: 80px; height: 80px;" src="../images/{{thread.user.profile_picture}}" alt="Profile Image">{{ thread.user.username }}</h5>
+				
+				<h5>{{thread.user.}}</h5>
 			{% else %}
-				<h5>{{ thread.receiver.username }}</h5>
-				<h5>{{ thread.receiver.profile_picture}}</h5>
+				<h5><img class="user-image rounded-circle" style="width: 80px; height: 80px;" src="../images/{{thread.receiver.profile_picture}}" alt="Profile Image">{{ thread.receiver.username }} </h5>
+				
 			{% endif %}
 		</div>
 	</div>
@@ -29,12 +30,15 @@
 		<div class="col-md-12 my-1">
 			{% if message.sender_user == request.user %}
 				<div class="sent-message my-3">
-					<p>{{ message.body }}</p>
+					
+					<p><img class="user-image rounded-circle" style="width: 40px; height: 40px;" src="../images/{{thread.user.profile_picture}}" alt="Profile Image">{{ message.body }}  </p>
 					<p>{{ message.date }}</p>
+					
+
 				</div>
 			{% elif message.receiver_user == request.user %}
 				<div class="received-message my-3">
-					<p>{{ message.body }}</p>
+					<p><img class="user-image rounded-circle" style="width: 40px; height: 40px;" src="../images/{{thread.receiver.profile_picture}}" alt="Profile Image">{{ message.body }} 
 					<p>{{ message.date }}</p>
 				</div>
 			{% endif %}

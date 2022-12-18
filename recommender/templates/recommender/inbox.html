@@ -21,11 +21,9 @@
 	<div class="row mb-3">
 		<div class="card col-md-12 p-5 shadow-sm">
 			{% if thread.receiver == request.user %}
-				<h5>{{ thread.user.username}}</h5>
-				<h5>{{ thread.user.profile_picture}}</h5>
+			<h5><img class="user-image rounded-circle" style="width: 80px; height: 80px;" src="../images/{{thread.user.profile_picture}}" alt="Profile Image">{{ thread.user.username }}</h5>
 			{% else %}
-				<h5>{{ thread.receiver.profile_picture}} {{ thread.receiver.username}}</h5>
-				
+			<h5><img class="user-image rounded-circle" style="width: 80px; height: 80px;" src="../images/{{thread.receiver.profile_picture}}" alt="Profile Image">{{ thread.receiver.username }} </h5>
 			{% endif %}
 			<a class="stretched-link" href="{% url 'recommender:thread' thread.pk %}"></a>
 		</div>
