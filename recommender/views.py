@@ -16,7 +16,7 @@ from django.dispatch import receiver
 from django.views import View
 from django.db.models import Q, Model
 from .models import User
-from .forms import CustomUserForm
+from .forms import CustomUserForm, CustomUserProfileForm
 from .models import ListeningRoom, ChatRoom
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
@@ -834,3 +834,16 @@ def authenticate_spotify_user(request):
             messages.info(request, f"You are now logged in as {email}.")
             return redirect("recommender:landing_member")
     return render(request, 'recommender/landing_spotify.html')
+
+@login_required
+def change_profile_settings(request):
+    user = request.user
+    form = CustomUserProfileForm(instance=user)
+
+    if request.method == 'POST':
+        form = CustomUserProfileForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+
+    playlist_count = Playlist.objects.filter(Q(owner=request.user)).count()
+    return render(request, 'recommender/profile_settings.html', context={"playlist_count": playlist_count, "form":form})

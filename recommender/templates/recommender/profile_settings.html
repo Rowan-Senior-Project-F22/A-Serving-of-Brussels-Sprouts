@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}
-A Serving of Brussels Sprouts
+    A Serving of Brussels Sprouts
 {% endblock %}
 
 {% block view_title %}
@@ -18,13 +18,13 @@ Account Settings
   <div class="card-body card-profile-body">
 
     <div class="profile-avata">
-      {% if not user.profile_picture %}
-      <img class="user-image rounded-circle" src="{%static 'images/user/user-md-01.jpg' %}" alt="Avata Image">
-      {% else %}
-      <img class="user-image rounded-circle" src="images/{{user.profile_picture}}" alt="Profile Image">
-      {% endif %}
-      <a class="h5 d-block mt-3 mb-2" href="#">{{ user.first_name }} {{user.last_name}}</a>
-      <a class="d-block text-color" href="#">{{ user.email }}</a>
+        {% if not user.profile_picture %}
+        <img class="user-image rounded-circle" src="{%static 'images/user/user-md-01.jpg' %}" alt="Avata Image">
+        {% else %}
+        <img class="user-image rounded-circle" src="images/{{user.profile_picture}}" alt="Profile Image">
+        {% endif %}
+        <a class="h5 d-block mt-3 mb-2" href="#">{{ user.first_name }} {{user.last_name}}</a>
+        <a class="d-block text-color" href="#">{{ user.email }}</a>
     </div>
 
     <ul class="nav nav-profile-follow">
@@ -49,8 +49,7 @@ Account Settings
 
     </ul>
 
-    <div class="profile-button" data-toggle="tooltip" data-placement="top"
-      title="You have already reached the maximum tier available.">
+    <div class="profile-button" data-toggle="tooltip" data-placement="top" title="You have already reached the maximum tier available.">
       <a class="btn btn-primary btn-pill disabled" href="user-planing-settings.html">Upgrade Plan</a>
     </div>
 
@@ -62,10 +61,10 @@ Account Settings
         <a class="nav-link" href="{% url 'recommender:user_preferences' %}">Music Preferences</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link active" href="{% url 'recommender:user_account_settings' %}">Friend Preferences</a>
+        <a class="nav-link" href="{% url 'recommender:user_account_settings' %}">Friend Preferences</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'recommender:change_profile_settings' %}">Settings</a>
+        <a class="nav-link active" href="{% url 'recommender:change_profile_settings' %}">Settings</a>
       </li>
     </ul>
   </div>
@@ -89,12 +88,12 @@ Account Settings
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" href="{% url 'recommender:user_account_settings' %}">
+            <a class="nav-link" href="{% url 'recommender:user_account_settings' %}">
               <i class="mdi mdi-account-outline mr-1"></i> Friend Preferences
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'recommender:change_profile_settings' %}">
+            <a class="nav-link active" href="{% url 'recommender:change_profile_settings' %}">
               <i class="mdi mdi-settings-outline mr-1"></i> Settings
             </a>
           </li>
@@ -114,17 +113,15 @@ Account Settings
 
       <div class="card-body">
 
-        <strong>Current: </strong> {{ friends }}
-
-        <form method="POST" action="{% url 'recommender:user_account_settings' %}">
+        <form method="POST" action="{% url 'recommender:change_profile_settings' %}" enctype="multipart/form-data">
           {% csrf_token %}
-          {{ form }}
+          {{ form.as_p }}
           <div class="d-flex justify-content-start mt-6">
-            <button type="submit" class="btn btn-primary mb-2 btn-pill">Change Preference</button>
+            <button type="submit" class="btn btn-primary mb-2 btn-pill">Update Profile</button>
           </div>
         </form>
 
-        <br />
+        <br/>
 
       </div>
     </div>
