@@ -690,16 +690,16 @@ def l_room_recommend(request):
     #dislike_list = ast.literal_eval(request.user.preferences['dislikes'])
     random_index = random.randint(0, len(like_list) -1)
     random_genre = like_list[random_index]
+    random_genre = random_genre.replace("-", " ")
     
     for room in rooms:
         room_genres = eval(room.genres)
         for genre in room_genres:
-            if(genre == random_genre):
+            if(genre==random_genre):
                 recommendations.append(room)
 
     random.shuffle(recommendations)
-    #return recommendations[:20]
-    pass
+    return recommendations[:20]
 
 
 
