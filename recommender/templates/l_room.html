@@ -96,13 +96,13 @@
             chatSocket.onmessage = function (e) {
                 const data = JSON.parse(e.data);
                 if (data.message) {
-                    let html = '<div class="media media-chat">';
+                    let html = '{% if ' + user_username + ' == ' + data.username + ' %} <div class="media media-chat media-chat-right">{% else %}<div class="media media-chat">{% endif %}';
                         html += `<img src="{% static 'images/user/user-sm-01.jpg' %}" class="rounded-circle" alt="Avata Image">`
                         html += '<div class="media-body"><div class="text-content">';
                     html += '<p class="font-bold" style="font-size:125%; color:black;"><b>' + data.username + '</b></p>';
                     html += '<p style="color:black">' + data.message + '</p>'
-                    html += `<time class="time">${data.timestamp}` 
-                    html += '</time></div></div></div></br>';
+                    html += `<time class="time">${data.timestamp}</time>` 
+                    html += '</div></div></div></br>';
                     document.querySelector('#chat-messages').innerHTML += html;
                     scrollToBottom();
                 } else {

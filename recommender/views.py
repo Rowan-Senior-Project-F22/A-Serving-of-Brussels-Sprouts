@@ -1,5 +1,6 @@
 import ast
 import json, re
+from math import ceil
 from django.template.defaultfilters import slugify
 from django.shortcuts import render, redirect
 from recommender.models import ThreadModel, MessageModel, MusicData, Playlist, Notification
@@ -252,6 +253,7 @@ def user_profile(request, user_name):
     context = {
         'username': user.username,
         'user_email': user.email,
+        'profile_user': user,
         'friend_count': user.friend_count,
         'like_count': like_count,
         'dislike_count': dislike_count,
@@ -296,10 +298,10 @@ class CreateThread(View):
             receiver = User.objects.get(username=username)
             if ThreadModel.objects.filter(user=request.user, receiver=receiver).exists():
                 thread = ThreadModel.objects.filter(user=request.user, receiver=receiver)[0]
-                return redirect('thread', pk=thread.pk)
+                return redirect('recommender:thread', pk=thread.pk)
             elif ThreadModel.objects.filter(user=receiver, receiver=request.user).exists():
                 thread = ThreadModel.objects.filter(user=receiver, reciever=request.user)[0]
-                return redirect('thread', pk=thread.pk)
+                return redirect('recommender:thread', pk=thread.pk)
             if form.is_valid:
                 thread = ThreadModel(
                     user=request.user,
@@ -423,18 +425,30 @@ def import_spotify_playlist(request, playlist_id):
     playlists.
     """
     spotify_playlist_id = playlist_id.split(':')[2]
-    playlist_details = sp.playlist_tracks(playlist_id=spotify_playlist_id)
+    playlist_details = sp.playlist(playlist_id=spotify_playlist_id)
+    playlist_name = playlist_details['name']
+
+    user_has_playlist = Playlist.objects.filter(name__contains=playlist_name, owner=request.user)
+    if len(user_has_playlist) > 0:
+        # Prevent the user from adding a duplicate playlist.
+        messages.error(request=request, message="You already have a playlist imported by this name!")
+        return import_spotify(request=request)
+
     if playlist_details is None:
         # If the details are invalid, signal an error message and route the user to the import spotify
         # view.
         messages.error(request=request, message="A playlist does not exist by that ID!")
         return import_spotify(request=request)
     track_ids = []
-    for i in range(0, len(playlist_details['items'])):
-        track_ids.append(map(lambda x: playlist_details['items'][i]['external_urls']))
-        #tracks_ids.append(playlist_details['items'][0]['track']['id'])
-    messages.success(request=request, message=f'You have successfully imported the playlist.')
-    return user_profile(request, request.user.username)
+    for i in range(0, len(playlist_details['tracks']['items'])):
+        if 'id' in playlist_details['tracks']['items'][i]['track']:
+            track_ids.append(playlist_details['tracks']['items'][i]['track']['id'])
+    new_playlist = Playlist(name=playlist_name,
+                spotify_ref_id=playlist_details['id'],
+                is_public=True, owner=request.user, songs=track_ids)
+    new_playlist.save()
+    messages.success(request=request, message=f'You have successfully imported {playlist_name}.')
+    return import_spotify(request=request)
 
 
 def import_spotify(request):
@@ -443,23 +457,30 @@ def import_spotify(request):
     API call. Then, aggregates this data into a list containing fields for the title,
     the Playlist image, and the track IDs.
     """
-    playlists = sp.user_playlists('spotify')
+    page = request.GET.get('page', 1)
+    ROWS_PER_PAGE = 50
+    try:
+        page = int(page)
+        if page <= 0:
+            page = 1
+    except:
+        page = 1
+    playlists = sp.user_playlists('spotify', limit=ROWS_PER_PAGE, offset=ROWS_PER_PAGE * (page - 1))
+    total_pages = range(1, ceil(int(playlists['total']) / ROWS_PER_PAGE))
     available_playlists = []
-    while playlists:
-        for i, playlist in enumerate(playlists['items']):
-            print(str(playlist) + '\n')
+    for i, playlist in enumerate(playlists['items']):
+            user_has_playlist = Playlist.objects.filter(name=playlist['name'], owner=request.user)
             available_playlists.append({
                 'name': playlist['name'],
                 'uri': playlist['uri'],
                 'thumbnail': playlist['images'][0]['url'] if ('images' in playlist and len(playlist['images']) > 0) else None,
-                'tracksRef': playlist['tracks']
+                'tracksRef': playlist['tracks'],
+                'disabled': len(user_has_playlist) > 0
             })
-        if playlists['next']:
-            playlists = sp.next(playlists)
-        else:
-            playlists = None
     return render(request=request, template_name="recommender/import_spotify.html", context={
-        'spotify_playlists': available_playlists
+        'spotify_playlists': available_playlists,
+        'total_pages': total_pages,
+        'page': page
     })
 
 
@@ -797,8 +818,10 @@ def get_logout(request):
 
 @login_required
 def user_playlist(request, user_id):
+    playlist_query = Q(spotify_ref_id__isnull=False)
     like_query_result = Playlist.objects.all().filter(owner=request.user, name='likes')
     dislike_query_result = Playlist.objects.all().filter(owner=request.user, name='dislikes')
+    spotify_playlists = Playlist.objects.filter(playlist_query)
 
     # fetch like playlist
     if len(like_query_result) > 0 or like_query_result[0].songs != "":
@@ -822,7 +845,8 @@ def user_playlist(request, user_id):
 
     context = {
         'liked_music': liked_music_data,
-        'disliked_music': disliked_music_data
+        'disliked_music': disliked_music_data,
+        'playlists': spotify_playlists
     }
 
     return render(request, 'recommender/user_playlist.html', context)

@@ -1,8 +1,5 @@
 {% extends 'base.html' %}
 
-{% block content %}
-{% load static %}
-
 {% block title %}
     A Serving of Brussels Sprouts
 {% endblock %}
@@ -10,6 +7,9 @@
 {% block view_title %}
 User Playlist
 {% endblock %}
+
+{% block content %}
+{% load static %}
 
   <head>
     <meta charset="UTF-8">
@@ -35,11 +35,17 @@ User Playlist
         </div>
         <br/>
 
+        <div class="card">
         <ul class="nav nav-tabs mb-3" id="pills-tab" role="tablist">
 
             <li class="nav-item">
-                <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#nav-tabs-likes" role="tab"
-                    aria-controls="nav-tabs" aria-selected="true">Likes</a>
+                <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#nav-playlists" role="tab"
+                    aria-controls="nav-playlists" aria-selected="true">Spotify Playlists</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" id="pills-home-tab" data-toggle="pill" href="#nav-tabs-likes" role="tab"
+                    aria-controls="nav-tabs" aria-selected="false">Likes</a>
             </li>
 
             <li class="nav-item">
@@ -48,9 +54,47 @@ User Playlist
             </li>
             
         </ul>
-
-        <div class="tab-content mt-5" id="nav-tabContent">
-            <div class="tab-pane fade show active" id="nav-tabs-likes" role="tabpanel" aria-labelledby="nav-home-tab">
+        <div class="card-body">
+        <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-playlists" role="tabpanel" aria-labelledby="nav-playlist-tab">
+                {% if playlists %}
+                <ul class="list-group">
+                    {% for playlist in playlists  %}
+                    <li class="list-group-item list-group-item-action">
+                        <div class="media media-sm mb-0">
+                          <div class="media-sm-wrapper bg-success">
+                            <i class="mdi mdi-spotify"></i>
+                          </div>
+                          <div class="media-body">
+                            <span class="title">{{ playlist.name }}</span>
+                            <p>
+                                <div class="accordion" id="accordion{{ playlist.id }}">
+                                <div class="card">
+                                  <div class="card-header" id="headingBorder{{ playlist.id }}">
+                                    <h2 class="mb-0">
+                                      <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseBorder{{ playlist.id }}"
+                                        aria-expanded="false" aria-controls="collapseBorder{{ playlist.id }}">
+                                        Listen
+                                      </button>
+                                    </h2>
+                                  </div>
+                                  <div id="collapseBorder{{ playlist.id }}" class="collapse" aria-labelledby="headingBorder{{ playlist.id }}" data-parent="#accordion{{ playlist.id }}">
+                                    <div class="card-body">
+                                        <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/{{ playlist.spotify_ref_id }}?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div></p>
+                          </div>
+                        </div>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                  {% else %}
+                  <p>You do not have any playlists imported from Spotify yet!</p>
+                {% endif %}
+            </div>
+            <div class="tab-pane fade" id="nav-tabs-likes" role="tabpanel" aria-labelledby="nav-home-tab">
                 <h1 class="heading"> Liked Music </h1>
                 <div class="box-container">
                     {% for l in liked_music %}
@@ -136,6 +180,8 @@ User Playlist
                     </div>
             </div>
         </div>
+    </div>
+    </div>
 
     </div>
 
