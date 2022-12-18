@@ -67,7 +67,11 @@ Discover Friends
             {% for member in memberlist %}
             <tr>
                 <td class="py-0 pt-2">
-                  <img src="{% static 'images/user/user-sm-04.jpg' %}" alt="Product Image">
+                  {% if not member.profile_picture %}
+                        <img src="{%static 'images/user/user-sm-04.jpg' %}" alt="Avata Image">
+                        {% else %}
+                        <img style="width: 50px; height: 50px;" src="../images/{{member.profile_picture}}" alt="Profile Image">
+                        {% endif %}
                 </td>
                 <td>{{ member.username }}</td>
                 <td>{{ member.email }}</td>
@@ -84,8 +88,16 @@ Discover Friends
           
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
                       <a class="dropdown-item" href="{% url 'recommender:user_profile' user_name=member.username %}">View Profile</a>
-                      <a class="dropdown-item" href="#">Add Friend</a>
-                      <a class="dropdown-item" href="#">DM User</a>
+                      <form method="POST">
+                        {% csrf_token %}
+                        <a class="dropdown-item" href="#">Add Friend</a>
+                      </form>
+                      <form method="POST" action="{% url 'recommender:create-thread' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="username" value="{{ member.username }}">
+                        <input type="submit" style="border: none;" class="dropdown-item" href="#" value="DM User">
+                        <!-- <a type="submit" style="border: none;" class="dropdown-item" href="#">DM User</a> -->
+                      </form>
                     </div>
                   </div>
                 </td>

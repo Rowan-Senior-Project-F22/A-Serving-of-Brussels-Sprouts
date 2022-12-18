@@ -96,6 +96,7 @@ class Playlist(models.Model):
     songs = models.CharField(null=False, default='', max_length=100)
     is_public = models.BooleanField(default=False)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
+    spotify_ref_id = models.CharField(null=True, default=None, max_length=228)
     #creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
 
 
