@@ -686,8 +686,11 @@ def recommend_songs_by_genre(like_list, dislike_list, count):
 def l_room_recommend(request):
     recommendations = []
     rooms = ChatRoom.objects.all()
-    like_list = ast.literal_eval(request.user.preferences)['likes']
-    #dislike_list = ast.literal_eval(request.user.preferences['dislikes'])
+    user_preferences = init_users_preferences(request=request, available_genre_seeds=None)
+    like_list = user_preferences['likes']
+    dislike_list = user_preferences['dislikes']
+    if len(like_list) == 0 or dislike_list == 0:
+        return []
     random_index = random.randint(0, len(like_list) -1)
     random_genre = like_list[random_index]
     random_genre = random_genre.replace("-", " ")

@@ -208,6 +208,7 @@
                                         src="{%static 'images/user/user-md-01.jpg' %}" alt="Avata Image">
                                     {% else %}
                                     <img class="user-image rounded-circle" src="../images/{{user.profile_picture}}"
+                                        style="width: 40px; height: 40px;"
                                         alt="Profile Image">
                                     {% endif %}
                                     <span class="d-none d-lg-inline-block">{{ user.username }}</span>

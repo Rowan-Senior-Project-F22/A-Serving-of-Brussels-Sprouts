@@ -6,6 +6,8 @@
     {{room_name}}
 {% endblock %}
 
+{% load static %}
+
 {% block content %}
 
 <head>
@@ -95,6 +97,7 @@
                 const data = JSON.parse(e.data);
                 if (data.message) {
                     let html = '<div class="media media-chat">';
+                        html += `<img src="{% static 'images/user/user-sm-01.jpg' %}" class="rounded-circle" alt="Avata Image">`
                         html += '<div class="media-body"><div class="text-content">';
                     html += '<p class="font-bold" style="font-size:125%; color:black;"><b>' + data.username + '</b></p>';
                     html += '<p style="color:black">' + data.message + '</p>'

@@ -21,7 +21,7 @@ Account Settings
       {% if not user.profile_picture %}
       <img class="user-image rounded-circle" src="{%static 'images/user/user-md-01.jpg' %}" alt="Avata Image">
       {% else %}
-      <img class="user-image rounded-circle" src="images/{{user.profile_picture}}" alt="Profile Image">
+      <img class="user-image rounded-circle" style="width: 120px; height: 120px;" src="images/{{user.profile_picture}}" alt="Profile Image">
       {% endif %}
       <a class="h5 d-block mt-3 mb-2" href="#">{{ user.first_name }} {{user.last_name}}</a>
       <a class="d-block text-color" href="#">{{ user.email }}</a>

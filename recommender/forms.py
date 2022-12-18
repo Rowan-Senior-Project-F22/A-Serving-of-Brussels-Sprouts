@@ -41,10 +41,11 @@ class CustomUserForm(UserCreationForm):
         return user
 
 class CustomUserProfileForm(forms.ModelForm):
-    email = forms.EmailField(required=True)
-    profile_picture = forms.ImageField()
-    password1 = forms.CharField(label=_("Password"), required=False, widget=forms.PasswordInput())
-    password2 = forms.CharField(label=_("Password confirmation"), required=False, widget=forms.PasswordInput())
+    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control mb-5'}))
+    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'form-control mb-5'}))
+    profile_picture = forms.ImageField(widget=forms.FileInput(attrs={'class': 'mb-5 d-flex'}))
+    password1 = forms.CharField(label=_("Password"), required=False, widget=forms.PasswordInput(attrs={'class': "form-control"}))
+    password2 = forms.CharField(label=_("Password confirmation"), required=False, widget=forms.PasswordInput(attrs={'class': "form-control"}))
     class Meta:
         model = User
         fields = ("username", "email", "profile_picture", "password1", "password2")
