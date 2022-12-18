@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm, AuthenticationForm
 from django.contrib.auth.models import User
+from django.utils.translation import gettext_lazy as _
 
 
 class ThreadForm(forms.Form):
@@ -35,6 +36,26 @@ class CustomUserForm(UserCreationForm):
     def save(self, commit=True):
         user = super(CustomUserForm, self).save(commit=False)
         user.email = self.cleaned_data['email']
+        if commit:
+            user.save()
+        return user
+
+class CustomUserProfileForm(forms.ModelForm):
+    email = forms.EmailField(required=True)
+    profile_picture = forms.ImageField()
+    password1 = forms.CharField(label=_("Password"), required=False, widget=forms.PasswordInput())
+    password2 = forms.CharField(label=_("Password confirmation"), required=False, widget=forms.PasswordInput())
+    class Meta:
+        model = User
+        fields = ("username", "email", "profile_picture", "password1", "password2")
+
+    def save(self, commit=True):
+        user = super(CustomUserProfileForm, self).save(commit=False)
+        user.email = self.cleaned_data['email']
+        user.profile_picture = self.cleaned_data['profile_picture']
+        password = self.cleaned_data['password1']
+        if password:
+            user.set_password(password)
         if commit:
             user.save()
         return user

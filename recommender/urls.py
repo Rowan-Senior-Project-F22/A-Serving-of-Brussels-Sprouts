@@ -1,6 +1,8 @@
 from django.urls import path
 from .views import CreateThread, ListThreads, ThreadView, CreateMessage, ThreadNotification
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 app_name = 'recommender'
 
@@ -15,6 +17,7 @@ urlpatterns = [
     path("playlist/<int:user_id>", views.user_playlist, name="user_playlist"),
     path("preferences", views.user_preferences, name="user_preferences"),
     path("settings", views.user_account_settings, name="user_account_settings"),
+    path("profile_settings", views.change_profile_settings, name="change_profile_settings"),
     path("landing/", views.get_member_feed, name="landing_member"),
     path("l_room/<slug:slug>/", views.l_room, name="l_room"),
     path("l_room_create/", views.l_room_create, name="l_room_create"),
@@ -29,3 +32,5 @@ urlpatterns = [
     path("import_spotify", views.import_spotify, name="import_spotify"),
     path("import_spotify_playlist/<str:playlist_id>", views.import_spotify_playlist, name="import_spotify_playlist"),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
