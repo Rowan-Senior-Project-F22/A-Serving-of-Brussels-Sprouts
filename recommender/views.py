@@ -818,7 +818,7 @@ def get_logout(request):
 
 @login_required
 def user_playlist(request, user_id):
-    playlist_query = Q(spotify_ref_id__isnull=False)
+    playlist_query = Q(spotify_ref_id__isnull=False) & Q(owner=request.user)
     like_query_result = Playlist.objects.all().filter(owner=request.user, name='likes')
     dislike_query_result = Playlist.objects.all().filter(owner=request.user, name='dislikes')
     spotify_playlists = Playlist.objects.filter(playlist_query)
