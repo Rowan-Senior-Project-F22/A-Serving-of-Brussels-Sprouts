@@ -250,6 +250,29 @@ def user_profile(request, user_name):
         for d in dislikes_subset:
             disliked_music_data.append(MusicData.objects.all().filter(track_id=d)[0])
 
+    pref = preferences = ast.literal_eval(user.preferences)
+    pref_likes = pref['likes']
+    pref_dislikes = pref['dislikes']
+
+    liked_genres = []
+    if pref_likes and len(pref_likes) != 0:
+        if len(pref_likes) > 4:
+            liked_genres = pref_likes[0:4]
+        else:
+            liked_genres = pref_likes
+        random.shuffle(liked_genres)
+
+    disliked_genres = []
+    if pref_dislikes and len(pref_dislikes) != 0:
+        if len(pref_dislikes) > 4:
+            disliked_genres = pref_dislikes[0:4]
+        else:
+            disliked_genres = pref_dislikes
+        random.shuffle(disliked_genres)
+
+    print('\nLiked Genres:', liked_genres)
+    print('Disliked Genres:', disliked_genres, '\n')
+
     context = {
         'username': user.username,
         'user_email': user.email,
@@ -258,7 +281,9 @@ def user_profile(request, user_name):
         'like_count': like_count,
         'dislike_count': dislike_count,
         'liked_music': liked_music_data,
-        'disliked_music': disliked_music_data
+        'disliked_music': disliked_music_data,
+        'liked_genres': liked_genres,
+        'disliked_genres': disliked_genres
     }
 
     return render(request, 'recommender/user_profile.html', context)
