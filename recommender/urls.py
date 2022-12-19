@@ -31,6 +31,7 @@ urlpatterns = [
     path("recommendation", views.friend_recommendation, name="friend_recommendation"),
     path("import_spotify", views.import_spotify, name="import_spotify"),
     path("import_spotify_playlist/<str:playlist_id>", views.import_spotify_playlist, name="import_spotify_playlist"),
+    path("friend_user", views.friend_user, name="friend_user"),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
