@@ -912,11 +912,7 @@ def friend_user(request):
 
 @login_required
 def user_playlist(request, user_id):
-<<<<<<< HEAD
     playlist_query = Q(spotify_ref_id__isnull=False) & Q(owner=request.user)
-=======
-    playlist_query = Q(spotify_ref_id__isnull=False, owner=request.user)
->>>>>>> staging
     like_query_result = Playlist.objects.all().filter(owner=request.user, name='likes')
     dislike_query_result = Playlist.objects.all().filter(owner=request.user, name='dislikes')
     spotify_playlists = Playlist.objects.filter(playlist_query)
