@@ -250,6 +250,29 @@ def user_profile(request, user_name):
         for d in dislikes_subset:
             disliked_music_data.append(MusicData.objects.all().filter(track_id=d)[0])
 
+    pref = preferences = ast.literal_eval(user.preferences)
+    pref_likes = pref['likes']
+    pref_dislikes = pref['dislikes']
+
+    liked_genres = []
+    if pref_likes and len(pref_likes) != 0:
+        if len(pref_likes) > 4:
+            liked_genres = pref_likes[0:4]
+        else:
+            liked_genres = pref_likes
+        random.shuffle(liked_genres)
+
+    disliked_genres = []
+    if pref_dislikes and len(pref_dislikes) != 0:
+        if len(pref_dislikes) > 4:
+            disliked_genres = pref_dislikes[0:4]
+        else:
+            disliked_genres = pref_dislikes
+        random.shuffle(disliked_genres)
+
+    print('\nLiked Genres:', liked_genres)
+    print('Disliked Genres:', disliked_genres, '\n')
+
     context = {
         'username': user.username,
         'user_email': user.email,
@@ -258,7 +281,9 @@ def user_profile(request, user_name):
         'like_count': like_count,
         'dislike_count': dislike_count,
         'liked_music': liked_music_data,
-        'disliked_music': disliked_music_data
+        'disliked_music': disliked_music_data,
+        'liked_genres': liked_genres,
+        'disliked_genres': disliked_genres
     }
 
     return render(request, 'recommender/user_profile.html', context)
@@ -296,6 +321,9 @@ class CreateThread(View):
 
         try:
             receiver = User.objects.get(username=username)
+            if receiver == request.user:
+                messages.error(request=request, message="You can't message yourself!")
+                return redirect('recommender:create-thread')
             if ThreadModel.objects.filter(user=request.user, receiver=receiver).exists():
                 thread = ThreadModel.objects.filter(user=request.user, receiver=receiver)[0]
                 return redirect('recommender:thread', pk=thread.pk)
@@ -705,22 +733,67 @@ def recommend_songs_by_genre(like_list, dislike_list, count):
     return recommendations
 
 def l_room_recommend(request):
+    like_recommend = []
+    dislike_recommend = []
     recommendations = []
+
     rooms = ChatRoom.objects.all()
     user_preferences = init_users_preferences(request=request, available_genre_seeds=None)
     like_list = user_preferences['likes']
     dislike_list = user_preferences['dislikes']
+
     if len(like_list) == 0 or dislike_list == 0:
         return []
     random_index = random.randint(0, len(like_list) -1)
     random_genre = like_list[random_index]
     random_genre = random_genre.replace("-", " ")
+
+    random_like_index = random.randint(0, len(like_list) -1)
+    random_like_genre = like_list[random_like_index]
+    random_dislike_index = random.randint(0, len(dislike_list) -1)
+    random_dislike_genre = like_list[random_dislike_index]
+    random_like_genre = random_like_genre.replace("-", " ")
+    random_dislike_genre = random_dislike_genre.replace("-", " ")
     
     for room in rooms:
         room_genres = eval(room.genres)
         for genre in room_genres:
             if(genre==random_genre):
                 recommendations.append(room)
+            if random_like_genre in genre:
+                if room in like_recommend:
+                    print("")
+                else:
+                    like_recommend.append(room)
+
+    for room in rooms:
+        room_genres = eval(room.genres)
+        for genre in room_genres:
+            if random_dislike_genre in genre:
+                if room in dislike_recommend:
+                    print("")
+                else:
+                    dislike_recommend.append(room)
+
+    if (len(like_recommend) == 0 and len(dislike_recommend) == 0):
+        return recommendations
+
+    for i in range(len(rooms)):
+        if (i%3 == 0):
+            if(len(dislike_recommend)) == 0:
+                print("")
+            else:
+                random_index = random.randint(0, len(dislike_recommend) -1)
+                recommendations.append(dislike_recommend[random_index])
+                dislike_recommend.pop(random_index)
+        else:
+            if(len(like_recommend)) == 0:
+                print("")
+            else:
+                random_index = random.randint(0, len(like_recommend) -1)
+                recommendations.append(like_recommend[random_index])
+                like_recommend.pop(random_index)
+
 
     random.shuffle(recommendations)
     return recommendations[:20]
@@ -770,6 +843,8 @@ def friend_recommendation(request):
     # Disparate
     # Default
 
+    current_friends = request.user.friends_list.all()
+
     if request.method == 'POST':
         search_form = UserSearchForm(data=request.POST)
         if search_form.is_valid():
@@ -780,14 +855,14 @@ def friend_recommendation(request):
             results = User.objects.filter(username__contains=username_query)
             return render(request=request, template_name='recommender/friend_recommender.html', context={
                 "memberlist": results,
-                "form": search_form
+                "form": search_form,
+                'current_friends': current_friends
             })
     else:
         recommendations = generate_friend_recommendations(request, preference=user_preferences['friends'])
-        print(recommendations)
         search_form = UserSearchForm()
 
-        return render(request=request, template_name='recommender/friend_recommender.html', context={'memberlist': recommendations, 'form': search_form})
+        return render(request=request, template_name='recommender/friend_recommender.html', context={'memberlist': recommendations, 'form': search_form, 'current_friends': current_friends})
 
 
 def get_login(request):
@@ -817,8 +892,31 @@ def get_logout(request):
 
 
 @login_required
+def friend_user(request):
+    if request.method == "POST":
+        user_to_friend = request.POST.get('target')
+        if user_to_friend is None or user_to_friend == request.user.id:
+            messages.error(request=request, message="Invalid friend requested.")
+            return friend_recommendation(request=request)
+        target_user = User.objects.filter(id=user_to_friend).first()
+        target_user.friend_count = target_user.friend_count + 1
+        request.user.friend_count = request.user.friend_count + 1
+        request.user.friends_list.add(target_user)
+        target_user.save()
+        request.user.save()
+        messages.success(request=request, message=f"You are now friends with {target_user.username}")
+        return friend_recommendation(request=request)
+    else:
+        return friend_recommendation(request=request)
+
+
+@login_required
 def user_playlist(request, user_id):
+<<<<<<< HEAD
     playlist_query = Q(spotify_ref_id__isnull=False) & Q(owner=request.user)
+=======
+    playlist_query = Q(spotify_ref_id__isnull=False, owner=request.user)
+>>>>>>> staging
     like_query_result = Playlist.objects.all().filter(owner=request.user, name='likes')
     dislike_query_result = Playlist.objects.all().filter(owner=request.user, name='dislikes')
     spotify_playlists = Playlist.objects.filter(playlist_query)

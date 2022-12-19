@@ -9,7 +9,7 @@ class ThreadForm(forms.Form):
 
 
 class MessageForm(forms.Form):
-    message = forms.CharField(label='', max_length=1000)
+    message = forms.CharField(label='', max_length=1000, widget=forms.TextInput(attrs={'size': '100', 'class': 'form-control', 'placeholder': 'Enter message'}))
 
 
 from .models import User
@@ -98,8 +98,8 @@ class UserPreferencesForm(forms.Form):
 
 class UserFriendSettingsForm(forms.Form):
     preference = forms.ChoiceField(choices=[('Similar', 'Similar'), ('Opposite', 'Opposite'),
-                                            ('Disparate', 'Disparate'), ('Default', 'Default')],
-                                   initial="Default",
+                                            ('Disparate', 'Disparate')],
+                                   initial="Opposite",
                                    widget=forms.Select(attrs={'class': "form-control rounded-0"}),
                                    label="Friend Recommendation Preference")
 

@@ -43,10 +43,12 @@
                 <div class="card-header-bg" style="background-image:url(assets/img/user/user-bg-01.jpg)"></div>
                 <div class="card-body card-profile-body">
                     <div class="profile-avata">
-                        {% if not profile_user.profile_picture %}
-                        <img class="user-image rounded-circle" src="{%static 'images/user/user-md-01.jpg' %}" alt="Avata Image">
-                        {% else %}
-                        <img class="user-image rounded-circle" style="width: 120px; height: 120px;" src="../images/{{profile_user.profile_picture}}" alt="Profile Image">
+                        {% if profile_user.profile_picture %}
+                        <img class="rounded-circle" src="../images/{{profile_user.profile_picture}}"
+                        style="width: 100px; height: 100px;" alt="Avatar Image">
+                            {% else %}
+                            <img class="rounded-circle" src="{% static 'images/user/user-md-01.jpg' %}"
+                        style="width: 100px; height: 100px;" alt="Avatar Image">
                         {% endif %}
                         <span class="h5 d-block mt-3 mb-2">{{ profile_user.username }}</span>
                         <span class="d-block">{{ profile_user.user_email }}</span>
@@ -77,6 +79,9 @@
 
             <!-- Liked Songs -->
             <h1 style="text-align:center">Likes</h1>
+            {% for g in liked_genres %}
+                <a href="#" class="badge badge-pill badge-primary">{{ g }}</a>
+            {% endfor %}
             <div class="card-group">
                 {% for l in liked_music %}
                 <div class="card">
@@ -106,6 +111,9 @@
 
             <!-- Disliked Songs -->
             <h1 style="text-align:center">Dislikes</h1>
+            {% for g in disliked_genres %}
+                <a href="#" class="badge badge-pill badge-primary">{{ g }}</a>
+            {% endfor %}
             <div class="card-group">
                 {% for d in disliked_music %}
                 <div class="card">

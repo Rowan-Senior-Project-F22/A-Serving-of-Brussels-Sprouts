@@ -31,7 +31,6 @@ def init_users_preferences(request, available_genre_seeds):
         }
     return users_preferences
 
-
 def generate_friend_recommendations(request, preference, search_query=None):
     """Generates a list of friend recommendations given a user preference. Retrieves
     all user objects. Then, for each user, appends a 3-tuple of the user's email,
@@ -44,6 +43,8 @@ def generate_friend_recommendations(request, preference, search_query=None):
     raw_users = User.objects.all()
     result_set = []
     current_users_preferences = ast.literal_eval(request.user.preferences)
+    if len(current_users_preferences['likes']) == 0 or len(current_users_preferences['dislikes']) == 0:
+        return []
     initialized_users = []
     for user in raw_users:
         try:
@@ -74,17 +75,22 @@ def generate_friend_recommendations(request, preference, search_query=None):
         result_set = []
         similar_likes_users = list((filter(lambda x: any(y in x[1] for y in current_users_preferences['likes']), initialized_users)))
         similar_dislikes_users = list((filter(lambda x: any(y in x[2] for y in current_users_preferences['dislikes']), initialized_users)))
+        random.shuffle(similar_likes_users)
+        random.shuffle(similar_dislikes_users)
         num_likes_users = 0		
         num_dislikes_users = 0		
         for i in range(0, 9):		
-             if len(similar_likes_users) == 0 and len(similar_dislikes_users) == 0:		
-                 break		
-             if i < 2 or (num_likes_users / num_dislikes_users != 2 and len(similar_likes_users) > 0):		
+             if len(similar_likes_users) == 0 or len(similar_dislikes_users) == 0:
+                if len(result_set) < 9 and len(similar_likes_users) == 0:
+                    pass
+                elif len(result_set) < 9 and len(similar_likes_users) == 0:
+                    pass	
+             if i % 3 != 0:		
                  new_user = similar_likes_users[random.randint(0, len(similar_likes_users) - 1)]		
                  similar_likes_users.remove(new_user)		
                  result_set.append(new_user)		
                  num_likes_users += 1		
-             elif len(similar_dislikes_users) > 0:		
+             else:		
                  new_user = similar_dislikes_users[random.randint(0, len(similar_dislikes_users) - 1)]		
                  similar_dislikes_users.remove(new_user)		
                  result_set.append(new_user)		
