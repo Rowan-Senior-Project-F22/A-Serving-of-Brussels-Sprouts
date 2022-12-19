@@ -195,7 +195,7 @@ For You Page
                     <div class="box">
                         <div class="content">
                                 <h3><b>Room name</b>: {{room.room_name}}</h3>
-                                <button id="join" class="btn btn-secondary" href="{% url 'recommender:l_room' room.room_slug %}">Join!</button>
+                                <a href="{% url 'recommender:l_room' room.room_slug %}" class="btn btn-secondary">Join!</a>
                         </div>
                     </div>
                     {% endfor %}
