@@ -733,22 +733,67 @@ def recommend_songs_by_genre(like_list, dislike_list, count):
     return recommendations
 
 def l_room_recommend(request):
+    like_recommend = []
+    dislike_recommend = []
     recommendations = []
+
     rooms = ChatRoom.objects.all()
     user_preferences = init_users_preferences(request=request, available_genre_seeds=None)
     like_list = user_preferences['likes']
     dislike_list = user_preferences['dislikes']
+
     if len(like_list) == 0 or dislike_list == 0:
         return []
     random_index = random.randint(0, len(like_list) -1)
     random_genre = like_list[random_index]
     random_genre = random_genre.replace("-", " ")
+
+    random_like_index = random.randint(0, len(like_list) -1)
+    random_like_genre = like_list[random_like_index]
+    random_dislike_index = random.randint(0, len(dislike_list) -1)
+    random_dislike_genre = like_list[random_dislike_index]
+    random_like_genre = random_like_genre.replace("-", " ")
+    random_dislike_genre = random_dislike_genre.replace("-", " ")
     
     for room in rooms:
         room_genres = eval(room.genres)
         for genre in room_genres:
             if(genre==random_genre):
                 recommendations.append(room)
+            if random_like_genre in genre:
+                if room in like_recommend:
+                    print("")
+                else:
+                    like_recommend.append(room)
+
+    for room in rooms:
+        room_genres = eval(room.genres)
+        for genre in room_genres:
+            if random_dislike_genre in genre:
+                if room in dislike_recommend:
+                    print("")
+                else:
+                    dislike_recommend.append(room)
+
+    if (len(like_recommend) == 0 and len(dislike_recommend) == 0):
+        return recommendations
+
+    for i in range(len(rooms)):
+        if (i%3 == 0):
+            if(len(dislike_recommend)) == 0:
+                print("")
+            else:
+                random_index = random.randint(0, len(dislike_recommend) -1)
+                recommendations.append(dislike_recommend[random_index])
+                dislike_recommend.pop(random_index)
+        else:
+            if(len(like_recommend)) == 0:
+                print("")
+            else:
+                random_index = random.randint(0, len(like_recommend) -1)
+                recommendations.append(like_recommend[random_index])
+                like_recommend.pop(random_index)
+
 
     random.shuffle(recommendations)
     return recommendations[:20]

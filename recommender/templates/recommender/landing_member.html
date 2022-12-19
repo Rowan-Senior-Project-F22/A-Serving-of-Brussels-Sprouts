@@ -190,6 +190,10 @@ For You Page
         <div class="tab-pane fade" id="pills-l-room-justify-content-between" role="tabpanel"
         aria-labelledby="nav-profile-tab">
             <div class="container">
+                <center>
+                    <a href="{% url 'recommender:l_room' 'main' %}" class="btn btn-secondary">Join the Global Listening Session!</a>
+                </center>
+                </br>
                 <div class="box-container">
                     {% for room in l_room_data %}
                     <div class="box">
