@@ -74,6 +74,9 @@
 
             <!-- Liked Songs -->
             <h1 style="text-align:center">Likes</h1>
+            {% for g in liked_genres %}
+                <a href="#" class="badge badge-pill badge-primary">{{ g }}</a>
+            {% endfor %}
             <div class="card-group">
                 {% for l in liked_music %}
                 <div class="card">
@@ -103,6 +106,9 @@
 
             <!-- Disliked Songs -->
             <h1 style="text-align:center">Dislikes</h1>
+            {% for g in disliked_genres %}
+                <a href="#" class="badge badge-pill badge-primary">{{ g }}</a>
+            {% endfor %}
             <div class="card-group">
                 {% for d in disliked_music %}
                 <div class="card">
