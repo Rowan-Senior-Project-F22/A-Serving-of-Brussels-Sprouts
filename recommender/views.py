@@ -843,6 +843,8 @@ def friend_recommendation(request):
     # Disparate
     # Default
 
+    current_friends = request.user.friends_list.all()
+
     if request.method == 'POST':
         search_form = UserSearchForm(data=request.POST)
         if search_form.is_valid():
@@ -853,14 +855,14 @@ def friend_recommendation(request):
             results = User.objects.filter(username__contains=username_query)
             return render(request=request, template_name='recommender/friend_recommender.html', context={
                 "memberlist": results,
-                "form": search_form
+                "form": search_form,
+                'current_friends': current_friends
             })
     else:
         recommendations = generate_friend_recommendations(request, preference=user_preferences['friends'])
-        print(recommendations)
         search_form = UserSearchForm()
 
-        return render(request=request, template_name='recommender/friend_recommender.html', context={'memberlist': recommendations, 'form': search_form})
+        return render(request=request, template_name='recommender/friend_recommender.html', context={'memberlist': recommendations, 'form': search_form, 'current_friends': current_friends})
 
 
 def get_login(request):
@@ -891,21 +893,26 @@ def get_logout(request):
 
 @login_required
 def friend_user(request):
-    user_to_friend = request.POST.get('target')
-    if user_to_friend is None or user_to_friend == request.user.id:
-        messages.error(request=request, message="Invalid friend requested.")
+    if request.method == "POST":
+        user_to_friend = request.POST.get('target')
+        if user_to_friend is None or user_to_friend == request.user.id:
+            messages.error(request=request, message="Invalid friend requested.")
+            return friend_recommendation(request=request)
+        target_user = User.objects.filter(id=user_to_friend).first()
+        target_user.friend_count = target_user.friend_count + 1
+        request.user.friend_count = request.user.friend_count + 1
+        request.user.friends_list.add(target_user)
+        target_user.save()
+        request.user.save()
+        messages.success(request=request, message=f"You are now friends with {target_user.username}")
         return friend_recommendation(request=request)
-    target_user = User.objects.filter(id=user_to_friend)
-    target_user.friend_count = target_user.friend_count + 1
-    request.user.friend_count = request.user.friend_count + 1
-    target_user.friends_list.add(target_user)
-    messages.success(request=request, message=f"You are now friends with {target_user.username}")
-    return friend_recommendation(request=request)
+    else:
+        return friend_recommendation(request=request)
 
 
 @login_required
 def user_playlist(request, user_id):
-    playlist_query = Q(spotify_ref_id__isnull=False)
+    playlist_query = Q(spotify_ref_id__isnull=False, owner=request.user)
     like_query_result = Playlist.objects.all().filter(owner=request.user, name='likes')
     dislike_query_result = Playlist.objects.all().filter(owner=request.user, name='dislikes')
     spotify_playlists = Playlist.objects.filter(playlist_query)

@@ -43,8 +43,13 @@
                 <div class="card-header-bg" style="background-image:url(assets/img/user/user-bg-01.jpg)"></div>
                 <div class="card-body card-profile-body">
                     <div class="profile-avata">
+                        {% if profile_user.profile_picture %}
                         <img class="rounded-circle" src="../images/{{profile_user.profile_picture}}"
                         style="width: 100px; height: 100px;" alt="Avatar Image">
+                            {% else %}
+                            <img class="rounded-circle" src="{% static 'images/user/user-md-01.jpg' %}"
+                        style="width: 100px; height: 100px;" alt="Avatar Image">
+                        {% endif %}
                         <span class="h5 d-block mt-3 mb-2">{{ profile_user.username }}</span>
                         <span class="d-block">{{ profile_user.user_email }}</span>
                     </div>
