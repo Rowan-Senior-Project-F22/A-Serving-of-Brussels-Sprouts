@@ -98,8 +98,8 @@ class UserPreferencesForm(forms.Form):
 
 class UserFriendSettingsForm(forms.Form):
     preference = forms.ChoiceField(choices=[('Similar', 'Similar'), ('Opposite', 'Opposite'),
-                                            ('Disparate', 'Disparate'), ('Default', 'Default')],
-                                   initial="Default",
+                                            ('Disparate', 'Disparate')],
+                                   initial="Opposite",
                                    widget=forms.Select(attrs={'class': "form-control rounded-0"}),
                                    label="Friend Recommendation Preference")
 
