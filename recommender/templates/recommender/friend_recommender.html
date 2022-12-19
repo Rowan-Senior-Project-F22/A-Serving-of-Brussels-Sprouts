@@ -88,7 +88,7 @@ Discover Friends
           
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
                       <a class="dropdown-item" href="{% url 'recommender:user_profile' user_name=member.username %}">View Profile</a>
-                      <form method="POST">
+                      <form method="POST" action="{% url 'recommender:friend_user' %}?target={{ member.id }}">
                         {% csrf_token %}
                         <a class="dropdown-item" href="#">Add Friend</a>
                       </form>

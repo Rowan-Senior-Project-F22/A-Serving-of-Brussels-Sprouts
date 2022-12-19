@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load static %}
 {% block title %} Inbox | {% endblock %}
 
 {% block content %}
@@ -23,19 +22,17 @@
 	<div class="row mb-3">
 		<div class="card col-md-12 p-5 shadow-sm">
 			{% if thread.receiver == request.user %}
-			{% if not user.profile_picture %}
-			<h5><img class="user-image rounded-circle"
-				src="{%static 'images/user/user-md-01.jpg' %}" style="width: 40px; height: 40px;"alt="Avata Image">{{thread.user.username}}</h5>
+				{% if not thread.user.profile_picture %}
+				<h5><img class="user-image rounded-circle mr-3" src="{% static 'images/user/user-md-01.jpg' %}" style="width: 40px; height: 40px;"alt="Avata Image">{{thread.user.username}}</h5>
+				{% else %}
+				<p><img class="user-image rounded-circle mr-3" style="width: 40px; height: 40px;" src="../images/{{thread.user.profile_picture}}" alt="Profile Image">{{thread.user.username}}</p>
+				{% endif %}
 			{% else %}
-			<p><img class="user-image rounded-circle" style="width: 40px; height: 40px;" src="../images/{{thread.user.profile_picture}}" alt="Profile Image"></p>
-			{% endif %}
-			{% else %}
-			{% if not user.profile_picture %}
-			<h5><img class="user-image rounded-circle"
-				src="{%static 'images/user/user-md-01.jpg' %}" style="width: 40px; height: 40px;"alt="Avata Image">{{thread.receiver.username}}</h5>
-			{% else %}
-			<p><img class="user-image rounded-circle" style="width: 40px; height: 40px;" src="../images/{{thread.receiver.profile_picture}}" alt="Profile Image"></p>
-			{% endif %}
+				{% if not thread.receiver.profile_picture %}
+				<h5><img class="user-image rounded-circle mr-3" src="{% static 'images/user/user-md-01.jpg' %}" style="width: 40px; height: 40px;"alt="Avata Image">{{thread.receiver.username}}</h5>
+				{% else %}
+				<p><img class="user-image rounded-circle mr-3" style="width: 40px; height: 40px;" src="../images/{{thread.receiver.profile_picture}}" alt="Profile Image">{{thread.receiver.username}}</p>
+				{% endif %}
 			{% endif %}
 			<a class="stretched-link" href="{% url 'recommender:thread' thread.pk %}"></a>
 		</div>

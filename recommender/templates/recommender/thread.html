@@ -10,19 +10,19 @@
 	<div class="row">
 		<div class="card col-md-12 mt-5 p-3 shadow-sm">
 			{% if thread.receiver == request.user %}
-			{% if not user.profile_picture %}
-			<h5><img class="user-image rounded-circle"
-				src="{%static 'images/user/user-md-01.jpg' %}" style="width: 40px; height: 40px;" alt="Avata Image">{{thread.user.username}}</h5>
+				{% if not thread.user.profile_picture %}
+				<h5><a href="{% url 'recommender:user_profile' user_name=thread.user.username %}"><img class="user-image rounded-circle mr-3"
+					src="{%static 'images/user/user-md-01.jpg' %}" style="width: 60px; height: 60px;" alt="Avata Image"></a>{{thread.user.username}}</h5>
+				{% else %}
+				<h5><a href="{% url 'recommender:user_profile' user_name=thread.user.username %}"><img class="user-image rounded-circle mr-3" style="width: 60px; height: 60px;" src="../images/{{thread.user.profile_picture}}" alt="Profile Image"></a>{{thread.user.username}}</h5>
+				{% endif %}
 			{% else %}
-			<p><img class="user-image rounded-circle" style="width: 40px; height: 40px;" src="../images/{{thread.receiver.profile_picture}}" alt="Profile Image"></p>
-			{% endif %}
-			{% else %}
-			{% if not user.profile_picture %}
-			<h5><img class="user-image rounded-circle"
-				src="{%static 'images/user/user-md-01.jpg' %}"  style="width: 40px; height: 40px;" alt="Avata Image">{{thread.receiver.username}}</h5>
-			{% else %}
-			<h5><img class="user-image rounded-circle" style="width: 20px; height: 20px;" src="../images/{{thread.receiver.profile_picture}}" alt="Profile Image"></h5>
-			{% endif %}
+				{% if not thread.receiver.profile_picture %}
+				<h5><a href="{% url 'recommender:user_profile' user_name=thread.receiver.username %}"><img class="user-image rounded-circle mr-3"
+					src="{%static 'images/user/user-md-01.jpg' %}"  style="width: 60px; height: 60px;" alt="Avata Image"></a>{{thread.receiver.username}}</h5>
+				{% else %}
+				<h5><a href="{% url 'recommender:user_profile' user_name=thread.receiver.username %}"><img class="user-image rounded-circle mr-3" style="width: 60px; height: 60px;" src="../images/{{thread.receiver.profile_picture}}" alt="Profile Image"></a>{{thread.receiver.username}}</h5>
+				{% endif %}
 			{% endif %}
 		</div>
 	</div>
@@ -39,29 +39,37 @@
 	<div class="row">
 		<div class="col-md-12 my-1">
 			{% if message.sender_user == request.user %}
-				<div class="sent-message my-3">
-					{% if not user.profile_picture %}
-					<p>	<img class="user-image rounded-circle"
-						src="{%static 'images/user/user-md-01.jpg' %}" style="width: 40px; height: 40px;" alt="Avatar Image">{{message.body}}</p>
-						<p>{{message.date}}</p>
+				<div class="media media-chat media-chat-right">
+					<div class="media-body">
+						<div class="text-content">
+							<span class="message">{{ message.body }}</span>
+							<time class="time">{{message.date}}</time>
+						</div>
+					</div>
+					{% if not message.sender_user.profile_picture %}
+					<img class="user-image rounded-circle"
+						src="{%static 'images/user/user-md-01.jpg' %}"  style="width: 40px; height: 40px;" alt="Avata Image">
 					{% else %}
-					<p><img class="user-image rounded-circle" style="width: 40px; height: 40px;" src="../images/{{thread.user.profile_picture}}" alt="Profile Image">{{ message.body }}</p>
-					<p>{{message.date}}</p>
-				</div>
+					<img class="user-image rounded-circle" style="width: 40px; height: 40px;" src="../images/{{message.sender_user.profile_picture}}" alt="Profile Image">
 					{% endif %}
+				</div>
 				
 			{% elif message.receiver_user == request.user %}
-			{% if not user.profile_picture %}
-			<div class = "received-message my-3">
-			<p>	<img class="user-image rounded-circle"
-				src="{%static 'images/user/user-md-01.jpg' %}"  style="width: 40px; height: 40px;" alt="Avata Image">{{message.body}}</p>
-				<p>{{message.date}}</p>
-			{% else %}
-			<p><img class="user-image rounded-circle" style="width: 40px; height: 40px;" src="../images/{{thread.receiver.profile_picture}}" alt="Profile Image">{{ message.body }} </p>
-			<p>{{message.date}}</p>
-			{% endif %}
-			{% endif %}
+			<div class="media media-chat media-chat-left">
+				{% if not message.sender_user.profile_picture %}
+				<img class="user-image rounded-circle"
+					src="{%static 'images/user/user-md-01.jpg' %}"  style="width: 40px; height: 40px;" alt="Avata Image">
+				{% else %}
+				<img class="user-image rounded-circle" style="width: 40px; height: 40px;" src="../images/{{message.sender_user.profile_picture}}" alt="Profile Image">
+				{% endif %}
+				<div class="media-body">
+				<div class="text-content">
+				<span class="message">{{ message.body }}</span>
+				<time class="time">{{message.date}}</time>
+			</div>
 		</div>
+				</div>
+			{% endif %}
 		</div>
 	</div>
 	{% endfor %}
