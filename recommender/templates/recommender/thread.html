@@ -1,10 +1,12 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load static %}
 {% block title %} Messaging {{thread.receiver.username}}{% endblock %}
 
 {% block content %}
 
 <div class="container">
+	<a href="{% url 'recommender:inbox' %}"><button class="btn btn-light"><i class="mdi mdi-arrow-left"></i> Conversations</button></a>
 	<div class="row">
 		<div class="card col-md-12 mt-5 p-3 shadow-sm">
 			{% if thread.receiver == request.user %}
@@ -32,7 +34,7 @@
 		</div>
 	</div>
 	{% endif %}
-
+	<div class="card-body pb-0" data-simplebar style="height: 545px;">
 	{% for message in message_list %}
 	<div class="row">
 		<div class="col-md-12 my-1">
@@ -63,6 +65,7 @@
 		</div>
 	</div>
 	{% endfor %}
+</div>
 
 	<div class="row">
 		<div class="card col-md-12 p-3 shadow-sm">
@@ -71,7 +74,7 @@
 				{{ form}}
 
 				<div class="d-grid gap-2 mt-3">
-					<button class="btn btn-light" type="submit">Send Message</button>
+					<button class="btn btn-secondary" type="submit">Send Message</button>
 				</div>
 			</form>
 		</div>

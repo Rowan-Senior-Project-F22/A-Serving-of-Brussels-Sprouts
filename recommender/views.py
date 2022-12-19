@@ -321,6 +321,9 @@ class CreateThread(View):
 
         try:
             receiver = User.objects.get(username=username)
+            if receiver == request.user:
+                messages.error(request=request, message="You can't message yourself!")
+                return redirect('recommender:create-thread')
             if ThreadModel.objects.filter(user=request.user, receiver=receiver).exists():
                 thread = ThreadModel.objects.filter(user=request.user, receiver=receiver)[0]
                 return redirect('recommender:thread', pk=thread.pk)
@@ -839,6 +842,20 @@ def get_logout(request):
     logout(request)
     messages.info(request, "You have successfully logged out.")
     return redirect("recommender:get_landing_guest")
+
+
+@login_required
+def friend_user(request):
+    user_to_friend = request.POST.get('target')
+    if user_to_friend is None or user_to_friend == request.user.id:
+        messages.error(request=request, message="Invalid friend requested.")
+        return friend_recommendation(request=request)
+    target_user = User.objects.filter(id=user_to_friend)
+    target_user.friend_count = target_user.friend_count + 1
+    request.user.friend_count = request.user.friend_count + 1
+    target_user.friends_list.add(target_user)
+    messages.success(request=request, message=f"You are now friends with {target_user.username}")
+    return friend_recommendation(request=request)
 
 
 @login_required
