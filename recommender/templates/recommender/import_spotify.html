@@ -7,6 +7,9 @@
 {% endblock %}
 
 {% block content %}
+<a href="{% url 'recommender:user_playlist' 1 %}"><button class="btn btn-light"><i class="mdi mdi-arrow-left"></i> Playlists</button></a>
+    <br/>
+    <br/>
 <center>
     <input class="form-control" placeholder="Search spotify playlists...">
     <br/>
